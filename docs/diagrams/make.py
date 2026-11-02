@@ -229,7 +229,7 @@ def fact():
     # Key → fingerprint → identity
     FP = d.box(900, 200, 290, 84, "Fingerprint = author", ["base32(SHA-512(JWK {crv,kty,x})[:16])", "QPRGVPJNWDXH4ESK2RYDTZJLTE"], "trust")
     d.arrow([(820, 242), (900, 242)], label="public key", at=(860, 234))
-    PR = d.box(900, 330, 290, 90, "Identity profile", ["Ariadne Signature Profile (JWS)", "aspe:openmanuals.org:<fp>", "claims: gist, DNS, Mastodon…"], "client")
+    PR = d.box(900, 330, 290, 90, "Identity profile", ["Ariadne Signature Profile (JWS)", "aspe:openmanuals.win:<fp>", "claims: gist, DNS, Mastodon…"], "client")
     LK = d.box(570, 330, 250, 90, "identity_link", ["signed by the server after", "tools/doip-verify checked", "the claim on its site"], "trust")
     d.arrow([(1045, 284), (1045, 330)])
     d.arrow([(900, 375), (820, 375)], label="verified", at=(860, 367))

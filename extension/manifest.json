@@ -13,6 +13,7 @@
     "*://*.archive.org/*",
     "https://api.github.com/*",
     "https://cloudflare-dns.com/*",
+    "https://openmanuals.win/*",
     "http://localhost/*",
     "http://127.0.0.1/*"
   ],

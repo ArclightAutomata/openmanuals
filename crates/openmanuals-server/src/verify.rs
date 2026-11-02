@@ -563,7 +563,7 @@ fn host_interval() -> Duration {
 }
 
 fn user_agent() -> String {
-    format!("OpenManuals-verifier/{} (+https://openmanuals.org)", env!("CARGO_PKG_VERSION"))
+    format!("OpenManuals-verifier/{} (+https://openmanuals.win)", env!("CARGO_PKG_VERSION"))
 }
 
 fn allow_local() -> bool {

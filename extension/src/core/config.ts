@@ -17,7 +17,7 @@ export interface LocalSettings {
 }
 export type Settings = SyncSettings & LocalSettings;
 
-export const SYNC_DEFAULTS: SyncSettings = { apiBase: "http://localhost:8000", uploadEnabled: false, annotateLists: true, showBanner: true, mirrors: "", legacyCheck: false };
+export const SYNC_DEFAULTS: SyncSettings = { apiBase: "https://openmanuals.win", uploadEnabled: false, annotateLists: true, showBanner: true, mirrors: "", legacyCheck: false };
 export const LOCAL_DEFAULTS: LocalSettings = { iaAccessKey: "", iaSecretKey: "", iaUser: "" };
 
 const trimBase = (s: unknown) => String(s ?? "").trim().replace(/\/+$/, "");
@@ -48,5 +48,5 @@ export const canUpload = (s: Settings): boolean => Boolean(s.uploadEnabled) && h
 
 /** The domain the identity profile is hosted on (`aspe:<domain>:<fp>`): the server's host. */
 export function aspeDomain(s: Settings): string {
-  try { return new URL(s.apiBase).host; } catch { return "openmanuals.org"; }
+  try { return new URL(s.apiBase).host; } catch { return "openmanuals.win"; }
 }

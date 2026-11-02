@@ -18,7 +18,7 @@ limitations under the License.
  * @module serviceProviders/openmanuals
  * @example
  * import { ServiceProviderDefinitions } from 'doipjs';
- * const sp = ServiceProviderDefinitions.data.openmanuals.processURI('https://openmanuals.org/k/QPRGVPJNWDXH4ESK2RYDTZJLTE');
+ * const sp = ServiceProviderDefinitions.data.openmanuals.processURI('https://openmanuals.win/k/QPRGVPJNWDXH4ESK2RYDTZJLTE');
  */
 
 // Proposed for doipjs's src/serviceProviders/ (with an entry in index.js).
@@ -44,11 +44,11 @@ export function processURI (uri) {
     about: {
       id: 'openmanuals',
       name: 'OpenManuals',
-      homepage: 'https://openmanuals.org'
+      homepage: 'https://openmanuals.win'
     },
     profile: {
       display: fingerprint,
-      uri: `https://openmanuals.org/k/${fingerprint}`,
+      uri: `https://openmanuals.win/k/${fingerprint}`,
       qr: null
     },
     claim: {
@@ -57,11 +57,11 @@ export function processURI (uri) {
     },
     proof: {
       request: {
-        uri: `https://openmanuals.org/k/${fingerprint}`,
+        uri: `https://openmanuals.win/k/${fingerprint}`,
         fetcher: E.Fetcher.HTTP,
         accessRestriction: E.ProofAccessRestriction.NONE,
         data: {
-          url: `https://openmanuals.org/api/key/${fingerprint}`,
+          url: `https://openmanuals.win/api/key/${fingerprint}`,
           format: E.ProofFormat.JSON
         }
       },
@@ -93,19 +93,19 @@ export const functions = {
 
 export const tests = [
   {
-    uri: 'https://openmanuals.org/k/QPRGVPJNWDXH4ESK2RYDTZJLTE',
+    uri: 'https://openmanuals.win/k/QPRGVPJNWDXH4ESK2RYDTZJLTE',
     shouldMatch: true
   },
   {
-    uri: 'https://openmanuals.org/k/qprgvpjnwdxh4esk2rydtzjlte/',
+    uri: 'https://openmanuals.win/k/qprgvpjnwdxh4esk2rydtzjlte/',
     shouldMatch: true
   },
   {
-    uri: 'https://openmanuals.org/k/QPRGVPJNWDXH4ESK2RYDTZJLTE/extra',
+    uri: 'https://openmanuals.win/k/QPRGVPJNWDXH4ESK2RYDTZJLTE/extra',
     shouldMatch: false
   },
   {
-    uri: 'https://openmanuals.org/manual/01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    uri: 'https://openmanuals.win/manual/01ARZ3NDEKTSV4RRFFQ69G5FAV',
     shouldMatch: false
   },
   {

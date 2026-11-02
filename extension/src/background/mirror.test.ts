@@ -8,7 +8,8 @@ import { readFileSync } from "node:fs";
 const root = new URL("../../../", import.meta.url);
 const wasmBytes = readFileSync(new URL("extension/vendor/openmanuals-wasm/openmanuals_wasm_bg.wasm", root));
 
-const mem: Record<string, Record<string, unknown>> = { sync: {}, local: {}, session: {} };
+// The tests talk to a stub server at the development address, not the default.
+const mem: Record<string, Record<string, unknown>> = { sync: { apiBase: "http://localhost:8000" }, local: {}, session: {} };
 const store = (area: string) => ({
   get: async (q: unknown) => {
     const m = mem[area];

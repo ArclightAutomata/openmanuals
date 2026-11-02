@@ -39,8 +39,8 @@ for (const t of om.tests) {
 }
 
 // The proof: GET /api/key/<fp> lists the Keyoxide identity in `claims`.
-const sp = om.processURI(`https://openmanuals.org/k/${FP.toLowerCase()}`)
-assert.equal(sp.proof.request.data.url, `https://openmanuals.org/api/key/${FP}`)
+const sp = om.processURI(`https://openmanuals.win/k/${FP.toLowerCase()}`)
+assert.equal(sp.proof.request.data.url, `https://openmanuals.win/api/key/${FP}`)
 const response = { fingerprint: FP, name: 'Alice', claims: ['https://gist.github.com/alice/1', KEYOXIDE] }
 let r = await doip.verifications.run(response, sp, KEYOXIDE)
 assert.equal(r.result, true, JSON.stringify(r))

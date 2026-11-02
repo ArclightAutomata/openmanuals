@@ -12,7 +12,8 @@ const wasmBytes = readFileSync(new URL("extension/vendor/openmanuals-wasm/openma
 const vectors = JSON.parse(readFileSync(new URL("crates/openmanuals-core/vectors/vectors.json", root), "utf8"));
 
 // ---- chrome stub -----------------------------------------------------------------
-const mem: Record<string, Record<string, unknown>> = { sync: {}, local: {}, session: {} };
+// The tests talk to a stub server at the development address, not the default.
+const mem: Record<string, Record<string, unknown>> = { sync: { apiBase: "http://localhost:8000" }, local: {}, session: {} };
 const store = (area: string) => ({
   // Like chrome.storage, every get returns copies, never the stored objects.
   get: async (q: unknown) => {
@@ -256,7 +257,7 @@ test("server pages: the script follows the setting; content scripts can't sign; 
   await tick(50);
   assert.deepEqual(registered.map((r) => r.matches), [["https://om.example.org/*"]]);
   assert.deepEqual(await send({ type: "siteHello" }, server), { ok: false });
-  delete mem.sync.apiBase;
+  mem.sync.apiBase = "http://localhost:8000";
   // Report targets: a copy's location fact, validated.
   postedFacts = [];
   const r = (await send({ type: "report", target: "sha256:" + "b".repeat(64), sha256: "c".repeat(64), value: "spam" })) as { sent: boolean };

@@ -94,8 +94,8 @@ mkdir -p data ledger
 ./target/release/om key init                                  # a new Ed25519 key
 cp ~/.local/share/openmanuals/key data/server.key             # the server's identity
 ./target/release/openmanuals-server --data-dir data --ledger-dir ledger build   # build and publish a snapshot
-./target/release/openmanuals-server --data-dir data --ledger-dir ledger --domain openmanuals.org \
-    --public-url https://openmanuals.org --doip-script tools/doip-verify/index.js serve --bind 127.0.0.1:8000
+./target/release/openmanuals-server --data-dir data --ledger-dir ledger --domain openmanuals.win \
+    --public-url https://openmanuals.win --doip-script tools/doip-verify/index.js serve --bind 127.0.0.1:8000
 ```
 
 Facts then arrive through the API, from the extension and from `om`. The
@@ -150,7 +150,7 @@ Moderation is build configuration, not data: anyone can build the same ledger
 with a different trust set.
 
 ```toml
-domain = "openmanuals.org"
+domain = "openmanuals.win"
 moderators = ["<fingerprint>"]   # their block/unblock/prefer facts apply
 labelers = []                    # their labels carry full weight (moderators implied)
 servers = []                     # their verified/location_status/identity_link facts are trusted;
@@ -329,7 +329,7 @@ ignore them.
   optional description and avatar, and the claims array, submitted as an
   `identity_profile` fact and served at `/.well-known/aspe/id/<fingerprint>`
   (with `/.well-known/aspe/version`, CORS `*`), so the identity is
-  `aspe:openmanuals.org:<fp>` and keyoxide.org can render it.
+  `aspe:openmanuals.win:<fp>` and keyoxide.org can render it.
 - **Proofs:** Ariadne claims the user places themselves, with no OAuth with
   any provider: GitHub gist, GitLab, Codeberg/Forgejo, Mastodon/Fediverse, DNS
   TXT, personal website. The extension gives per-service instructions and
@@ -402,8 +402,8 @@ Keyoxide identity's URI (`openpgp4fpr:<fingerprint>` or
 
 | claim | how Keyoxide checks it (doipjs 2.1.0, unchanged) | shown as |
 |---|---|---|
-| `aspe:openmanuals.org:<fp>` | the ASPE provider reads `/.well-known/aspe/id/<fp>` and looks for its URI in the claims | ASPE: `aspe:openmanuals.org:<fp>` |
-| `https://openmanuals.org/k/<fp>` | the generic ActivityPub provider gets `/k/<fp>` as `application/activity+json` (a read-only ActivityStreams `Person` whose `attachment` values are the profile's claims), then reads `/.well-known/nodeinfo` for the service name | openmanuals: `@<fp>@openmanuals.org` |
+| `aspe:openmanuals.win:<fp>` | the ASPE provider reads `/.well-known/aspe/id/<fp>` and looks for its URI in the claims | ASPE: `aspe:openmanuals.win:<fp>` |
+| `https://openmanuals.win/k/<fp>` | the generic ActivityPub provider gets `/k/<fp>` as `application/activity+json` (a read-only ActivityStreams `Person` whose `attachment` values are the profile's claims), then reads `/.well-known/nodeinfo` for the service name | openmanuals: `@<fp>@openmanuals.win` |
 
 For an OpenPGP key the claim is the notation
 `proof@ariadne.id=<claim>` (doipjs looks `openpgp4fpr:` keys up on
@@ -412,8 +412,8 @@ its claims list.
 
 The link then verifies in both directions: the server's verifier checks the
 OpenManuals profile's `openpgp4fpr:`/`aspe:` claim like any other (doipjs
-reads the Keyoxide profile and finds `aspe:openmanuals.org:<fp>` in it, or the
-`https://openmanuals.org/k/<fp>` URL, whose `Ariadne-Identity-Proof` header
+reads the Keyoxide profile and finds `aspe:openmanuals.win:<fp>` in it, or the
+`https://openmanuals.win/k/<fp>` URL, whose `Ariadne-Identity-Proof` header
 names that same `aspe:` URI) and records an `identity_link`. Keys that link
 the same Keyoxide identity count as one contributor. `/k/<fp>` lists the
 claimed identities, with ✓ on those the verifier confirmed.
@@ -431,7 +431,7 @@ definition is in
 [`tools/keyoxide-provider/openmanuals.js`](tools/keyoxide-provider/openmanuals.js)
 (ready to propose upstream; `node tools/keyoxide-provider/test.mjs` tests it
 against the installed doipjs). It matches only
-`https://openmanuals.org/k/<fp>` and reads `GET /api/key/<fp>`.
+`https://openmanuals.win/k/<fp>` and reads `GET /api/key/<fp>`.
 
 Everything here reads the snapshot, except ASPE, which reads the inbox and
 checks blocks itself: a key a moderator blocked has no profile, Person or
@@ -871,7 +871,7 @@ What the extension asks on a source page.
   "known": true,
   "manual": { "id": "01J9…", "title": "JVC AV-2168TEE Service Manual", "doc_type": "service",
               "brand": "JVC", "model": "AV-2168TEE", "source_url": "https://www.manualslib.com/manual/…",
-              "url": "https://openmanuals.org/manual/01J9…" },
+              "url": "https://openmanuals.win/manual/01J9…" },
   "files": [
     { "id": "…", "sha256": "…", "sha1": "…", "md5": "…", "size": 1234567, "mime": "application/pdf", "pages": 42,
       "derived_from": "…" | null, "transform": "watermark-stripped" | null, "tool_version": "om-strip-rs/1" | null,
@@ -976,7 +976,7 @@ blocked.
 
 ```json
 { "fingerprint": "QPRG…", "name": "Alice", "description": null,
-  "url": "https://openmanuals.org/k/QPRG…", "aspe": "aspe:openmanuals.org:QPRG…",
+  "url": "https://openmanuals.win/k/QPRG…", "aspe": "aspe:openmanuals.win:QPRG…",
   "claims": ["https://gist.github.com/alice/…", "aspe:keyoxide.org:6WJK…"],
   "identities": ["aspe:keyoxide.org:6WJK…"],
   "links": [{ "service": "aspe", "handle": "aspe:keyoxide.org:6WJK…", "claim_uri": "aspe:keyoxide.org:6WJK…" }],
