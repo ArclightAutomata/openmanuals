@@ -10,6 +10,7 @@
     "build": "node build.mjs",
     "prewatch": "node scripts/wasm.mjs",
     "watch": "node build.mjs --watch",
+    "package": "npm run build && node scripts/package.mjs",
     "pretest": "node scripts/wasm.mjs",
     "test": "node --test 'src/**/*.test.ts'",
     "pretypecheck": "node scripts/wasm.mjs",
