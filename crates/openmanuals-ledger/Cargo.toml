@@ -1,0 +1,31 @@
+[package]
+name = "openmanuals-ledger"
+description = "OpenManuals JSONL ledger and the deterministic SQLite snapshot build"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+openmanuals-core = { path = "../openmanuals-core" }
+serde = { workspace = true }
+serde_json = { workspace = true, features = ["raw_value"] }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+rusqlite = { workspace = true }
+ulid = { workspace = true }
+jiff = { workspace = true }
+toml = { workspace = true }
+hex = { workspace = true }
+sha2 = { workspace = true }
+tracing = { workspace = true }
+postcard = { workspace = true }
+rayon = { workspace = true }
+memchr = { workspace = true }
+zstd = { workspace = true }
+rustc-hash = "2.1.1"
+
+[dev-dependencies]
+openmanuals-core = { path = "../openmanuals-core", features = ["sign"] }
+tempfile = { workspace = true }
+mimalloc = { workspace = true }

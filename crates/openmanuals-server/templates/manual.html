@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ m.title }} — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail">
+  <nav class="crumbs">{% if m.brand %}<a href="/manuals?brand={{ m.brand_key|urlencode }}">{{ m.brand }}</a> / {% endif %}{{ m.doc_type }}</nav>
+  <h1>{{ m.title }}</h1>
+  <p class="detail-meta"><span class="doc-tag">{{ m.doc_type }}</span>
+    {% for p in products %} <a class="chip" href="/product/{{ p.brand|urlencode }}/{{ p.model|urlencode }}">{{ p.brand }} {{ p.model }}</a>{% endfor %}
+  </p>
+  {% if download %}
+  <div class="download-block">
+    <a class="download-btn" href="{{ download.url }}" target="_blank" rel="noopener nofollow ugc">↓ Download from {{ download.host }}</a>
+    {% if download.ia_identifier %}<a class="read-link" href="https://archive.org/details/{{ download.ia_identifier }}" target="_blank" rel="noopener">View on archive.org</a>{% endif %}
+  </div>
+  {% else %}
+  <p class="empty">No verified free copy yet. {% if m.source_url %}Known at <a href="{{ m.source_url }}" rel="noopener nofollow">{{ m.source }}</a>.{% endif %}</p>
+  {% endif %}
+  {% for f in files %}
+  <section class="file" data-om-file="{{ f.id }}">
+    <h3><a href="/file/{{ f.id }}">{{ f.label }}</a> <small>{{ f.size_label }}{% if f.transform %} · {{ f.transform }} ({{ f.tool_version }}){% endif %}</small> <span class="om-actions"></span></h3>
+    {% if f.review %}<p class="held">Not offered for download: {{ f.review }}.</p>
+    {% elif f.copies %}
+    <ul class="copies">
+      {% for c in f.copies %}<li data-om-location="{{ c.id }}" data-om-file="{{ f.id }}" data-om-author="{{ c.author }}"><a href="{{ c.url }}" rel="noopener nofollow ugc">{{ c.host }}</a> <small>verified {{ c.verified_at[:10] }} · by <a href="/k/{{ c.author }}">{{ c.author_name }}</a></small> <span class="om-actions"></span></li>{% endfor %}
+    </ul>
+    {% else %}<p class="muted">No verified copy.</p>{% endif %}
+  </section>
+  {% endfor %}
+  <p class="provenance">
+    {% if m.source_url %}Source: <a href="{{ m.source_url }}" rel="noopener nofollow">{{ m.source_url }}</a> · {% endif %}
+    Recorded by <a href="/k/{{ m.author }}">{{ m.author_name }}</a> · manual <code>{{ m.id }}</code>
+  </p>
+</article>
+{% endblock %}

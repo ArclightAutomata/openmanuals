@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% import "_facts.html" as facts %}
+{% block title %}Ledger — OpenManuals{% endblock %}
+{% block content %}
+<section class="ledger-head">
+  <h1>Ledger</h1>
+  <p class="ledger-intro">Every signed fact the server has accepted, newest first ({{ total }} in all). It's the same data as the <a href="/api/feed">feed</a> and the git ledger; what the site shows is built from it.</p>
+  {% if author %}
+  <div class="author-card">
+    <a href="/k/{{ author.fp }}">{{ author.avatar|safe }}</a>
+    <div>
+      <p class="author-name"><a href="/k/{{ author.fp }}">{{ author.name }}</a>{% if author.role %} <span class="pill pill-role">{{ author.role }}</span>{% endif %}</p>
+      <p class="fact-meta"><code>{{ author.fp }}</code>{% for l in author.links %} {% if l.uri %}<a class="proof" href="{{ l.uri }}" rel="noopener nofollow ugc">✓ {{ l.service }}/{{ l.handle }}</a>{% else %}<span class="proof">✓ {{ l.service }}/{{ l.handle }}</span>{% endif %}{% endfor %}</p>
+    </div>
+    <a class="clear" href="/ledger{% if kind %}?type={{ kind|urlencode }}{% endif %}">Show everyone</a>
+  </div>
+  {% endif %}
+  <nav class="type-filter" aria-label="Filter by type">
+    <a class="chip{% if not kind %} active{% endif %}" href="/ledger{% if author_fp %}?author={{ author_fp }}{% endif %}">all</a>
+    {% for t in types %}<a class="chip{% if t.active %} active{% endif %}" href="/ledger?type={{ t.name }}{% if author_fp %}&amp;author={{ author_fp }}{% endif %}">{{ t.name }}</a>{% endfor %}
+  </nav>
+</section>
+{% if groups %}{{ facts.rows(groups) }}{% else %}<p class="empty">No facts here.</p>{% endif %}
+<nav class="pager">
+  {% if newer %}<a class="btn" href="{{ newer }}">← Newer</a>{% else %}<span class="btn disabled">← Newer</span>{% endif %}
+  {% if older %}<a class="btn" href="{{ older }}">Older →</a>{% else %}<span class="btn disabled">Older →</span>{% endif %}
+</nav>
+{% endblock %}

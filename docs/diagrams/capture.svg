@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="860" viewBox="0 0 1260 860" role="img" aria-labelledby="t d">
+<title id="t">How a download is preserved</title>
+<desc id="d">With uploads on, the extension fetches a manual once when you download it, saves your copy, hashes it, strips watermarks, uploads the stripped file to archive.org under your account, and sends a signed bundle of facts to the OpenManuals server, whose verifier later checks the copy.</desc>
+<defs><marker id="e-black" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#000000"/></marker><marker id="s-black" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#000000"/></marker><marker id="e-blue" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#0060B6"/></marker><marker id="s-blue" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#0060B6"/></marker><marker id="e-red" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#BF0000"/></marker><marker id="s-red" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#BF0000"/></marker><marker id="e-purple" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8210D2"/></marker><marker id="s-purple" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8210D2"/></marker><marker id="e-gray" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8C8C8C"/></marker><marker id="s-gray" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8C8C8C"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="20" y="38" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="22" text-anchor="start" font-weight="normal" fill="#000">Extension: preserving a manual you download</text>
+<rect x="20" y="60" width="1020" height="590" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="40" y="90" width="220" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="40.75" y="120" width="218.5" height="49.25" fill="#d9ead3" stroke="none"/>
+<line x1="40" y1="120" x2="260" y2="120" stroke="#000" stroke-width="0.75"/>
+<text x="150.0" y="111" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Download clicked</text>
+<text x="150.0" y="141.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">a click, Manualzz's form,</text>
+<text x="150.0" y="157.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">or Save link as…</text>
+<polygon points="420,75.0 540.0,130 420,185.0 300.0,130" fill="#f4cccc" stroke="#000" stroke-width="1.5"/>
+<text x="420" y="118" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Upload on, keys</text>
+<text x="420" y="134" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">saved, not</text>
+<text x="420" y="150" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">preserved yet?</text>
+<rect x="330" y="205" width="180" height="50" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<text x="420.0" y="235.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">The site handles it</text>
+<rect x="580" y="90" width="220" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="580.75" y="120" width="218.5" height="49.25" fill="#cfe2f3" stroke="none"/>
+<line x1="580" y1="120" x2="800" y2="120" stroke="#000" stroke-width="0.75"/>
+<text x="690.0" y="111" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Fetch the file once</text>
+<text x="690.0" y="141.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">content script, or the</text>
+<text x="690.0" y="157.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">service worker's fetch port</text>
+<rect x="840" y="90" width="180" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="840.75" y="120" width="178.5" height="49.25" fill="#d9ead3" stroke="none"/>
+<line x1="840" y1="120" x2="1020" y2="120" stroke="#000" stroke-width="0.75"/>
+<text x="930.0" y="111" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Your copy</text>
+<text x="930.0" y="141.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">saved to Downloads</text>
+<text x="930.0" y="157.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">as before</text>
+<path d="M260,130 L300,130" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M420,185 L420,205" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="430" y="200" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M540,130 L580,130" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="560" y="122" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M800,130 L840,130" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M690,170 L690,300 L150,300 L150,360" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="40" y="360" width="220" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="40.75" y="390" width="218.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="40" y1="390" x2="260" y2="390" stroke="#000" stroke-width="0.75"/>
+<text x="150.0" y="381" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Hash the original</text>
+<text x="150.0" y="424.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">sha256 · sha1 · md5 · size</text>
+<rect x="300" y="360" width="230" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="300.75" y="390" width="228.5" height="59.25" fill="#cfe2f3" stroke="none"/>
+<line x1="300" y1="390" x2="530" y2="390" stroke="#000" stroke-width="0.75"/>
+<text x="415.0" y="381" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Strip watermarks</text>
+<text x="415.0" y="408.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">offscreen worker,</text>
+<text x="415.0" y="424.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">openmanuals-strip (wasm);</text>
+<text x="415.0" y="440.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">no change or error → original</text>
+<polygon points="660,350.0 760.0,405 660,460.0 560.0,405" fill="#f4cccc" stroke="#000" stroke-width="1.5"/>
+<text x="660" y="393" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Same file</text>
+<text x="660" y="409" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">already</text>
+<text x="660" y="425" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">archived?</text>
+<rect x="810" y="360" width="200" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="810.75" y="390" width="198.5" height="59.25" fill="#cfe2f3" stroke="none"/>
+<line x1="810" y1="390" x2="1010" y2="390" stroke="#000" stroke-width="0.75"/>
+<text x="910.0" y="381" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Upload</text>
+<text x="910.0" y="408.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">S3 PUT with your keys:</text>
+<text x="910.0" y="424.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">new item openmanuals-…</text>
+<text x="910.0" y="440.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">with title, source, hashes</text>
+<path d="M260,405 L300,405" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M530,405 L560,405" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M760,405 L810,405" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="785" y="397" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no</text>
+<rect x="1060" y="360" width="180" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="1060.75" y="390" width="178.5" height="59.25" fill="#e6e6e6" stroke="none"/>
+<line x1="1060" y1="390" x2="1240" y2="390" stroke="#000" stroke-width="0.75"/>
+<text x="1150.0" y="381" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">archive.org</text>
+<text x="1150.0" y="416.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">the item, under</text>
+<text x="1150.0" y="432.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">your account</text>
+<path d="M1010,405 L1060,405" fill="none" stroke="#8210D2" stroke-width="1.75" marker-end="url(#e-purple)"/>
+<rect x="560" y="520" width="440" height="100" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="560.75" y="550" width="438.5" height="69.25" fill="#f4cccc" stroke="none"/>
+<line x1="560" y1="550" x2="1000" y2="550" stroke="#000" stroke-width="0.75"/>
+<text x="780.0" y="541" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Sign a bundle of facts</text>
+<text x="780.0" y="573.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">file (original) · file (stripped) · derivation</text>
+<text x="780.0" y="589.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">location: the source page · location: the copy</text>
+<text x="780.0" y="605.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">manual · product · covers · manual_file</text>
+<path d="M660,460 L660,520" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="650" y="482" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="end" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">yes: no upload (unless</text>
+<text x="650" y="498" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="end" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">you choose Add another copy);</text>
+<text x="650" y="514" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="end" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">the source page is still recorded</text>
+<path d="M910,450 L910,520" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="300" y="520" width="200" height="100" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="300.75" y="550" width="198.5" height="69.25" fill="#ffeeaa" stroke="none"/>
+<line x1="300" y1="550" x2="500" y2="550" stroke="#000" stroke-width="0.75"/>
+<text x="400.0" y="541" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Outbox</text>
+<text x="400.0" y="573.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">chrome.storage.local;</text>
+<text x="400.0" y="589.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">retried until the</text>
+<text x="400.0" y="605.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">server accepts it</text>
+<path d="M560,570 L500,570" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="280" y="670" width="960" height="140" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="300" y="705" width="220" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="300.75" y="735" width="218.5" height="49.25" fill="#cfe2f3" stroke="none"/>
+<line x1="300" y1="735" x2="520" y2="735" stroke="#000" stroke-width="0.75"/>
+<text x="410.0" y="726" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">POST /api/facts</text>
+<text x="410.0" y="756.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">signatures, budgets,</text>
+<text x="410.0" y="772.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">blocked keys</text>
+<rect x="580" y="705" width="220" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="580.75" y="735" width="218.5" height="49.25" fill="#ffeeaa" stroke="none"/>
+<line x1="580" y1="735" x2="800" y2="735" stroke="#000" stroke-width="0.75"/>
+<text x="690.0" y="726" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Inbox → ledger</text>
+<text x="690.0" y="756.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">folded into git, then</text>
+<text x="690.0" y="772.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">built into the snapshot</text>
+<rect x="860" y="705" width="220" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="860.75" y="735" width="218.5" height="49.25" fill="#cfe2f3" stroke="none"/>
+<line x1="860" y1="735" x2="1080" y2="735" stroke="#000" stroke-width="0.75"/>
+<text x="970.0" y="726" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Verifier</text>
+<text x="970.0" y="756.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">fetches the copy, checks</text>
+<text x="970.0" y="772.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">its hashes, scans the PDF</text>
+<path d="M470,620 L470,705" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M520,745 L580,745" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M800,745 L860,745" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M1080,745 L1150,745 L1150,450" fill="none" stroke="#0060B6" stroke-width="1.75" marker-end="url(#e-blue)"/>
+<text x="1160" y="600" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#0060B6" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">fetch &amp; check</text>
+<rect x="40" y="680" width="22" height="16" rx="0" fill="#d9ead3" stroke="#000" stroke-width="1"/>
+<text x="72" y="693" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#000">client / person</text>
+<rect x="40" y="704" width="22" height="16" rx="0" fill="#cfe2f3" stroke="#000" stroke-width="1"/>
+<text x="72" y="717" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#000">process</text>
+<rect x="40" y="728" width="22" height="16" rx="0" fill="#ffeeaa" stroke="#000" stroke-width="1"/>
+<text x="72" y="741" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#000">file or database</text>
+<rect x="40" y="752" width="22" height="16" rx="0" fill="#f4cccc" stroke="#000" stroke-width="1"/>
+<text x="72" y="765" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#000">key, signature or check</text>
+<rect x="40" y="776" width="22" height="16" rx="0" fill="#e6e6e6" stroke="#000" stroke-width="1"/>
+<text x="72" y="789" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#000">external service</text>
+<text x="40" y="845" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555" font-style="italic">The copy shows on the site once the verifier has checked it. If stripping changes nothing, the original is uploaded and no derivation is recorded.</text>
+<text x="32" y="82" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Your browser (the manual site's tab and the extension)</text>
+<text x="292" y="692" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">OpenManuals server</text>
+</svg>

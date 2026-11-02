@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+openmanuals.db
+.secret_key
+.pytest_cache/
+target/
+extension/node_modules/
+extension/dist/
+data/
+/ledger/
+*.db.tmp
+node_modules/
+# Built from the Rust crates by extension/scripts/wasm.mjs
+extension/vendor/openmanuals-wasm/
+extension/vendor/openmanuals-strip-wasm/

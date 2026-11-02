@@ -1,0 +1,10 @@
+{
+  "name": "om-doip-verify",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Verifies the claims of an Ariadne Signature Profile with doipjs; the OpenManuals verifier shells out to this",
+  "type": "module",
+  "bin": { "om-doip-verify": "./index.js" },
+  "dependencies": { "doipjs": "2.1.0" }
+}

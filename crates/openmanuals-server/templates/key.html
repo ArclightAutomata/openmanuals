@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail">
+  <div class="key-head"><span class="key-avatar">{{ avatar|safe }}</span><h1>{{ name }}</h1></div>
+  <p class="detail-meta"><code>{{ fp }}</code> · <code>{{ aspe }}</code>{% if keyoxide %} · <a href="{{ keyoxide }}" rel="noopener">Keyoxide profile ↗</a>{% endif %}</p>
+  {% if links %}<ul class="links">{% for l in links %}<li>{{ l.service }}: {% if l.href %}<a href="{{ l.href }}" rel="noopener nofollow">{{ l.handle }}</a>{% else %}{{ l.handle }}{% endif %} ✓</li>{% endfor %}</ul>{% endif %}
+  {% if identities %}
+  <h2>Keyoxide identities</h2>
+  <p class="empty">This key's signed profile claims these identities. One is linked both ways (✓) when its Keyoxide profile also lists <code>{{ aspe }}</code> or <code>{{ url }}</code>.</p>
+  <ul class="links">{% for i in identities %}<li>{% if i.href %}<a href="{{ i.href }}" rel="noopener nofollow">{{ i.uri }}</a>{% else %}{{ i.uri }}{% endif %}{% if i.verified %} ✓{% else %} (not confirmed yet){% endif %}</li>{% endfor %}</ul>
+  {% endif %}
+  <p><a href="/ledger?author={{ fp }}">{{ facts }} facts</a> · {{ verified_copies }} verified copies{% if group_keys > 1 %} · {{ group_keys }} keys{% endif %}</p>
+  <h2>Recent verified copies</h2>
+  <ul class="manual-list">{% for c in copies %}<li class="manual-card"><a class="manual-link" href="/manual/{{ c.manual }}"><span class="manual-model">{{ c.title }}</span></a><a class="mini-dl" href="{{ c.url }}" rel="noopener nofollow ugc">↓ {{ c.host }}</a></li>{% endfor %}</ul>
+</article>
+{% endblock %}

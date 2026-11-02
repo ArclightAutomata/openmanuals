@@ -1,0 +1,11 @@
+{# What the visitor needs before downloading. The OpenManuals extension, when
+   installed, hides the first note from the start (its stylesheet), shows the
+   "checking" line until it has answered, then reveals one of the last two. #}
+{% macro readiness() %}
+<div class="readiness">
+  <p class="om-ext-checking ready-note">Checking your OpenManuals extension…</p>
+  <p class="om-ext-hint ready-note warn-note"><strong>First, install the OpenManuals browser extension</strong> and turn on uploads in its settings. A download made without it isn't preserved.</p>
+  <p class="ready-note warn-note" data-om-upload="off" hidden><strong>Uploads are off in your extension.</strong> Turn them on so your download is preserved. <button type="button" class="link-button" data-om-open-options>Open extension settings</button></p>
+  <p class="ready-note ok-note" data-om-upload="on" hidden><strong>Your extension is ready.</strong> Download the manual there as usual; it's preserved on the Internet Archive automatically.</p>
+</div>
+{% endmacro %}

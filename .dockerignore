@@ -1,0 +1,10 @@
+# Only Cargo.toml, Cargo.lock, crates/, brand/logo.svg and tools/doip-verify are used by the Dockerfile.
+target
+data
+ledger
+extension
+docs
+brand/*.png
+**/node_modules
+**/__pycache__
+.git

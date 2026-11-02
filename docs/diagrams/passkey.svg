@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="770" viewBox="0 0 1280 770" role="img" aria-labelledby="t d">
+<title id="t">How a passkey protects the signing key</title>
+<desc id="d">The passkey's PRF output is stretched with HKDF into an AES-256-GCM key that wraps the Ed25519 signing key. The wrapped copy is stored in the browser, on the server and in an optional backup file; on another computer the same passkey rebuilds the same wrapping key and unwraps it.</desc>
+<defs><marker id="e-black" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#000000"/></marker><marker id="s-black" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#000000"/></marker><marker id="e-blue" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#0060B6"/></marker><marker id="s-blue" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#0060B6"/></marker><marker id="e-red" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#BF0000"/></marker><marker id="s-red" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#BF0000"/></marker><marker id="e-purple" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8210D2"/></marker><marker id="s-purple" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8210D2"/></marker><marker id="e-gray" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8C8C8C"/></marker><marker id="s-gray" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8C8C8C"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="20" y="38" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="22" text-anchor="start" font-weight="normal" fill="#000">Passkey-protected signing key</text>
+<rect x="20" y="60" width="260" height="420" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="300" y="60" width="640" height="420" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="960" y="60" width="300" height="420" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="40" y="100" width="220" height="120" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="40.75" y="130" width="218.5" height="89.25" fill="#e6e6e6" stroke="none"/>
+<line x1="40" y1="130" x2="260" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="150.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Passkey</text>
+<text x="150.0" y="155.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">password manager, phone</text>
+<text x="150.0" y="171.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">or security key</text>
+<text x="150.0" y="187.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">user.id = fingerprint</text>
+<text x="150.0" y="203.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">RP: chrome-extension://&lt;id&gt;</text>
+<rect x="330" y="100" width="260" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="330.75" y="130" width="258.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="330" y1="130" x2="590" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="460.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">PRF output</text>
+<text x="460.0" y="148.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">input "openmanuals key wrap v1"</text>
+<text x="460.0" y="164.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">→ 32 secret bytes, the same</text>
+<text x="460.0" y="180.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">every time for this passkey</text>
+<rect x="650" y="100" width="260" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="650.75" y="130" width="258.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="650" y1="130" x2="910" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="780.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Wrapping key</text>
+<text x="780.0" y="156.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">HKDF-SHA256 → AES-256-GCM</text>
+<text x="780.0" y="172.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">never stored</text>
+<rect x="330" y="250" width="260" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="330.75" y="280" width="258.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="330" y1="280" x2="590" y2="280" stroke="#000" stroke-width="0.75"/>
+<text x="460.0" y="271" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Ed25519 signing key</text>
+<text x="460.0" y="306.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">made once; extractable</text>
+<text x="460.0" y="322.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">only during this step</text>
+<rect x="650" y="250" width="260" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="650.75" y="280" width="258.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="650" y1="280" x2="910" y2="280" stroke="#000" stroke-width="0.75"/>
+<text x="780.0" y="271" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">AES-GCM wrapKey</text>
+<text x="780.0" y="306.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">random IV; AAD binds the</text>
+<text x="780.0" y="322.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">fingerprint and passkey id</text>
+<rect x="330" y="380" width="260" height="80" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="330.75" y="410" width="258.5" height="49.25" fill="#ffeeaa" stroke="none"/>
+<line x1="330" y1="410" x2="590" y2="410" stroke="#000" stroke-width="0.75"/>
+<text x="460.0" y="401" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Kept in this browser</text>
+<text x="460.0" y="431.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">IndexedDB, non-extractable:</text>
+<text x="460.0" y="447.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">signs facts, can't be read</text>
+<rect x="980" y="100" width="260" height="190" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="980.75" y="130" width="258.5" height="159.25" fill="#ffeeaa" stroke="none"/>
+<line x1="980" y1="130" x2="1240" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="1110.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Key wrap</text>
+<text x="1110.0" y="174.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">format: om-key-wrap v1</text>
+<text x="1110.0" y="190.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">fingerprint</text>
+<text x="1110.0" y="206.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">publicJwk</text>
+<text x="1110.0" y="222.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">credential (passkey id)</text>
+<text x="1110.0" y="238.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">iv</text>
+<text x="1110.0" y="254.0" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">wrapped (ciphertext)</text>
+<rect x="980" y="340" width="260" height="110" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="980.75" y="370" width="258.5" height="79.25" fill="#ffeeaa" stroke="none"/>
+<line x1="980" y1="370" x2="1240" y2="370" stroke="#000" stroke-width="0.75"/>
+<text x="1110.0" y="361" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Stored in</text>
+<text x="1110.0" y="398.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">this browser (chrome.storage.local)</text>
+<text x="1110.0" y="414.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">the server: /api/key-wrap</text>
+<text x="1110.0" y="430.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">the backup file, if you made one</text>
+<path d="M260,145 L330,145" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="295" y="137" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">PRF</text>
+<path d="M590,145 L650,145" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="620" y="137" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">HKDF</text>
+<path d="M780,190 L780,250" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="790" y="225" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">key</text>
+<path d="M590,295 L650,295" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="620" y="287" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">PKCS#8</text>
+<path d="M460,340 L460,380" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="470" y="365" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">re-import</text>
+<path d="M910,270 L980,270" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M1110,290 L1110,340" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="20" y="510" width="1240" height="240" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="40" y="560" width="220" height="96" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="40.75" y="590" width="218.5" height="65.25" fill="#e6e6e6" stroke="none"/>
+<line x1="40" y1="590" x2="260" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="150.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">1. Pick your passkey</text>
+<text x="150.0" y="619.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">it names the key:</text>
+<text x="150.0" y="635.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">userHandle = fingerprint</text>
+<rect x="300" y="560" width="220" height="96" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="300.75" y="590" width="218.5" height="65.25" fill="#cfe2f3" stroke="none"/>
+<line x1="300" y1="590" x2="520" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="410.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">2. Fetch the wrap</text>
+<text x="410.0" y="611.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">GET /api/key-wrap/&lt;fp&gt;</text>
+<text x="410.0" y="627.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">(or this browser's copy,</text>
+<text x="410.0" y="643.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">or the backup file)</text>
+<rect x="560" y="560" width="220" height="96" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="560.75" y="590" width="218.5" height="65.25" fill="#f4cccc" stroke="none"/>
+<line x1="560" y1="590" x2="780" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="670.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">3. Same wrapping key</text>
+<text x="670.0" y="611.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">same passkey, same input</text>
+<text x="670.0" y="627.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">→ same PRF output</text>
+<text x="670.0" y="643.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">→ same AES key</text>
+<rect x="820" y="560" width="200" height="96" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="820.75" y="590" width="198.5" height="65.25" fill="#f4cccc" stroke="none"/>
+<line x1="820" y1="590" x2="1020" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="920.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">4. unwrapKey</text>
+<text x="920.0" y="611.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">non-extractable,</text>
+<text x="920.0" y="627.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">checked against</text>
+<text x="920.0" y="643.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">the public key</text>
+<rect x="1060" y="560" width="180" height="96" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="1060.75" y="590" width="178.5" height="65.25" fill="#ffeeaa" stroke="none"/>
+<line x1="1060" y1="590" x2="1240" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="1150.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">5. Signed in</text>
+<text x="1150.0" y="619.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">same fingerprint,</text>
+<text x="1150.0" y="635.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">same identity</text>
+<path d="M260,608.0 L300,608.0" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M520,608.0 L560,608.0" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M780,608.0 L820,608.0" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M1020,608.0 L1060,608.0" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="40" y="700" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555" font-style="italic">The wrap is useless without the passkey: only the passkey can produce the PRF output that unlocks it, so anyone may hold a copy.</text>
+<text x="40" y="722" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555" font-style="italic">Another passkey adds another wrap of the same key. A backup file (Advanced options) encrypts the key under a passphrase instead.</text>
+<text x="32" y="82" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Passkey provider</text>
+<text x="312" y="82" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Extension (options page)</text>
+<text x="972" y="82" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Wrapped copy (safe to share)</text>
+<text x="32" y="532" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Sign in on another computer</text>
+</svg>

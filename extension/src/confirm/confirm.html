@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OpenManuals — confirm</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; font-size: 14px; color: #1c2321; background: #f6f7f5; }
+    header { background: #2f7d5b; color: #fff; padding: 12px 18px; font-weight: 700; }
+    main { padding: 16px 18px 24px; }
+    h1 { font-size: 16px; margin: 0 0 8px; }
+    .card { background: #fff; border: 1px solid #e1e5df; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+    .meta { color: #5f6b66; font-size: 13px; margin: 4px 0; word-break: break-all; }
+    ul.body { margin: 8px 0 0; padding-left: 18px; font: 12px ui-monospace, monospace; word-break: break-all; }
+    label { display: block; font-size: 13px; color: #5f6b66; margin: 10px 0 4px; }
+    select { width: 100%; padding: 6px 8px; border: 1px solid #d5d9d3; border-radius: 6px; font-size: 14px; }
+    .row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    button { padding: 8px 14px; border: none; border-radius: 6px; background: #2f7d5b; color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
+    button.secondary { background: #e5efe9; color: #1f5b40; }
+    button.danger { background: #b91c1c; }
+    button:disabled { opacity: .5; cursor: default; }
+    .msg { margin-top: 12px; font-size: 13px; }
+    .ok { color: #2f7d5b; font-weight: 600; }
+    .bad { color: #b91c1c; font-weight: 600; }
+    .hidden { display: none; }
+    code { background: #eef1ec; padding: 1px 4px; border-radius: 4px; font-size: 12px; }
+    header .mark { width: 22px; height: 22px; vertical-align: -5px; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <header><img class="mark" src="icons/logo.svg" alt="" width="22" height="22">OpenManuals</header>
+  <main>
+    <h1 id="title">Loading…</h1>
+    <div id="what" class="card hidden"></div>
+    <div id="retractBox" class="hidden">
+      <p>Retracting hides your fact from the catalog. The ledger keeps it, marked as retracted by you.</p>
+      <div class="row"><button id="retract" class="danger">Sign and send retraction</button></div>
+    </div>
+    <div id="reportBox" class="hidden">
+      <label for="reason">Reason</label>
+      <select id="reason">
+        <option value="wrong-file">Wrong file (not the manual it claims to be)</option>
+        <option value="spam">Spam</option>
+        <option value="malware">Malware</option>
+        <option value="impersonation">Impersonation</option>
+      </select>
+      <div class="row"><button id="report">Sign and send report</button></div>
+    </div>
+    <div class="row"><button id="close" class="secondary">Close</button></div>
+    <p id="msg" class="msg"></p>
+  </main>
+  <script type="module" src="confirm.js"></script>
+</body>
+</html>

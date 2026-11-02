@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}About — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail">
+  <h1>About OpenManuals</h1>
+  <p>OpenManuals is an index of free manuals. Every entry is a signed fact from a contributor's key; the database is rebuilt from the public ledger and published as a <a href="/db/latest.db">snapshot</a> (<a href="/db/latest.db.sha256">sha256</a>, <a href="/db/latest.db.sig">signature</a>).</p>
+  <p>Server key fingerprint: <code>{{ fp }}</code></p>
+  <p>API: <code>POST /api/facts</code>, <code>GET /api/feed</code>, <code>GET /api/lookup</code>. Identity profiles: <code>/.well-known/aspe/id/&lt;fingerprint&gt;</code>.</p>
+</article>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "_contribute.html" as contrib %}
+{% block title %}Help preserve a manual — OpenManuals{% endblock %}
+{% block content %}
+<section class="contribute-page">
+  <h1>Help preserve a manual</h1>
+  <p class="lede">We know of <strong>{{ total }}</strong> manuals on manuals sites around the web that nobody has preserved yet. Each one takes a minute: open it, download it, and the extension does the rest.</p>
+  {% if none %}<p class="warn-note ready-note">{% if brand %}No {{ brand }} manuals are missing right now.{% else %}No missing manuals right now.{% endif %} Try another brand.</p>{% endif %}
+  {{ contrib.readiness() }}
+  <ol class="steps">
+    <li><strong>Take me to one</strong> opens a random missing manual in a new tab.</li>
+    <li>Download it there the way you normally would.</li>
+    <li>The extension removes the site's watermark, uploads it to archive.org under your account, and records it here.</li>
+  </ol>
+  <form class="contribute-form" action="/contribute/random" method="get" target="_blank" rel="noreferrer">
+    <label for="brand">Brand</label>
+    <select id="brand" name="brand">
+      <option value="">Any brand</option>
+      {% for b in brands %}<option value="{{ b.key }}"{% if b.key == brand_key %} selected{% endif %}>{{ b.brand }} ({{ b.n }})</option>{% endfor %}
+      {% if brand and brand_key not in brands|map(attribute='key') %}<option value="{{ brand_key }}" selected>{{ brand }} ({{ brand_missing }})</option>{% endif %}
+    </select>
+    <button type="submit">Take me to one →</button>
+  </form>
+  <p class="fine">Each page is handed to one person at a time for a few hours, so helpers don't download the same manual. If the extension says it's already free to download, it was preserved in the meantime; take another.</p>
+</section>
+{% endblock %}

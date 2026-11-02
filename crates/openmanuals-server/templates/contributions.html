@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Contributions — OpenManuals{% endblock %}
+{% block content %}
+<section class="results">
+  <div class="results-head"><h1>Contributions</h1><p class="count">{{ total }} verified copies</p></div>
+  <h2>Top contributors</h2>
+  <ul class="links">{% for t in top %}<li><a href="/k/{{ t.key }}">{{ t.name }}</a> — {{ t.n }}</li>{% endfor %}</ul>
+  <h2>Recent</h2>
+  <ul class="manual-list">{% for c in recent %}<li class="manual-card"><a class="manual-link" href="/manual/{{ c.manual }}"><span class="manual-model">{{ c.title }}</span></a><small>{{ c.verified_at[:10] }} · <a href="/k/{{ c.author }}">{{ c.author_name }}</a></small><a class="mini-dl" href="{{ c.url }}" rel="noopener nofollow ugc">↓ {{ c.host }}</a></li>{% endfor %}</ul>
+</section>
+{% endblock %}

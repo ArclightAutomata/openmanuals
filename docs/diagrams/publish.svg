@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="700" viewBox="0 0 1240 700" role="img" aria-labelledby="t d">
+<title id="t">Publishing and syncing snapshots</title>
+<desc id="d">Each build is published as an immutable version with a zstd copy, a row diff from the previous version, page hashes, a lookup filter and a signed manifest; clients use diffs, the compressed copy, the filter or range reads.</desc>
+<defs><marker id="e-black" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#000000"/></marker><marker id="s-black" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#000000"/></marker><marker id="e-blue" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#0060B6"/></marker><marker id="s-blue" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#0060B6"/></marker><marker id="e-red" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#BF0000"/></marker><marker id="s-red" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#BF0000"/></marker><marker id="e-purple" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8210D2"/></marker><marker id="s-purple" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8210D2"/></marker><marker id="e-gray" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8C8C8C"/></marker><marker id="s-gray" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8C8C8C"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="20" y="38" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="22" text-anchor="start" font-weight="normal" fill="#000">Publishing a snapshot</text>
+<rect x="20" y="64" width="1200" height="150" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="60" y="100" width="250" height="70" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="60.75" y="130" width="248.5" height="39.25" fill="#ffeeaa" stroke="none"/>
+<line x1="60" y1="130" x2="310" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="185.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">v1</text>
+<text x="185.0" y="153.5" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="11" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">01M5PC…AZM-2b51a5b8585c</text>
+<rect x="380" y="100" width="250" height="70" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="380.75" y="130" width="248.5" height="39.25" fill="#ffeeaa" stroke="none"/>
+<line x1="380" y1="130" x2="630" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="505.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">v2</text>
+<text x="505.0" y="153.5" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="11" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">01M5PN…QVB-c928e7ed6595</text>
+<rect x="700" y="100" width="250" height="70" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="700.75" y="130" width="248.5" height="39.25" fill="#ffeeaa" stroke="none"/>
+<line x1="700" y1="130" x2="950" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="825.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">v3</text>
+<text x="825.0" y="153.5" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="11" text-anchor="middle" font-weight="normal" fill="#000" xml:space="preserve">01M680…TAS-bc2b773f89d3</text>
+<path d="M310,135 L380,135" fill="none" stroke="#0060B6" stroke-width="1.75" marker-end="url(#e-blue)"/>
+<text x="345.0" y="127" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#0060B6" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">diff v1→v2</text>
+<path d="M630,135 L700,135" fill="none" stroke="#0060B6" stroke-width="1.75" marker-end="url(#e-blue)"/>
+<text x="665.0" y="127" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#0060B6" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">diff v2→v3</text>
+<rect x="1000" y="100" width="200" height="70" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="1000.75" y="130" width="198.5" height="39.25" fill="#ffeeaa" stroke="none"/>
+<line x1="1000" y1="130" x2="1200" y2="130" stroke="#000" stroke-width="0.75"/>
+<text x="1100.0" y="121" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">latest.db</text>
+<text x="1100.0" y="154.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">hard link to newest</text>
+<path d="M950,135 L1000,135" fill="none" stroke="#8C8C8C" stroke-width="1.75" stroke-dasharray="7,5" marker-end="url(#e-gray)"/>
+<rect x="40" y="290" width="220" height="120" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="40.75" y="320" width="218.5" height="89.25" fill="#cfe2f3" stroke="none"/>
+<line x1="40" y1="320" x2="260" y2="320" stroke="#000" stroke-width="0.75"/>
+<text x="150.0" y="311" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle" font-weight="normal" fill="#000">Publish (after each build)</text>
+<text x="150.0" y="345.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">name by content</text>
+<text x="150.0" y="361.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">link latest.db</text>
+<text x="150.0" y="377.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">compress · diff · hash</text>
+<text x="150.0" y="393.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">sign manifest · prune</text>
+<rect x="300" y="236" width="380" height="450" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="320" y="270" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="300" width="338.5" height="25.25" fill="#ffeeaa" stroke="none"/>
+<line x1="320" y1="300" x2="660" y2="300" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="291" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">&lt;version&gt;.db</text>
+<text x="490.0" y="316.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">118 MB; pages read it, mirrors serve it</text>
+<rect x="320" y="338" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="368" width="338.5" height="25.25" fill="#ffeeaa" stroke="none"/>
+<line x1="320" y1="368" x2="660" y2="368" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="359" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">&lt;version&gt;.db.zst</text>
+<text x="490.0" y="384.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">zstd -9: 27 MB to download</text>
+<rect x="320" y="406" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="436" width="338.5" height="25.25" fill="#f4cccc" stroke="none"/>
+<line x1="320" y1="436" x2="660" y2="436" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="427" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">&lt;version&gt;.pages</text>
+<text x="490.0" y="452.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">sha256 of every 16 KiB page</text>
+<rect x="320" y="474" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="504" width="338.5" height="25.25" fill="#ffeeaa" stroke="none"/>
+<line x1="320" y1="504" x2="660" y2="504" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="495" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">diff/&lt;from&gt;.&lt;to&gt;.jsonl.zst</text>
+<text x="490.0" y="520.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">changed rows (~0.5 MB per fold)</text>
+<rect x="320" y="542" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="572" width="338.5" height="25.25" fill="#ffeeaa" stroke="none"/>
+<line x1="320" y1="572" x2="660" y2="572" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="563" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">lookup-filter.bin</text>
+<text x="490.0" y="588.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">known pages, 141 KB</text>
+<rect x="320" y="610" width="340" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="320.75" y="640" width="338.5" height="25.25" fill="#f4cccc" stroke="none"/>
+<line x1="320" y1="640" x2="660" y2="640" stroke="#000" stroke-width="0.75"/>
+<text x="490.0" y="631" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">manifest.json + .sig</text>
+<text x="490.0" y="656.5" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#000">versions, sizes, hashes, server key</text>
+<path d="M260,350 L300,350" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="900" y="260" width="300" height="86" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="290" width="298.5" height="55.25" fill="#cfe2f3" stroke="none"/>
+<line x1="900" y1="290" x2="1200" y2="290" stroke="#000" stroke-width="0.75"/>
+<text x="1050.0" y="281" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Website &amp; API</text>
+<text x="1050.0" y="314.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">latest.db, through a pooled,</text>
+<text x="1050.0" y="330.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">memory-mapped reader</text>
+<path d="M680,303 L900,303" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="900" y="366" width="300" height="86" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="396" width="298.5" height="55.25" fill="#d9ead3" stroke="none"/>
+<line x1="900" y1="396" x2="1200" y2="396" stroke="#000" stroke-width="0.75"/>
+<text x="1050.0" y="387" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">om sync</text>
+<text x="1050.0" y="420.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">manifest → diff chain if smaller,</text>
+<text x="1050.0" y="436.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">else .db.zst; checks table hashes</text>
+<path d="M680,409 L900,409" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="900" y="472" width="300" height="86" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="502" width="298.5" height="55.25" fill="#d9ead3" stroke="none"/>
+<line x1="900" y1="502" x2="1200" y2="502" stroke="#000" stroke-width="0.75"/>
+<text x="1050.0" y="493" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Extension filter</text>
+<text x="1050.0" y="526.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">lookup-filter.bin every 6 h;</text>
+<text x="1050.0" y="542.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">unknown pages stay local</text>
+<path d="M680,515 L900,515" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<rect x="900" y="578" width="300" height="86" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="608" width="298.5" height="55.25" fill="#e6e6e6" stroke="none"/>
+<line x1="900" y1="608" x2="1200" y2="608" stroke="#000" stroke-width="0.75"/>
+<text x="1050.0" y="599" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Mirrors &amp; range readers</text>
+<text x="1050.0" y="632.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">manifest, .pages and .db pages;</text>
+<text x="1050.0" y="648.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">every page verified</text>
+<path d="M680,621 L900,621" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="32" y="86" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Versions: &lt;ledger head&gt;-&lt;content id&gt;  (immutable; newest 3 kept, diffs for 30 days)</text>
+<text x="312" y="258" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">snapshots/  (any static host)</text>
+</svg>

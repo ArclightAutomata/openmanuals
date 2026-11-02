@@ -1,0 +1,53 @@
+[workspace]
+resolver = "3"
+members = ["crates/openmanuals-core", "crates/openmanuals-wasm", "crates/openmanuals-ledger", "crates/openmanuals-server", "crates/openmanuals-cli", "crates/openmanuals-strip", "crates/openmanuals-strip-wasm"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/ArclightAutomata/openmanuals"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+anyhow = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+ulid = "1"
+jiff = { version = "0.2", features = ["serde"] }
+toml = "0.8"
+hex = "0.4"
+sha1 = "0.10"
+sha2 = "0.10"
+md-5 = "0.10"
+base64 = "0.22"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "json"] }
+clap = { version = "4", features = ["derive", "env"] }
+tempfile = "3"
+postcard = { version = "1", default-features = false, features = ["use-std"] }
+rayon = "1"
+memchr = "2"
+mimalloc = { version = "0.1", default-features = false }
+zstd = { version = "0.13", features = ["zstdmt"] }
+# PDF parsing for openmanuals-strip (and openmanuals-server's scan). 0.45.0: 2026-09-08.
+lopdf = { version = "=0.45.0", default-features = false }
+# Pure-Rust deflate (miniz_oxide backend), wasm-safe.
+flate2 = { version = "1.1.10", default-features = false, features = ["rust_backend"] }
+# regex for the plain patterns (raw-byte classes); fancy-regex for lookaround.
+regex = { version = "1.13.1", default-features = false, features = ["std", "perf"] }
+fancy-regex = "0.19.2"
+zune-jpeg = "0.5.15"
+
+# The extension's stripper wasm (crates/openmanuals-strip-wasm). LTO and stripped
+# symbols take it from 2.9 MB to 2.3 MB; opt-level "s" would save another
+# 0.26 MB but strips about 40% slower.
+[profile.wasm]
+inherits = "release"
+lto = true
+codegen-units = 1
+strip = true

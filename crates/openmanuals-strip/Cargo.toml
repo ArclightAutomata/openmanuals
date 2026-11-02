@@ -1,0 +1,25 @@
+[package]
+name = "openmanuals-strip"
+description = "OpenManuals watermark stripper: removes ManualsLib wrapper pages, footers and links, and third-party site stamps from PDFs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+lopdf = { workspace = true }
+flate2 = { workspace = true }
+regex = { workspace = true }
+fancy-regex = { workspace = true }
+zune-jpeg = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+sha2 = { workspace = true }
+hex = { workspace = true }
+
+# lopdf pulls in getrandom (for writing encrypted files, which we never do);
+# on wasm32-unknown-unknown it needs the JS backend to compile.
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+lopdf = { workspace = true, features = ["wasm_js"] }

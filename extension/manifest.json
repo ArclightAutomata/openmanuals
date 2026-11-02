@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "OpenManuals",
+  "version": "0.3.0",
+  "minimum_chrome_version": "137",
+  "description": "Shows when a manual you're viewing on a manuals site is already free to download and, with upload on, preserves the manuals you download on the Internet Archive and records them on OpenManuals.",
+  "permissions": ["storage", "alarms", "offscreen", "scripting", "sidePanel", "cookies", "downloads"],
+  "host_permissions": [
+    "*://*.manualslib.com/*",
+    "*://*.elektrotanya.com/*",
+    "*://*.manualzz.com/*",
+    "*://archive.org/*",
+    "*://*.archive.org/*",
+    "https://api.github.com/*",
+    "https://cloudflare-dns.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "optional_host_permissions": ["*://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [
+    { "matches": ["*://*.manualslib.com/*"], "js": ["content-manualslib.js"], "css": ["content.css"], "run_at": "document_idle" },
+    { "matches": ["*://*.elektrotanya.com/*"], "js": ["content-elektrotanya.js"], "css": ["content.css"], "run_at": "document_idle" },
+    { "matches": ["*://*.manualzz.com/*"], "js": ["content-manualzz.js"], "css": ["content.css"], "run_at": "document_idle" }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "OpenManuals",
+    "default_icon": { "16": "icons/logo-16.png", "32": "icons/logo-32.png", "48": "icons/logo-48.png", "128": "icons/logo-128.png" }
+  },
+  "icons": { "16": "icons/logo-16.png", "32": "icons/logo-32.png", "48": "icons/logo-48.png", "128": "icons/logo-128.png" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" }
+}

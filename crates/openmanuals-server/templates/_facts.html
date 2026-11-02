@@ -1,0 +1,38 @@
+{% macro rows(groups) %}
+{% for g in groups %}
+<div class="fact-day">
+  <h3 class="fact-day-title"><span class="fact-dot" aria-hidden="true"></span>Facts on {{ g.day }}</h3>
+  <ol class="fact-list">
+  {% for r in g.rows %}
+    <li class="fact-row{% if r.hidden %} is-hidden{% endif %}{% if r.retracted %} is-retracted{% endif %}" data-om-fact="{{ r.id }}" data-om-author="{{ r.author.fp }}" data-om-type="{{ r.type }}"{% if r.retracted %} data-om-retracted{% endif %}{% if r.hidden %} data-om-hidden{% endif %}>
+      <a class="fact-avatar" href="/k/{{ r.author.fp }}" title="{{ r.author.fp }}">{{ r.author.avatar|safe }}</a>
+      <div class="fact-main">
+        <p class="fact-summary">{% if r.href %}<a href="{{ r.href }}">{{ r.summary }}</a>{% else %}{{ r.summary }}{% endif %}
+          {% if r.retracted %}<span class="pill pill-muted" title="Its author retracted it; the build ignores it">retracted</span>{% endif %}
+          {% if r.pending %}<span class="pill pill-pending" title="Accepted; it reaches the snapshot at the next fold">pending</span>{% endif %}</p>
+        {% if r.more %}
+        <details class="fact-more">
+          <summary>and {{ r.more|length }} more like it</summary>
+          <ol class="fact-sublist">
+            {% for x in r.more %}<li data-om-fact="{{ x.id }}" data-om-author="{{ r.author.fp }}" data-om-type="{{ x.type }}"{% if x.retracted %} data-om-retracted{% endif %}{% if x.hidden %} data-om-hidden{% endif %}>{% if x.href %}<a href="{{ x.href }}">{{ x.summary }}</a>{% else %}{{ x.summary }}{% endif %} <a class="fact-sha" href="/fact/{{ x.id }}" title="{{ x.id }}"><code>{{ x.short }}</code></a> <time datetime="{{ x.at }}" title="{{ x.at }}">{{ x.ago }}</time> <span class="om-actions"></span></li>{% endfor %}
+          </ol>
+        </details>
+        {% endif %}
+        <p class="fact-meta">
+          <a class="fact-author" href="/k/{{ r.author.fp }}">{{ r.author.name }}</a>
+          {% if r.author.role %}<span class="pill pill-role">{{ r.author.role }}</span>{% endif %}
+          {% for l in r.author.links %}{% if l.uri %}<a class="proof" href="{{ l.uri }}" rel="noopener nofollow ugc" title="Verified {{ l.service }} account">✓ {{ l.service }}/{{ l.handle }}</a>{% else %}<span class="proof">✓ {{ l.service }}/{{ l.handle }}</span>{% endif %}{% endfor %}
+          submitted <time datetime="{{ r.at }}" title="{{ r.at }}">{{ r.ago }}</time>
+        </p>
+      </div>
+      <div class="fact-side">
+        <a class="type-chip" href="/ledger?type={{ r.type|urlencode }}">{{ r.type }}</a>
+        <a class="fact-sha" href="/fact/{{ r.id }}" title="{{ r.id }}"><code>{{ r.short }}</code></a>
+        <span class="om-actions"></span>
+      </div>
+    </li>
+  {% endfor %}
+  </ol>
+</div>
+{% endfor %}
+{% endmacro %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Free CRT &amp; vintage AV manuals</h1>
+  <p class="lede">{{ total }} service manuals, schematics and owner's guides with a verified free download.</p>
+  <form class="hero-search" action="/manuals" method="get">
+    <input type="search" name="q" placeholder="e.g. Sony KV-27S22, Panasonic CT-2088…" autofocus>
+    <button type="submit">Find a manual</button>
+  </form>
+</section>
+<section class="brands">
+  <h2>Browse by brand</h2>
+  <div class="chip-row">
+    {% for b in brands %}
+    <a class="chip" href="/manuals?brand={{ b.key|urlencode }}">{{ b.brand }} <span class="chip-count">{{ b.n }}</span></a>
+    {% endfor %}
+  </div>
+  <p class="all-link"><a href="/manuals">Browse all manuals →</a></p>
+</section>
+{% endblock %}

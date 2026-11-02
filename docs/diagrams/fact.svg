@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="640" viewBox="0 0 1220 640" role="img" aria-labelledby="t d">
+<title id="t">Anatomy of a signed fact</title>
+<desc id="d">A fact envelope is canonicalized with RFC 8785, hashed to its id and signed by the author's key; the author is the key's fingerprint, and identity proofs link keys to accounts.</desc>
+<defs><marker id="e-black" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#000000"/></marker><marker id="s-black" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#000000"/></marker><marker id="e-blue" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#0060B6"/></marker><marker id="s-blue" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#0060B6"/></marker><marker id="e-red" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#BF0000"/></marker><marker id="s-red" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#BF0000"/></marker><marker id="e-purple" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8210D2"/></marker><marker id="s-purple" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8210D2"/></marker><marker id="e-gray" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8C8C8C"/></marker><marker id="s-gray" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8C8C8C"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="20" y="38" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="22" text-anchor="start" font-weight="normal" fill="#000">A signed fact</text>
+<rect x="30" y="70" width="470" height="300" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="30.75" y="100" width="468.5" height="170" fill="#ffeeaa"/>
+<rect x="30.75" y="270" width="468.5" height="99.25" fill="#f4cccc"/>
+<text x="265" y="91" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Fact envelope (one ledger line)</text>
+<text x="44" y="122" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">{ "v": 1,</text>
+<text x="44" y="142" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">  "type": "location",</text>
+<text x="44" y="162" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">  "author": "QPRGVPJNWDXH4ESK2RYDTZJLTE",</text>
+<text x="44" y="182" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">  "at": "2026-10-23T18:00:00Z",</text>
+<text x="44" y="202" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">  "body": {</text>
+<text x="44" y="222" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">    "file": "9f86d081…0a08",</text>
+<text x="44" y="242" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">    "url": "https://archive.org/download/…",</text>
+<text x="44" y="262" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="13" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">    "kind": "archive" },</text>
+<text x="44" y="290" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">  "sig": { "alg": "Ed25519", "fmt": "raw",</text>
+<text x="44" y="310" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">           "key": { "crv": "Ed25519", "x": "…" },</text>
+<text x="44" y="330" font-family="DejaVu Sans Mono, Liberation Mono, Menlo, Consolas, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#000" xml:space="preserve">           "value": "8hpr4LcH…TKA6qB17SKTZ5Ag" } }</text>
+<rect x="570" y="70" width="250" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="570.75" y="100" width="248.5" height="43.25" fill="#f4cccc" stroke="none"/>
+<line x1="570" y1="100" x2="820" y2="100" stroke="#000" stroke-width="0.75"/>
+<text x="695.0" y="91" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Canonical bytes</text>
+<text x="695.0" y="118.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">RFC 8785 (JCS) of the</text>
+<text x="695.0" y="134.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">envelope without "sig"</text>
+<rect x="900" y="70" width="290" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="100" width="288.5" height="43.25" fill="#ffeeaa" stroke="none"/>
+<line x1="900" y1="100" x2="1190" y2="100" stroke="#000" stroke-width="0.75"/>
+<text x="1045.0" y="91" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Fact id</text>
+<text x="1045.0" y="126.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">sha256:&lt;hex of the canonical bytes&gt;</text>
+<rect x="570" y="200" width="250" height="84" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="570.75" y="230" width="248.5" height="53.25" fill="#f4cccc" stroke="none"/>
+<line x1="570" y1="230" x2="820" y2="230" stroke="#000" stroke-width="0.75"/>
+<text x="695.0" y="221" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Sign</text>
+<text x="695.0" y="245.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">Ed25519</text>
+<text x="695.0" y="261.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">non-extractable WebCrypto</text>
+<text x="695.0" y="277.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">key in the extension</text>
+<path d="M500,107 L570,107" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="535" y="99" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">drop sig</text>
+<path d="M820,107 L900,107" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="860" y="99" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">sha256</text>
+<path d="M695,144 L695,200" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M570,242 L500,242" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="535" y="234" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">sig.value</text>
+<rect x="900" y="200" width="290" height="84" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="230" width="288.5" height="53.25" fill="#f4cccc" stroke="none"/>
+<line x1="900" y1="230" x2="1190" y2="230" stroke="#000" stroke-width="0.75"/>
+<text x="1045.0" y="221" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Fingerprint = author</text>
+<text x="1045.0" y="253.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">base32(SHA-512(JWK {crv,kty,x})[:16])</text>
+<text x="1045.0" y="269.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">QPRGVPJNWDXH4ESK2RYDTZJLTE</text>
+<path d="M820,242 L900,242" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="860" y="234" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">public key</text>
+<rect x="900" y="330" width="290" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="900.75" y="360" width="288.5" height="59.25" fill="#d9ead3" stroke="none"/>
+<line x1="900" y1="360" x2="1190" y2="360" stroke="#000" stroke-width="0.75"/>
+<text x="1045.0" y="351" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Identity profile</text>
+<text x="1045.0" y="378.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">Ariadne Signature Profile (JWS)</text>
+<text x="1045.0" y="394.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">aspe:openmanuals.org:&lt;fp&gt;</text>
+<text x="1045.0" y="410.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">claims: gist, DNS, Mastodon…</text>
+<rect x="570" y="330" width="250" height="90" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="570.75" y="360" width="248.5" height="59.25" fill="#f4cccc" stroke="none"/>
+<line x1="570" y1="360" x2="820" y2="360" stroke="#000" stroke-width="0.75"/>
+<text x="695.0" y="351" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">identity_link</text>
+<text x="695.0" y="378.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">signed by the server after</text>
+<text x="695.0" y="394.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">tools/doip-verify checked</text>
+<text x="695.0" y="410.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">the claim on its site</text>
+<path d="M1045,284 L1045,330" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M900,375 L820,375" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="860" y="367" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">verified</text>
+<rect x="30" y="452" width="1160" height="170" rx="0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-dasharray="10,8"/>
+<rect x="50" y="486" width="212" height="116" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="50.75" y="516" width="210.5" height="85.25" fill="#ffeeaa" stroke="none"/>
+<line x1="50" y1="516" x2="262" y2="516" stroke="#000" stroke-width="0.75"/>
+<text x="156.0" y="507" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Catalog (anyone)</text>
+<text x="156.0" y="547.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">manual · product · covers</text>
+<text x="156.0" y="563.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">file · manual_file</text>
+<text x="156.0" y="579.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">location · derivation · same_as</text>
+<rect x="278" y="486" width="212" height="116" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="278.75" y="516" width="210.5" height="85.25" fill="#d9ead3" stroke="none"/>
+<line x1="278" y1="516" x2="490" y2="516" stroke="#000" stroke-width="0.75"/>
+<text x="384.0" y="507" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Identity (anyone)</text>
+<text x="384.0" y="555.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">identity_profile</text>
+<text x="384.0" y="571.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">succession · vouch</text>
+<rect x="506" y="486" width="212" height="116" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="506.75" y="516" width="210.5" height="85.25" fill="#cfe2f3" stroke="none"/>
+<line x1="506" y1="516" x2="718" y2="516" stroke="#000" stroke-width="0.75"/>
+<text x="612.0" y="507" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Opinions (anyone)</text>
+<text x="612.0" y="555.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">label (reports)</text>
+<text x="612.0" y="571.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">retract (own facts)</text>
+<rect x="734" y="486" width="212" height="116" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="734.75" y="516" width="210.5" height="85.25" fill="#f4cccc" stroke="none"/>
+<line x1="734" y1="516" x2="946" y2="516" stroke="#000" stroke-width="0.75"/>
+<text x="840.0" y="507" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Moderation (trusted keys)</text>
+<text x="840.0" y="555.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">block · unblock · prefer</text>
+<text x="840.0" y="571.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">applied at build time</text>
+<rect x="962" y="486" width="212" height="116" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="962.75" y="516" width="210.5" height="85.25" fill="#e6e6e6" stroke="none"/>
+<line x1="962" y1="516" x2="1174" y2="516" stroke="#000" stroke-width="0.75"/>
+<text x="1068.0" y="507" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Server (server key)</text>
+<text x="1068.0" y="555.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">verified · location_status</text>
+<text x="1068.0" y="571.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">identity_link</text>
+<text x="42" y="474" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="14" text-anchor="start" font-weight="bold" fill="#555555" stroke="#fff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">Fact types</text>
+</svg>

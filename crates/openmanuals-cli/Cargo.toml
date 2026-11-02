@@ -1,0 +1,42 @@
+[package]
+name = "openmanuals-cli"
+description = "OpenManuals command line: keys, signing, sync, build, uploads, migration"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "om"
+path = "src/main.rs"
+
+[dependencies]
+openmanuals-core = { path = "../openmanuals-core", features = ["sign"] }
+openmanuals-ledger = { path = "../openmanuals-ledger" }
+openmanuals-strip = { path = "../openmanuals-strip" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+rusqlite = { workspace = true }
+ulid = { workspace = true }
+jiff = { workspace = true }
+toml = { workspace = true }
+hex = { workspace = true }
+sha1 = { workspace = true }
+sha2 = { workspace = true }
+md-5 = { workspace = true }
+base64 = { workspace = true }
+tracing = { workspace = true }
+rayon = { workspace = true }
+mimalloc = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+reqwest = { workspace = true }
+clap = { workspace = true }
+rusty-s3 = "0.7"
+urlencoding = "2"
+
+[dev-dependencies]
+tempfile = { workspace = true }
+axum = "0.8"
+lopdf = { workspace = true }

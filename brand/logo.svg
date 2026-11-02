@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OpenManuals">
+  <title>OpenManuals</title>
+  <defs>
+    <radialGradient id="film" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#1c2c36"/>
+      <stop offset="1" stop-color="#05090c"/>
+    </radialGradient>
+    <linearGradient id="spine" x1="0" x2="1">
+      <stop offset="0" stop-color="#f2f9fd" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#f2f9fd" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#f2f9fd" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="12" fill="url(#film)"/>
+
+  <!-- Few, bold leaves; each translucent so the overlaps still build up -->
+  <g fill="#e6f2fa" fill-opacity="0.16" stroke="#e6f2fa" stroke-opacity="0.75" stroke-width="2" stroke-linejoin="round">
+    <path d="M32 18 Q18 9 4.5 12 L5 49 Q18 46 32 53 Z"/>
+    <path d="M32 18 Q20 7 9.5 9 L10 46 Q20 43.5 32 53 Z"/>
+    <path d="M32 18 Q46 9 59.5 12 L59 49 Q46 46 32 53 Z"/>
+    <path d="M32 18 Q44 7 54.5 9 L54 46 Q44 43.5 32 53 Z"/>
+  </g>
+  <!-- Lines of text: few and heavy so they survive at 16px -->
+  <g fill="none" stroke="#e6f2fa" stroke-opacity="0.7" stroke-width="2.6" stroke-linecap="round">
+    <path d="M14 24.5 Q20.5 22.6 27 25"/>
+    <path d="M14 31.5 Q20.5 29.6 27 32"/>
+    <path d="M14 38.5 Q18.5 37.1 23 38.3"/>
+    <path d="M37 25 Q43.5 22.6 50 24.5"/>
+    <path d="M37 32 Q43.5 29.6 50 31.5"/>
+    <path d="M37 38.5 Q41.5 37.1 46 38.3"/>
+  </g>
+  <!-- The bright fold -->
+  <rect x="28.5" y="16" width="7" height="38" fill="url(#spine)"/>
+  <path d="M32 18 V53" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

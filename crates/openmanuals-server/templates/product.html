@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ p.brand }} {{ p.model }} — OpenManuals{% endblock %}
+{% block content %}
+<section class="results">
+  <div class="results-head">
+    <h1>{{ p.brand }} {{ p.model }}</h1>
+    <p class="count">{{ results|length }} manual{% if results|length != 1 %}s{% endif %}</p>
+  </div>
+  <ul class="manual-list">
+    {% for m in results %}
+    <li class="manual-card">
+      <a class="manual-link" href="/manual/{{ m.id }}"><span class="manual-model">{{ m.title }}</span></a>
+      <span class="doc-tag">{{ m.doc_type }}</span>
+      {% if m.download %}<a class="mini-dl" href="{{ m.download }}" target="_blank" rel="noopener nofollow ugc">↓ {{ m.host }}</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,326 @@
+{
+ "_doc": "What the stripper should do to 40 real ManualsLib originals (first 40 by sha1 under 20 MB in the bootstrap catalog's downloads that have a stripped variant), recorded from the original Python stripper the rules came from. Paths are relative to OM_STRIP_CORPUS.",
+ "generated": "2026-10-23",
+ "samples": [
+  {
+   "path": "downloads/00/09/00096d2bb2b7cd791f9eec05e0450afa8c44c4e8.pdf",
+   "pages_before": 114,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 110,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/15/0015d00d4385592510099d9b74edfcbacf284262.pdf",
+   "pages_before": 98,
+   "leading": 5,
+   "trailing": 1,
+   "pages_after": 92,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/17/001787218093d1bde5e5b15052f6d376de63b902.pdf",
+   "pages_before": 118,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 113,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/19/0019a61e77587307feb042049ccf6446d6dbd9e0.pdf",
+   "pages_before": 57,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 52,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/29/00290c4083f865ca4a4e003246fff4b0425882a9.pdf",
+   "pages_before": 122,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 117,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/3e/003e69566dbf8d272dfb788115bfff6aad6f9aa8.pdf",
+   "pages_before": 14,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 12,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/4d/004d6d546079bbb27208c3975a4a14dc3a78d5b4.pdf",
+   "pages_before": 28,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 28,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/51/0051f8d973fcaef4f24fe4a67a1bbd95188bd904.pdf",
+   "pages_before": 31,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 29,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/53/0053a088183d8f167e9457db3ef0d159a343fa29.pdf",
+   "pages_before": 51,
+   "leading": 2,
+   "trailing": 1,
+   "pages_after": 48,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/55/0055c46891f55bce30c1c0bd36d855509a448aa5.pdf",
+   "pages_before": 31,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 31,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/62/00624e8bd37fe609518fe1d65f80b228ed126d62.pdf",
+   "pages_before": 4,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 2,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/66/0066e3451755b39de106a12777b297757027098c.pdf",
+   "pages_before": 50,
+   "leading": 2,
+   "trailing": 1,
+   "pages_after": 47,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/6d/006d5992b173e360e0ff92388f1c8f089fdf7990.pdf",
+   "pages_before": 14,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 12,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/6f/006f7a03cfef92968a4a8b778b21d63c31701925.pdf",
+   "pages_before": 2,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 2,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/7a/007af42456cd192760e00b69bc0832709c524346.pdf",
+   "pages_before": 26,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 26,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/7e/007ef4989663b3f51159ef27319e6b1a1a61d0c6.pdf",
+   "pages_before": 53,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 48,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/81/0081e840f7b18c93c7cc29ecc202cb637fcc32d6.pdf",
+   "pages_before": 2,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 2,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/8c/008cb80c82945dfa251e94f294908b27cb34eb96.pdf",
+   "pages_before": 62,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 60,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/9f/009fe912192589844f8af334dbfeba1214ee3acd.pdf",
+   "pages_before": 107,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 102,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/ab/00ab651db1dbb11888f700008932731907df490d.pdf",
+   "pages_before": 73,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 73,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/ab/00abecc4c0624aea9aa51f76a4948f39766ddf75.pdf",
+   "pages_before": 107,
+   "leading": 2,
+   "trailing": 1,
+   "pages_after": 104,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/ae/00ae9b60d29d09518af07a5a917b26acddd71be5.pdf",
+   "pages_before": 61,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 56,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/b4/00b4a11ad61ae765ba37db8ee7699a0d95fdf0a6.pdf",
+   "pages_before": 38,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 34,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/bd/00bde5005145f5a27429762b2a2347650bb40d8d.pdf",
+   "pages_before": 74,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 70,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/c7/00c7f3763a5319212c542c3955bc156a5d24a4e9.pdf",
+   "pages_before": 30,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 28,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/cd/00cde0bdec2960eb28dc474d2a8164b7b281d0ed.pdf",
+   "pages_before": 76,
+   "leading": 4,
+   "trailing": 1,
+   "pages_after": 71,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/d5/00d5272b4045899176b0c0ef64b6e4020c7d767d.pdf",
+   "pages_before": 28,
+   "leading": 2,
+   "trailing": 1,
+   "pages_after": 25,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/d9/00d97de3d3ce6dd4caa3576231433414c0ca1c1d.pdf",
+   "pages_before": 87,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 83,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/df/00df8a6cc6f4822e9477f5e9f5fdfb832541fffe.pdf",
+   "pages_before": 1,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 1,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/e2/00e2cba88587f199457d55a23d1e944207a0305c.pdf",
+   "pages_before": 304,
+   "leading": 7,
+   "trailing": 1,
+   "pages_after": 296,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/f0/00f0b432e9db675c557807cd057c91d7f9881f16.pdf",
+   "pages_before": 112,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 108,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/f8/00f88f99d9f3cf3c02cb4baa3e51e3c373b6fd3d.pdf",
+   "pages_before": 32,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 30,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/f8/00f8f099439a5bc9e91df711b73ef916616804eb.pdf",
+   "pages_before": 50,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 46,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/fd/00fd5771ad11ecbb675b589407e543f4439c6071.pdf",
+   "pages_before": 25,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 23,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/fe/00fead9e8fc44e4b96f76f86b0dfccbc5c25f001.pdf",
+   "pages_before": 138,
+   "leading": 3,
+   "trailing": 1,
+   "pages_after": 134,
+   "modified": true
+  },
+  {
+   "path": "downloads/00/ff/00ffddd4b9baf7266f5815652e5d3da5f3663d1f.pdf",
+   "pages_before": 24,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 24,
+   "modified": true
+  },
+  {
+   "path": "downloads/01/02/0102ef99c662699b1659e9e9164753b27a0e164a.pdf",
+   "pages_before": 56,
+   "leading": 1,
+   "trailing": 1,
+   "pages_after": 54,
+   "modified": true
+  },
+  {
+   "path": "downloads/01/03/010305f5618f1dac0f2caa79eb95ba2c32b393d4.pdf",
+   "pages_before": 124,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 124,
+   "modified": true
+  },
+  {
+   "path": "downloads/01/07/0107247c803da2cbcdcf950dde0d06acf6455c11.pdf",
+   "pages_before": 2,
+   "leading": 0,
+   "trailing": 0,
+   "pages_after": 2,
+   "modified": true
+  },
+  {
+   "path": "downloads/01/09/010934e4cd5589d046aea886516097c84c26210a.pdf",
+   "pages_before": 128,
+   "leading": 11,
+   "trailing": 1,
+   "pages_after": 116,
+   "modified": true
+  }
+ ]
+}

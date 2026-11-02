@@ -1,0 +1,32 @@
+{
+  "name": "openmanuals-extension",
+  "version": "0.3.0",
+  "private": true,
+  "license": "MIT",
+  "description": "OpenManuals browser extension",
+  "type": "module",
+  "scripts": {
+    "prebuild": "node scripts/wasm.mjs",
+    "build": "node build.mjs",
+    "prewatch": "node scripts/wasm.mjs",
+    "watch": "node build.mjs --watch",
+    "pretest": "node scripts/wasm.mjs",
+    "test": "node --test 'src/**/*.test.ts'",
+    "pretypecheck": "node scripts/wasm.mjs",
+    "typecheck": "tsc --noEmit",
+    "wasm": "node scripts/wasm.mjs --force",
+    "wasm:core": "node scripts/wasm.mjs core --force",
+    "wasm:strip": "node scripts/wasm.mjs strip --force"
+  },
+  "dependencies": {
+    "@sqlite.org/sqlite-wasm": "3.53.4-build2",
+    "doipjs": "2.1.0",
+    "simple-icons": "16.36.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.287",
+    "@types/node": "^24.19.2",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

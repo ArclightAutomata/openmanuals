@@ -1,0 +1,210 @@
+{
+  "description": "OpenManuals openmanuals-core test vectors. Every implementation must reproduce these byte for byte.",
+  "keys": [
+    {
+      "alg": "Ed25519",
+      "seed_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+      "jwk": {
+        "crv": "Ed25519",
+        "kty": "OKP",
+        "x": "0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc"
+      },
+      "fingerprint": "DZLKGG66S2CK7LR5WGBTG5L5IE",
+      "openssh": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINBKsjJ0K7SrOhNovUYV5ObQIkq3GgFrr4UgozLJd4c3 DZLKGG66S2CK7LR5WGBTG5L5IE"
+    }
+  ],
+  "facts": [
+    {
+      "alg": "Ed25519",
+      "canonical": "{\"at\":\"2026-10-23T18:00:00Z\",\"author\":\"DZLKGG66S2CK7LR5WGBTG5L5IE\",\"body\":{\"md5\":\"098f6bcd4621d373cade4e832627b4f6\",\"mime\":\"application/pdf\",\"nested\":{\"a\":\"b\",\"z\":[1,2.5,false,null]},\"note\":\"unicode: é ü 漢 😀\",\"sha1\":\"a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\",\"sha256\":\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\"size\":4},\"type\":\"file\",\"v\":1}",
+      "id": "sha256:bd5509e781fddae37c96d7c31e557e65f0ad7a5b76d4552276f9885707098e91",
+      "fact": {
+        "v": 1,
+        "type": "file",
+        "author": "DZLKGG66S2CK7LR5WGBTG5L5IE",
+        "at": "2026-10-23T18:00:00Z",
+        "body": {
+          "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+          "sha1": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+          "md5": "098f6bcd4621d373cade4e832627b4f6",
+          "size": 4,
+          "mime": "application/pdf",
+          "note": "unicode: é ü 漢 😀",
+          "nested": {
+            "z": [
+              1,
+              2.5,
+              false,
+              null
+            ],
+            "a": "b"
+          }
+        },
+        "sig": {
+          "alg": "Ed25519",
+          "fmt": "raw",
+          "key": {
+            "crv": "Ed25519",
+            "kty": "OKP",
+            "x": "0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc"
+          },
+          "value": "QCimNApG0B-BbP5a6Xo1CS_75X74zEOUgx8jrbg8GofjBaV8dE1xz-QpA6k7cPrUwQysTJ808ppU3I8RKE0ACg"
+        }
+      }
+    }
+  ],
+  "profile": {
+    "jws": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6IkRaTEtHRzY2UzJDSzdMUjVXR0JURzVMNUlFIiwiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMEVxeU1uUXJ0S3M2RTJpOVJoWGs1dEFpU3JjYUFXdXZoU0NqTXNsM2h6YyJ9fQ.eyJodHRwOi8vYXJpYWRuZS5pZC92ZXJzaW9uIjowLCJodHRwOi8vYXJpYWRuZS5pZC90eXBlIjoicHJvZmlsZSIsImh0dHA6Ly9hcmlhZG5lLmlkL25hbWUiOiJWZWN0b3IgUGVyc29uIiwiaHR0cDovL2FyaWFkbmUuaWQvY2xhaW1zIjpbImh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2V4YW1wbGUvYWJjMTIzIiwiZG5zOmV4YW1wbGUub3JnP3R5cGU9VFhUIl0sImh0dHA6Ly9hcmlhZG5lLmlkL2Rlc2NyaXB0aW9uIjoiZGVzYyJ9.HQs-tDGWBcf7rDT7lyojidv1kUauBK3cq3MknY_rUCSYHUDhWqoQGwXeFWPahnoPmXmuvxnCBX66Qbh5QZ7uCA",
+    "fingerprint": "DZLKGG66S2CK7LR5WGBTG5L5IE",
+    "name": "Vector Person",
+    "claims": [
+      "https://gist.github.com/example/abc123",
+      "dns:example.org?type=TXT"
+    ],
+    "aspe": "aspe:openmanuals.org:DZLKGG66S2CK7LR5WGBTG5L5IE"
+  },
+  "asp_spec_example": {
+    "jwk": {
+      "kty": "OKP",
+      "use": "sig",
+      "crv": "Ed25519",
+      "x": "__poSQwNedopfLKP3ZgM6FXz9LIJszDZh5wKcoQF71U"
+    },
+    "fingerprint": "QPRGVPJNWDXH4ESK2RYDTZJLTE"
+  },
+  "canonical": [
+    {
+      "input": {
+        "b": 1.0,
+        "a": [
+          true,
+          null,
+          "é"
+        ],
+        "c": {
+          "z": 1000.0,
+          "y": 0.1
+        }
+      },
+      "output": "{\"a\":[true,null,\"é\"],\"b\":1,\"c\":{\"y\":0.1,\"z\":1000}}"
+    },
+    {
+      "input": {
+        "€": "😀",
+        "a\u0000": 1e+21,
+        "n": -0.0
+      },
+      "output": "{\"a\\u0000\":1e+21,\"n\":0,\"€\":\"😀\"}"
+    }
+  ],
+  "identifiers": {
+    "legacy": [
+      {
+        "source": "manualslib",
+        "source_id": "331384",
+        "identifier": "manualslib-id-331384"
+      },
+      {
+        "source": "elektrotanya",
+        "source_id": "sony_kv-1400_sm.pdf",
+        "identifier": "elektrotanya-sony_kv-1400_sm_pdf-c89aade7"
+      },
+      {
+        "source": "elektrotanya",
+        "source_id": "sony_kv-1400,sm (ü).pdf",
+        "identifier": "elektrotanya-sony_kv-1400_sm_pdf-114c3090"
+      },
+      {
+        "source": "elektrotanya",
+        "source_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "identifier": "elektrotanya-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-94218caa"
+      },
+      {
+        "source": "other",
+        "source_id": "1",
+        "identifier": null
+      }
+    ],
+    "upload": [
+      {
+        "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "ulid": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+        "identifier": "openmanuals-9f86d081884c7d65-01arz3ndektsv4rrffq69g5fav"
+      }
+    ],
+    "pages": [
+      {
+        "url": "https://www.manualslib.com/manual/331384/Jvc-Av-2168tee.html?x=1",
+        "page": {
+          "source": "manualslib",
+          "source_id": "331384",
+          "kind": "manual",
+          "slug": "Jvc-Av-2168tee.html",
+          "candidates": [
+            "manualslib-id-331384"
+          ]
+        }
+      },
+      {
+        "url": "http://manualslib.com/download/331384/Jvc-Av-2168tee.html",
+        "page": {
+          "source": "manualslib",
+          "source_id": "331384",
+          "kind": "download",
+          "slug": "Jvc-Av-2168tee.html",
+          "candidates": [
+            "manualslib-id-331384"
+          ]
+        }
+      },
+      {
+        "url": "https://elektrotanya.com/sony_kv-1400%2Csm.pdf/download.html#dl",
+        "page": {
+          "source": "elektrotanya",
+          "source_id": "sony_kv-1400%2Csm.pdf",
+          "kind": "manual",
+          "slug": "sony_kv-1400%2Csm.pdf",
+          "candidates": [
+            "elektrotanya-sony_kv-1400_2Csm_pdf-a9fca69f",
+            "elektrotanya-sony_kv-1400_sm_pdf-03f31f13"
+          ]
+        }
+      },
+      {
+        "url": "https://manualslib.com/brand/jvc/",
+        "page": null
+      },
+      {
+        "url": "https://example.com/manual/1/x",
+        "page": null
+      }
+    ]
+  },
+  "products": [
+    {
+      "brand": "JVC",
+      "model": "AV-2168TEE",
+      "key": "jvc|AV2168TEE"
+    },
+    {
+      "brand": " jvc ",
+      "model": "av 2168/tee",
+      "key": "jvc|AV2168TEE"
+    },
+    {
+      "brand": "Harman  Kardon",
+      "model": "AVR_20.II",
+      "key": "harman kardon|AVR20II"
+    },
+    {
+      "brand": "",
+      "model": "x",
+      "key": null
+    },
+    {
+      "brand": "Sony",
+      "model": " - ",
+      "key": null
+    }
+  ]
+}

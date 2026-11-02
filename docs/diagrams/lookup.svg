@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="870" viewBox="0 0 1120 870" role="img" aria-labelledby="t d">
+<title id="t">How the extension looks up a page</title>
+<desc id="d">The extension checks a local filter first, asks the server only on a possible hit, and falls back to snapshot mirrors when the server is unreachable. A live archive.org identifier check is an advanced setting, off by default.</desc>
+<defs><marker id="e-black" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#000000"/></marker><marker id="s-black" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#000000"/></marker><marker id="e-blue" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#0060B6"/></marker><marker id="s-blue" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#0060B6"/></marker><marker id="e-red" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#BF0000"/></marker><marker id="s-red" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#BF0000"/></marker><marker id="e-purple" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8210D2"/></marker><marker id="s-purple" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8210D2"/></marker><marker id="e-gray" viewBox="-12 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L-11,-5 L-8,0 L-11,5 Z" fill="#8C8C8C"/></marker><marker id="s-gray" viewBox="-2 -6 14 12" refX="0" refY="0" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,-5 L8,0 L11,5 Z" fill="#8C8C8C"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="20" y="38" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="22" text-anchor="start" font-weight="normal" fill="#000">Extension: looking up a page on a supported manual site</text>
+<rect x="180" y="70" width="300" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="180.75" y="100" width="298.5" height="25.25" fill="#d9ead3" stroke="none"/>
+<line x1="180" y1="100" x2="480" y2="100" stroke="#000" stroke-width="0.75"/>
+<text x="330.0" y="91" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Page visited</text>
+<text x="330.0" y="117.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">manual page or download page</text>
+<polygon points="330,150.0 480.0,200 330,250.0 180.0,200" fill="#f4cccc" stroke="#000" stroke-width="1.5"/>
+<text x="330" y="188" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">In the lookup filter?</text>
+<text x="330" y="204" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">(or submitted from</text>
+<text x="330" y="220" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">this browser)</text>
+<rect x="180" y="290" width="300" height="56" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="180.75" y="320" width="298.5" height="25.25" fill="#cfe2f3" stroke="none"/>
+<line x1="180" y1="320" x2="480" y2="320" stroke="#000" stroke-width="0.75"/>
+<text x="330.0" y="311" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">GET /api/lookup</text>
+<text x="330.0" y="337.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">to the OpenManuals server</text>
+<polygon points="330,375.0 460.0,420 330,465.0 200.0,420" fill="#f4cccc" stroke="#000" stroke-width="1.5"/>
+<text x="330" y="424" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Server reachable?</text>
+<rect x="180" y="520" width="300" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="180.75" y="550" width="298.5" height="43.25" fill="#cfe2f3" stroke="none"/>
+<line x1="180" y1="550" x2="480" y2="550" stroke="#000" stroke-width="0.75"/>
+<text x="330.0" y="541" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Mirror lookup</text>
+<text x="330.0" y="568.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">offscreen worker: SQLite over</text>
+<text x="330.0" y="584.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">Range requests, pages verified</text>
+<polygon points="330,628.0 440.0,670 330,712.0 220.0,670" fill="#f4cccc" stroke="#000" stroke-width="1.5"/>
+<text x="330" y="674" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#000">Answered?</text>
+<rect x="640" y="400" width="400" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="640.75" y="430" width="398.5" height="43.25" fill="#ffeeaa" stroke="none"/>
+<line x1="640" y1="430" x2="1040" y2="430" stroke="#000" stroke-width="0.75"/>
+<text x="840.0" y="421" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Known manual</text>
+<text x="840.0" y="448.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">best copy (archive.org first), mutes</text>
+<text x="840.0" y="464.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">and reports applied → banner + download</text>
+<rect x="640" y="560" width="400" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="640.75" y="590" width="398.5" height="43.25" fill="#e6e6e6" stroke="none"/>
+<line x1="640" y1="590" x2="1040" y2="590" stroke="#000" stroke-width="0.75"/>
+<text x="840.0" y="581" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Live archive.org check (optional)</text>
+<text x="840.0" y="608.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">Advanced setting, off by default: old-style</text>
+<text x="840.0" y="624.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">identifiers (check_identifier, then metadata)</text>
+<rect x="640" y="730" width="400" height="74" rx="0" fill="#fff" stroke="#000" stroke-width="1.5"/>
+<rect x="640.75" y="760" width="398.5" height="43.25" fill="#d9ead3" stroke="none"/>
+<line x1="640" y1="760" x2="1040" y2="760" stroke="#000" stroke-width="0.75"/>
+<text x="840.0" y="751" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="15" text-anchor="middle" font-weight="normal" fill="#000">Banner</text>
+<text x="840.0" y="778.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">"free on the Internet Archive" or</text>
+<text x="840.0" y="794.0" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#000">"not archived yet" (+ upload if enabled)</text>
+<path d="M330,126 L330,150" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M330,250 L330,290" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="342" y="276" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">yes (or no filter)</text>
+<path d="M480,200 L1090,200 L1090,752 L1040,752" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="760" y="192" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no: nothing leaves the browser</text>
+<path d="M330,346 L330,375" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M460,420 L640,420" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="540" y="412" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M330,465 L330,520" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="348" y="500" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no</text>
+<path d="M330,594 L330,628" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<path d="M440,670 L600,670 L600,450 L640,450" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="520" y="662" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">yes</text>
+<path d="M220,670 L120,670 L120,845 L610,845 L610,597 L640,597" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+<text x="200" y="662" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#000" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no</text>
+<text x="130" y="862" font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#555" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no: to the live check if it is on; otherwise straight to the banner</text>
+<path d="M840,474 L840,520 L1060,520 L1060,782 L1040,782" fill="none" stroke="#8C8C8C" stroke-width="1.75" marker-end="url(#e-gray)"/>
+<path d="M840,634 L840,730" fill="none" stroke="#000000" stroke-width="1.75" marker-end="url(#e-black)"/>
+</svg>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}File {{ f.id[:12] }} — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail" data-om-file="{{ f.id }}">
+  <h1>File <code>{{ f.id[:16] }}…</code> <span class="om-actions"></span></h1>
+  <p class="detail-meta">{{ f.size_label }}{% if f.mime %} · {{ f.mime }}{% endif %}{% if f.pages %} · {{ f.pages }} pages{% endif %}</p>
+  <dl class="hashes">
+    {% if f.sha256 %}<dt>SHA-256</dt><dd><code>{{ f.sha256 }}</code></dd>{% endif %}
+    {% if f.sha1 %}<dt>SHA-1</dt><dd><code>{{ f.sha1 }}</code></dd>{% endif %}
+    {% if f.md5 %}<dt>MD5</dt><dd><code>{{ f.md5 }}</code></dd>{% endif %}
+  </dl>
+  {% if f.derived_from %}<p>{{ f.transform }} variant of <a href="/file/{{ f.derived_from }}">{{ f.derived_from[:16] }}…</a> ({{ f.tool }} {{ f.tool_version }}).</p>{% endif %}
+  <h2>Copies</h2>
+  {% if f.review %}<p class="held">Not offered for download: {{ f.review }}. Its copies are not linked.</p>
+  {% elif copies %}<ul class="copies">{% for c in copies %}<li data-om-location="{{ c.id }}" data-om-file="{{ f.id }}" data-om-author="{{ c.author }}"><a href="{{ c.url }}" rel="noopener nofollow ugc">{{ c.url }}</a> <small>{{ c.kind }} · verified {{ c.verified_at[:10] }} · by <a href="/k/{{ c.author }}">{{ c.author_name }}</a></small> <span class="om-actions"></span></li>{% endfor %}</ul>
+  {% else %}<p class="muted">No verified copy.</p>{% endif %}
+  <h2>Manuals</h2>
+  <ul class="manual-list">{% for m in manuals %}<li class="manual-card"><a class="manual-link" href="/manual/{{ m.id }}"><span class="manual-model">{{ m.title }}</span></a><span class="doc-tag">{{ m.doc_type }}</span></li>{% endfor %}</ul>
+</article>
+{% endblock %}

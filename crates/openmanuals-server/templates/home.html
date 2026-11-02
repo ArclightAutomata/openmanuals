@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "_facts.html" as facts %}
+{% import "_contribute.html" as contrib %}
+{% block content %}
+<section class="hero">
+  <h1>Manuals, preserved in the open</h1>
+  <p class="lede">OpenManuals is a public, signed ledger of where to download device manuals (service manuals, schematics, owner's guides), with every copy checked byte for byte. Anyone can contribute; no account needed.</p>
+  <form class="hero-search" action="/manuals" method="get">
+    <input type="search" name="q" placeholder="e.g. Sony KV-27S22, Panasonic CT-2088…" autofocus>
+    <button type="submit">Find a manual</button>
+  </form>
+  <ul class="stat-row">
+    <li><strong>{{ stats.downloadable }}</strong> with a verified download</li>
+    <li><strong>{{ stats.manuals }}</strong> manuals known</li>
+    <li><strong>{{ stats.contributors }}</strong> {{ stats.contributors_label }}</li>
+    <li><a href="/ledger"><strong>{{ stats.facts }}</strong> signed facts</a></li>
+  </ul>
+</section>
+{% if stats.missing != "0" %}
+<section class="contribute-card">
+  <div>
+    <h2>Help preserve a manual</h2>
+    <p><strong>{{ stats.missing }}</strong> manuals we know of online still need a preserved copy. Open a random one, download it, and the extension preserves it.</p>
+    {{ contrib.readiness() }}
+  </div>
+  <div class="contribute-actions">
+    <a class="button" href="/contribute/random" target="_blank" rel="noreferrer">Take me to one →</a>
+    <a href="/contribute">Pick a brand</a>
+  </div>
+</section>
+{% endif %}
+<section class="sites">
+  <h2>Sites we check</h2>
+  <p class="sites-lede">When you open a manual on one of these sites, the extension shows whether it's already preserved, and with uploads on it preserves the ones you download.</p>
+  <div class="site-grid">
+    {% for s in sites %}
+    <div class="site-card">
+      <div class="site-head"><a href="{{ s.url }}" rel="noopener noreferrer" target="_blank">{{ s.name }}</a></div>
+      <p class="site-count"><strong>{{ s.preserved }}</strong> preserved <span>of {{ s.known }} known ({{ s.pct }}%)</span></p>
+      <div class="site-bar" role="img" aria-label="{{ s.pct }}% preserved"><span style="width: {{ s.bar }}%"></span></div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+<section class="activity">
+  <div class="section-head"><h2>Latest activity</h2><a href="/ledger">Browse the whole ledger →</a></div>
+  {{ facts.rows(groups) }}
+</section>
+<section class="brands">
+  <h2>Browse by brand</h2>
+  <div class="chip-row">
+    {% for b in brands %}<a class="chip" href="/manuals?brand={{ b.key|urlencode }}">{{ b.brand }} <span class="chip-count">{{ b.n }}</span></a>{% endfor %}
+  </div>
+  <p class="all-link"><a href="/manuals">Browse all manuals →</a></p>
+</section>
+{% endblock %}

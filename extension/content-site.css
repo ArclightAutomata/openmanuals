@@ -1,0 +1,17 @@
+/* Injected on the configured OpenManuals server's pages (content-site.js).
+   Chrome applies this before the page is first drawn, so "install the
+   extension" notes are hidden from the start and a "checking" line stands in
+   until content-site.js has asked the service worker. It sets data-om-ext on
+   <html>: "ok" (this is the configured server) or "no" (another server on the
+   same host name; the page is left as it is without the extension). */
+html:not([data-om-ext="no"]) .om-ext-hint, .om-ext-hint[hidden], [data-om-upload][hidden] { display: none !important; }
+html:not([data-om-ext]) .om-ext-checking { display: block !important; }
+.om-actions { display: inline-block !important; }
+button.om-act {
+  all: unset; box-sizing: border-box; display: inline-block; cursor: pointer;
+  font: 600 13px/1 system-ui, sans-serif; padding: 2px 7px; margin-left: 6px; border-radius: 6px;
+  border: 1px solid rgba(127, 127, 127, 0.45); color: inherit; opacity: 0.75; vertical-align: middle;
+}
+button.om-act:hover, button.om-act:focus-visible { opacity: 1; background: rgba(47, 125, 91, 0.15); outline: none; }
+/* The row hovered in the side panel. */
+.om-highlight { outline: 2px solid #2f7d5b !important; outline-offset: 2px; border-radius: 4px; }

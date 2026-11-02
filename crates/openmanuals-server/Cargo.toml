@@ -1,0 +1,56 @@
+[package]
+name = "openmanuals-server"
+description = "OpenManuals server: facts inbox, feed, snapshot, identity hosting, verifier, pages"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+openmanuals-core = { path = "../openmanuals-core", features = ["sign"] }
+openmanuals-ledger = { path = "../openmanuals-ledger" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+rusqlite = { workspace = true }
+ulid = { workspace = true }
+jiff = { workspace = true }
+toml = { workspace = true }
+hex = { workspace = true }
+sha1 = { workspace = true }
+sha2 = { workspace = true }
+md-5 = { workspace = true }
+base64 = { workspace = true }
+tracing = { workspace = true }
+rayon = { workspace = true }
+mimalloc = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+reqwest = { workspace = true }
+clap = { workspace = true }
+axum = "0.8"
+tower-http = { version = "0.6", features = ["cors", "fs", "trace"] }
+tower = { version = "0.5", features = ["util"] }
+minijinja = { version = "2", features = ["loader", "json", "urlencode"] }
+psl = "2"
+futures-util = "0.3"
+urlencoding = "2"
+# PDF parser for the active-content scan (scan.rs). 0.45.0: released 2026-09-08;
+# 0.46.0 (2026-10-21) is too recent. No default features: no rayon (the scan
+# runs on one dedicated thread), no chrono.
+lopdf = { version = "=0.45.0", default-features = false }
+memchr = { workspace = true }
+# setrlimit for the scan worker process (scan.rs).
+libc = "0.2.191"
+
+[dev-dependencies]
+# Building compressed object streams for the scanner tests.
+flate2 = "1.1"
+tempfile = { workspace = true }
+# Paused time for the fold scheduler's tests.
+tokio = { workspace = true, features = ["test-util"] }
+
+[lib]
+name = "openmanuals_server"
+path = "src/lib.rs"

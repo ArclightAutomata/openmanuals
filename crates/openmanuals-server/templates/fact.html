@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Fact {{ f.short }} — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail fact-detail" data-om-fact="{{ f.id }}" data-om-author="{{ f.author.fp }}" data-om-type="{{ f.type }}"{% if f.retracted %} data-om-retracted{% endif %}{% if f.hidden %} data-om-hidden{% endif %}>
+  <div class="fact-header">
+    <a href="/k/{{ f.author.fp }}">{{ f.author.avatar|safe }}</a>
+    <div>
+      <h1>{{ f.summary }}</h1>
+      <p class="fact-meta">
+        <a class="fact-author" href="/k/{{ f.author.fp }}">{{ f.author.name }}</a>
+        {% if f.author.role %}<span class="pill pill-role">{{ f.author.role }}</span>{% endif %}
+        {% for l in f.author.links %}{% if l.uri %}<a class="proof" href="{{ l.uri }}" rel="noopener nofollow ugc">✓ {{ l.service }}/{{ l.handle }}</a>{% else %}<span class="proof">✓ {{ l.service }}/{{ l.handle }}</span>{% endif %}{% endfor %}
+        submitted <time datetime="{{ f.at }}" title="{{ f.at }}">{{ f.ago }}</time>
+        · <a class="type-chip" href="/ledger?type={{ f.type|urlencode }}">{{ f.type }}</a>
+        {% if f.pending %}<span class="pill pill-pending">pending</span>{% endif %}
+        {% if f.retracted %}<span class="pill pill-muted">retracted</span>{% endif %}
+        <span class="om-actions"></span>
+      </p>
+    </div>
+  </div>
+  {% if f.hidden %}<p class="held">This fact is in the ledger but hidden by moderation, so its content isn't shown here.</p>{% endif %}
+  {% if f.retracted %}<p class="held">Retracted by its author: the build ignores it, but the ledger keeps it.</p>{% endif %}
+  <dl class="hashes">
+    <dt>Fact id</dt><dd><code>{{ f.id }}</code></dd>
+    <dt>Arrived</dt><dd>{{ f.at }} <small>(cursor <code>{{ cursor }}</code>)</small></dd>
+    <dt>Author's timestamp</dt><dd>{{ claimed_at }} <small>(claimed by the author, not trusted)</small></dd>
+    <dt>Signature</dt><dd>{% if sig %}{{ sig.alg }}, {{ sig.fmt }}: {% if sig.valid %}valid ✓{% else %}<strong>invalid</strong>{% endif %}{% else %}none{% endif %}</dd>
+    <dt>In the ledger</dt><dd>{% if ledger_file %}<code>{{ ledger_file }}</code>{% else %}not yet: it is folded in within seconds{% endif %}</dd>
+    <dt>Author key</dt><dd><a href="/ledger?author={{ f.author.fp }}"><code>{{ f.author.fp }}</code></a> <small>(all its facts)</small></dd>
+    {% if f.href %}<dt>Concerns</dt><dd><a href="{{ f.href }}">{{ f.href }}</a></dd>{% endif %}
+  </dl>
+  {% if json %}<h2>The fact</h2><pre class="fact-json"><code>{{ json }}</code></pre>{% endif %}
+</article>
+{% endblock %}

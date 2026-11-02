@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OpenManuals extension settings</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; font-size: 15px; color: #1c2321; background: #f6f7f5; }
+    header { background: #2f7d5b; color: #fff; padding: 18px 28px; font-weight: 700; font-size: 18px; }
+    main { max-width: 720px; margin: 0 auto; padding: 24px 20px 60px; }
+    section { background: #fff; border: 1px solid #e1e5df; border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
+    h2 { margin: 0 0 6px; font-size: 17px; }
+    h3 { margin: 18px 0 6px; font-size: 14px; color: #5f6b66; text-transform: uppercase; letter-spacing: .04em; }
+    p.lede { margin: 0 0 14px; color: #5f6b66; line-height: 1.5; }
+    label { display: block; font-size: 13px; color: #5f6b66; margin: 12px 0 4px; }
+    input[type=text], input[type=password], input[type=email], textarea, select { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #d5d9d3; border-radius: 6px; font-size: 14px; font-family: inherit; }
+    input.mono, textarea.mono { font-family: ui-monospace, monospace; }
+    .row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+    button { padding: 8px 16px; border: none; border-radius: 6px; background: #2f7d5b; color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; font-family: inherit; }
+    button.secondary { background: #e5efe9; color: #1f5b40; }
+    button.neutral { background: #fff; color: #374151; border: 1px solid #d5d9d3; }
+    button.neutral:hover:not(:disabled) { background: #f3f4f2; }
+    button.danger { background: #fee2e2; color: #991b1b; }
+    button:disabled { opacity: .5; cursor: default; }
+    .msg { font-size: 13px; }
+    .ok { color: #2f7d5b; font-weight: 600; }
+    .bad { color: #b91c1c; font-weight: 600; }
+    .check { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; }
+    .check input { margin-top: 3px; }
+    .check small { display: block; color: #5f6b66; }
+    a { color: #1a6ea8; }
+    code { background: #eef1ec; padding: 1px 5px; border-radius: 4px; font-size: 13px; word-break: break-all; }
+    .fp { font: 15px ui-monospace, monospace; background: #eef1ec; padding: 8px 10px; border-radius: 6px; word-break: break-all; }
+    .fp.copyable { position: relative; padding-right: 42px; cursor: pointer; border: 1px solid transparent; transition: border-color .15s, background .15s; }
+    .fp.copyable:hover, .fp.copyable:focus-visible { border-color: #b8c7bd; background: #e5efe9; outline: none; }
+    .fp.copyable::after { content: ""; position: absolute; right: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); background: #5f6b66; -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='8' y='3' width='8' height='4' rx='1'/><path d='M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2'/></svg>") center / contain no-repeat; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='8' y='3' width='8' height='4' rx='1'/><path d='M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2'/></svg>") center / contain no-repeat; }
+    .fp.copyable:hover::after { background: #1f5b40; }
+    .fp.copyable.copied::after { background: #2f7d5b; -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12l5 5L20 7'/></svg>"); mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12l5 5L20 7'/></svg>"); }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); background: #1c2321; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s, transform .15s; z-index: 10; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    ul.claims { list-style: none; padding: 0; margin: 8px 0; }
+    ul.claims li { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid #eef1ec; font-size: 14px; }
+    ul.claims li span.u { flex: 1; word-break: break-all; }
+    .badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #eef1ec; color: #5f6b66; white-space: nowrap; }
+    .badge.ok { background: #dcefe4; color: #1f5b40; }
+    .badge.bad { background: #fee2e2; color: #991b1b; }
+    .hidden { display: none; }
+    table.hist { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.hist td { padding: 5px 4px; border-top: 1px solid #eef1ec; vertical-align: top; }
+    .avatar-preview { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: #eef1ec; border: 1px solid #d5d9d3; color: #5f6b66; font-size: 11px; text-align: center; flex: none; }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .ia-status { border: 1px solid #e1e5df; border-radius: 8px; padding: 10px 14px; margin: 0 0 12px; background: #fafbf9; }
+    .ia-row { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 14px; line-height: 1.4; }
+    .ia-row + .ia-row { border-top: 1px solid #eef1ec; }
+    .dot { flex: none; width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; background: #c9cec7; }
+    .dot.ok { background: #2f7d5b; }
+    .dot.bad { background: #b91c1c; }
+    .dot.warn { background: #d97706; }
+    ul.claims li.claim { gap: 10px; }
+    .claim-service { display: inline-flex; align-items: center; gap: 6px; flex: none; min-width: 112px; font-weight: 600; font-size: 14px; }
+    .claim-icon { width: 18px; height: 18px; flex: none; }
+    .claim-uri { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font: 13px ui-monospace, monospace; color: #5f6b66; }
+    h2.with-led { display: flex; align-items: center; gap: 10px; }
+    .led { flex: none; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #d7dbd5, #9aa29c); box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+    .led.on { background: radial-gradient(circle at 35% 35%, #d6ffe0, #22e05a 45%, #0fa83c); box-shadow: 0 0 6px 2px rgba(34,224,90,.65), 0 0 14px 4px rgba(34,224,90,.3), inset 0 0 0 1px rgba(0,80,20,.35); }
+    .led-label { font-size: 12px; font-weight: 600; color: #5f6b66; text-transform: uppercase; letter-spacing: .05em; }
+    .led-label.on { color: #12823a; }
+    .ia-row .row-action { margin-left: auto; align-self: center; white-space: nowrap; }
+    .ia-row .row-action + .row-action { margin-left: 8px; }
+    .ia-row .row-action.hidden + .row-action { margin-left: auto; }
+    .ia-block + .ia-row { border-top: 1px solid #eef1ec; }
+    .ia-alt { padding: 0 0 8px 22px; }
+    .ia-alt details { margin-top: 6px; }
+    .ia-alt summary { cursor: pointer; color: #1a6ea8; font-size: 14px; }
+    .ia-msg { margin: 0 0 8px 22px; }
+    .ia-msg:empty { display: none; }
+    a.button-link { display: inline-block; padding: 8px 16px; border-radius: 6px; background: #2f7d5b; color: #fff; font-weight: 600; font-size: 14px; text-decoration: none; }
+    a.button-link:hover { background: #276a4d; }
+    a.button-link.hidden { display: none; }
+    .checked-at { display: block; color: #5f6b66; font-size: 12px; margin-top: 2px; }
+    .checked-at:empty { display: none; }
+    .needs-keys { display: block; color: #b45309; font-weight: 600; font-size: 12px; margin-top: 2px; }
+    .needs-keys.hidden { display: none; }
+    .upload-toggle { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .upload-toggle input { width: 16px; height: 16px; margin: 0; }
+    .upload-toggle:has(input:disabled) { opacity: .55; cursor: default; }
+    details.advanced-settings { margin: 8px 0 18px; }
+    details.advanced-settings > summary { cursor: pointer; color: #5f6b66; font-size: 14px; padding: 6px 2px; }
+    details.advanced-settings section.sub { margin-top: 10px; }
+    .stale { background: #fef3c7; border: 1px solid #f59e0b; color: #78350f; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 14px; }
+    .subsection { border: 1px solid #e1e5df; border-radius: 10px; background: #fafbf9; padding: 16px 18px 18px; margin: 22px 0 6px; }
+    .subsection > h3.sub-title { margin: 0 0 4px; font-size: 18px; font-weight: 700; color: #1c2321; text-transform: none; letter-spacing: 0; }
+    .subsection > .lede:first-of-type { margin-bottom: 6px; }
+    .subsection input[type=text], .subsection input[type=password] { background: #fff; }
+    .subsection input.changed { border-color: #d97706; box-shadow: 0 0 0 2px rgba(217,119,6,.15); }
+    .subsection.dirty { border-color: #f2c37b; }
+    .dirty-pill { font-size: 13px; font-weight: 600; color: #b45309; background: #fef3c7; border-radius: 10px; padding: 3px 10px; }
+    .instructions { background: #f6f7f5; border-radius: 8px; padding: 12px 14px; margin-top: 10px; font-size: 14px; line-height: 1.5; }
+    header .mark { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <header><img class="mark" src="icons/logo.svg" alt="" width="26" height="26">OpenManuals — extension settings</header>
+  <main>
+    <div id="staleBuild" class="stale hidden" role="alert">The extension was rebuilt since Chrome started it, so this page and the extension's background are different versions. Reload it: <code>chrome://extensions</code> → ⟳ on the OpenManuals card.</div>
+    <section id="identity">
+      <h2 class="with-led"><span class="led" id="idLed" role="img" aria-label="Off"></span>Your identity (optional) <span class="led-label" id="idLedLabel">Off</span></h2>
+      <p class="lede">You only need an identity to contribute back to OpenManuals. When you download a manual that isn't in the database yet, or report a bad copy, the extension tells the OpenManuals server about it, and those notes are signed by your identity. Without one, finding manuals and downloading them from archive.org work the same, and with upload enabled your files still go to archive.org, but nothing is recorded on the OpenManuals server and you get no credit.</p>
+      <p class="lede">OpenManuals has no accounts. Your identity is a signing key made by this extension and protected by a passkey. You can choose to link this key to other identities you own, like on GitHub, Mastodon, your domain, etc. Linked identities that check out add trust: others can see who stands behind your contributions, and your reports carry more weight. The private key leaves this browser only encrypted, so that just your passkey can open it.</p>
+      <div id="noKey">
+        <p class="lede">Your key is protected by a passkey from your password manager, phone or security key. On another computer, sign in with the same passkey. No password to remember, nothing to download.</p>
+        <div class="row">
+          <button id="createKey">Create signing key</button>
+          <button id="signInPasskey" class="secondary">Sign in with passkey</button>
+        </div>
+        <div class="row" style="margin-top:6px"><span class="msg" id="keyMsg"></span></div>
+        <details id="advanced" style="margin-top:16px">
+          <summary>Advanced options</summary>
+          <h3>Create a key with a backup file</h3>
+          <p class="lede">The key is also saved to a file encrypted with a passphrase. The file and passphrase restore it without a passkey, for example if you lose every passkey.</p>
+          <label for="passphrase">Passphrase for the backup file</label>
+          <input type="password" id="passphrase" autocomplete="new-password">
+          <label for="passphrase2">Repeat passphrase</label>
+          <input type="password" id="passphrase2" autocomplete="new-password">
+          <div class="check">
+            <input type="checkbox" id="usePasskey" checked>
+            <label for="usePasskey" style="margin:0;color:inherit;font-size:15px"><strong>Also protect with a passkey</strong><small id="passkeyNote">Then you can sign in on another computer with the passkey alone.</small></label>
+          </div>
+          <div class="row"><button id="createKeyBackup" class="secondary">Create key and download backup</button><span class="msg" id="advKeyMsg"></span></div>
+          <h3>Restore from a backup file</h3>
+          <p class="lede">With its passphrase. Or choose the file and click “Sign in with passkey” above, if the server doesn't have the passkey's copy.</p>
+          <input type="file" id="backupFile" accept="application/json">
+          <label for="importPass">Backup passphrase</label>
+          <input type="password" id="importPass" autocomplete="off">
+          <div class="row"><button id="importKey" class="secondary">Restore key</button><span class="msg" id="importMsg"></span></div>
+        </details>
+      </div>
+      <div id="hasKey" class="hidden">
+        <label>Fingerprint</label>
+        <div class="fp copyable" id="fingerprint" role="button" tabindex="0" title="Click to copy" aria-label="Fingerprint (click to copy)"></div>
+        <label>Identifier to paste into proofs</label>
+        <div class="fp copyable" id="aspe" role="button" tabindex="0" title="Click to copy" aria-label="Identifier (click to copy)"></div>
+        <p class="lede" id="keyInfo" style="margin-top:10px"></p>
+
+        <div class="subsection" id="passkeysSection">
+        <h3 class="sub-title">Passkeys</h3>
+        <p class="lede">Any of these passkeys signs you in on another computer. Each one keeps an encrypted copy of the key, here and on the server; only that passkey can open it.</p>
+        <ul class="claims" id="passkeys"></ul>
+        <div class="row"><button id="addPasskey" class="secondary">Add a passkey</button><span class="msg" id="passkeyMsg"></span></div>
+        <details id="keyAdvanced" style="margin-top:12px">
+          <summary>Advanced options</summary>
+          <h3>Download a backup file</h3>
+          <p class="lede">A file encrypted with a passphrase that restores the key without a passkey, in case you lose every passkey. You'll unlock the key with one of your passkeys first.</p>
+          <label for="newBackupPass">Passphrase for the backup file</label>
+          <input type="password" id="newBackupPass" autocomplete="new-password">
+          <label for="newBackupPass2">Repeat passphrase</label>
+          <input type="password" id="newBackupPass2" autocomplete="new-password">
+          <div class="row"><button id="makeBackup" class="secondary">Download backup file</button><span class="msg" id="backupMsg"></span></div>
+          <h3>Add a passkey using the backup file</h3>
+          <p class="lede">For a key with no passkey yet. You'll get an updated backup file that includes the new passkey.</p>
+          <input type="file" id="pkBackupFile" accept="application/json">
+          <label for="pkBackupPass">Backup passphrase</label>
+          <input type="password" id="pkBackupPass" autocomplete="off">
+          <div class="row"><button id="addPasskeyBackup" class="secondary">Add a passkey</button></div>
+        </details>
+        </div>
+
+        <div class="subsection" id="profile">
+        <h3 class="sub-title">Profile</h3>
+        <p class="lede">How you're shown next to your contributions, on the server's pages and on Keyoxide.</p>
+        <label for="profName">Display name</label>
+        <input type="text" id="profName" placeholder="How you'd like to be credited">
+        <label for="profDesc">Description (optional)</label>
+        <input type="text" id="profDesc">
+        <label>Avatar (optional)</label>
+        <div class="row" style="margin-top:4px">
+          <span id="avatarPreview" class="avatar-preview" aria-label="Your avatar"></span>
+          <button id="avatarUpload" class="secondary">Upload image</button>
+          <input type="file" id="avatarFile" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">
+          <button id="avatarGithub" class="secondary hidden">Use my GitHub avatar</button>
+          <button id="avatarRemove" class="secondary hidden">Remove</button>
+          <span class="msg" id="avatarMsg"></span>
+        </div>
+        <p class="lede" style="margin-top:6px">Cropped to a square and resized to 256×256 in this browser before it's sent (which also drops photo location data). It's published with your profile; the image itself is kept on the server, not in the public ledger, and replaced when you change it.</p>
+        <div class="row"><button id="saveProfile">Save profile</button><span class="dirty-pill hidden" id="profDirty" role="status">● Unsaved changes</span><span class="msg" id="profMsg"></span></div>
+        </div>
+
+        <div class="subsection" id="proofs">
+        <h3 class="sub-title">Proofs</h3>
+        <p class="lede">Each proof is a place you control that contains your identifier. Add as many as you like. A proof that checks out is added to your profile and published right away; anyone (and keyoxide.org) can check them.</p>
+        <ul class="claims" id="claims"></ul>
+        <div class="row">
+          <select id="service"></select>
+          <button id="showInstructions" class="secondary" disabled>Add a proof</button>
+        </div>
+        <div id="instructions" class="instructions hidden">
+          <div id="instrText"></div>
+          <label for="claimUrl">Then paste the claim URL here</label>
+          <input type="text" id="claimUrl" class="mono">
+          <div class="row"><button id="verifyClaim" class="secondary">Check proof</button><button id="addClaim" class="secondary" disabled title="The server checks it again before it counts">Add anyway</button><button id="cancelClaim" class="secondary">Cancel</button><span class="msg" id="claimMsg"></span></div>
+        </div>
+        </div>
+        <h3>Sign out</h3>
+        <div class="row"><button id="forgetKey" class="danger">Sign out on this computer</button><span class="msg">Removes the key from this browser. Sign in again with a passkey (or restore your backup file). Contributions already signed stay attributed to it.</span></div>
+      </div>
+    </section>
+
+    <section id="archive">
+      <h2 class="with-led"><span class="led" id="iaLed" role="img" aria-label="Off"></span>Internet Archive <span class="led-label" id="iaLedLabel">Off</span></h2>
+      <p class="lede">Uploads go to archive.org under <em>your</em> archive.org account, using its S3 upload keys. The keys are kept only on this computer.</p>
+      <div class="ia-status" id="iaStatus" aria-live="polite">
+        <div class="ia-block">
+          <div class="ia-row"><span class="dot" id="iaAuthDot"></span><div><strong>archive.org account</strong><br><span id="iaAuthText">Checking…</span><small id="iaKeysChecked" class="checked-at"></small></div>
+            <button id="iaUseSession" class="row-action hidden">Use this account</button>
+            <a id="iaSignIn" class="row-action button-link hidden" href="https://archive.org/account/login" target="_blank" rel="noopener">Sign in to archive.org</a>
+            <button id="iaRetest" class="row-action neutral hidden">Re-test keys</button>
+            <button id="iaSignOut" class="row-action neutral hidden">Sign out</button>
+          </div>
+          <div class="ia-alt hidden" id="iaAlt">
+            <details id="iaPasswordBox">
+              <summary id="iaPasswordSummary">Sign in with email and password</summary>
+              <p class="lede" style="margin-top:8px">Sent only to archive.org's login endpoint (the same one the <code>ia</code> tool uses) to get that account's upload keys. The password isn't stored, and this browser's own archive.org sign-in doesn't change.</p>
+              <label for="iaEmail">archive.org email</label><input type="email" id="iaEmail" autocomplete="username">
+              <label for="iaPassword">Password</label><input type="password" id="iaPassword" autocomplete="current-password">
+              <div class="row"><button id="iaPasswordLogin" class="secondary">Sign in</button></div>
+            </details>
+            <details id="iaManualBox">
+              <summary>Enter S3 keys manually</summary>
+              <p class="lede" style="margin-top:8px">From <a href="https://archive.org/account/s3.php" target="_blank" rel="noopener">archive.org/account/s3.php</a>.</p>
+              <label for="iaAccessKey">Access key</label><input type="text" id="iaAccessKey" class="mono" autocomplete="off" spellcheck="false">
+              <label for="iaSecretKey">Secret key</label><input type="password" id="iaSecretKey" autocomplete="off">
+              <div class="row"><button id="saveIa">Save keys</button><button id="testIa" class="secondary">Test keys</button></div>
+            </details>
+          </div>
+          <p class="msg ia-msg" id="iaMsg"></p>
+        </div>
+        <div class="ia-row"><span class="dot" id="iaUploadDot"></span><div><strong>Uploads</strong><br><span id="iaUploadText">Checking…</span><small id="uploadNeedsKeys" class="needs-keys hidden"></small></div><label class="row-action upload-toggle" for="uploadEnabled"><input type="checkbox" id="uploadEnabled"> Enable upload</label></div>
+      </div>
+    </section>
+
+
+    <section id="display">
+      <h2>Display</h2>
+      <div class="check"><input type="checkbox" id="showBanner"><label for="showBanner" style="margin:0;color:inherit;font-size:15px">Show the banner on manual pages</label></div>
+      <div class="check"><input type="checkbox" id="annotateLists"><label for="annotateLists" style="margin:0;color:inherit;font-size:15px">Mark archived manuals in brand and search listings<small>One archive.org search per page of results.</small></label></div>
+      <div class="subsection" id="mutedSection">
+      <h3 class="sub-title">Muted contributors</h3>
+      <p class="lede">Copies from these keys are skipped. Authors are muted automatically after three of their files are reported from this browser.</p>
+      <ul class="claims" id="muted"></ul>
+      </div>
+    </section>
+    <details id="advancedSettings" class="advanced-settings">
+      <summary>Advanced settings</summary>
+      <p class="lede" style="margin-top:8px">For development and troubleshooting. The defaults are right for almost everyone.</p>
+      <section id="server" class="sub">
+        <h3 style="margin-top:4px">OpenManuals server</h3>
+        <p class="lede">Where facts are sent and looked up. Leave empty to only use archive.org directly (nothing is recorded then).</p>
+        <label for="apiBase">Server</label>
+        <input type="text" id="apiBase" placeholder="https://openmanuals.org" spellcheck="false">
+        <label for="mirrors">Snapshot mirrors (one per line)</label>
+        <textarea id="mirrors" rows="3" spellcheck="false" placeholder="https://archive.org/download/openmanuals-snapshots/"></textarea>
+        <p class="lede">When the server can't be reached, pages are looked up in a copy of its published snapshots instead, reading only the parts needed. A mirror is trusted only if its snapshot is signed by the server key this browser saw while the server was reachable.</p>
+        <div class="row"><button id="saveOm">Save</button><button id="testOm" class="secondary">Test</button><span id="omMsg" class="msg"></span></div>
+        <h3>Older archive.org uploads</h3>
+        <div class="check"><input type="checkbox" id="legacyCheck"><label for="legacyCheck" style="margin:0;color:inherit;font-size:15px">Also ask archive.org about pages the server doesn't know<small>Looks for items uploaded under the old naming (e.g. <code>manualslib-id-…</code>) that aren't in the OpenManuals database. Slow: archive.org takes several seconds per page, so the banner waits. Without a server this check always runs.</small></label></div>
+        <h3>Outbox</h3>
+        <div id="outboxInfo" class="msg"></div>
+        <table class="hist" id="history"></table>
+      </section>
+    </details>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>
