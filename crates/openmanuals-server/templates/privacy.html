@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Privacy — OpenManuals{% endblock %}
+{% block content %}
+<article class="detail">
+  <h1>Privacy</h1>
+  <p class="muted">Last updated November 2, 2026</p>
+
+  <p>OpenManuals has no user accounts, no ads and no analytics. Anything you contribute is public by design: it goes into a signed ledger that anyone can download. This page explains what that means for the website and for the browser extension.</p>
+
+  <h2>The website</h2>
+  <ul>
+    <li>The server doesn't set tracking cookies, run analytics or record visitors' IP addresses. Your color-theme choice is kept in your browser.</li>
+    <li>Requests may pass through a content delivery network, which handles IP addresses under its own privacy policy.</li>
+  </ul>
+
+  <h2>The browser extension</h2>
+  <p>The extension has one purpose: finding free copies of manuals and, if you turn uploads on, preserving the manuals you download on the Internet Archive. To do that:</p>
+  <ul>
+    <li><strong>Checking a page.</strong> On a supported manuals site, the extension first checks the page against a compact list it downloads from OpenManuals. Only when that list says a page might be known does it send the page's address to OpenManuals to confirm. It never sends other browsing.</li>
+    <li><strong>Your Internet Archive account (uploads only).</strong> When you turn uploads on, the extension reads which archive.org account you're signed in to and fetches that account's upload keys from archive.org. The keys are stored only in the extension's local storage and are only ever sent to archive.org. Manuals you download are uploaded to your own archive.org account.</li>
+    <li><strong>What gets published.</strong> After an upload, the extension publishes facts about it: the file's original address, its size and checksums, the Internet Archive item, and which manual and models it covers. Each fact is signed with your contributor key and becomes part of the public ledger. You can retract a fact later, but the ledger keeps its history.</li>
+    <li><strong>Your contributor key.</strong> The extension creates the key in your browser. The private key never leaves your device unencrypted. If you protect it with a passkey, an encrypted copy is stored on OpenManuals so you can recover it; OpenManuals can't decrypt it.</li>
+    <li><strong>Optional profile.</strong> A display name, avatar and identity proofs (for example a GitHub gist or a DNS record) are public if you add them. To check a proof, the extension fetches it from the site where it lives.</li>
+    <li><strong>Other sites, only when you ask.</strong> If you add a copy of a manual by its web address, use a different OpenManuals server, or add a proof hosted elsewhere, the extension asks for permission to access that one site and uses it only for that.</li>
+  </ul>
+  <p>The extension collects nothing else: no browsing history beyond the pages above, no keystrokes and no personal information. Nothing is sold or shared with third parties.</p>
+
+  <h2>Deleting your data</h2>
+  <p>Uninstalling the extension deletes everything it stored in your browser, including the upload keys. Published facts are public and permanent by design, but you can retract them from the extension. Uploads live in your own Internet Archive account, where you can manage them.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or requests: open an issue at <a href="https://github.com/ArclightAutomata/openmanuals/issues">github.com/ArclightAutomata/openmanuals</a>.</p>
+</article>
+{% endblock %}

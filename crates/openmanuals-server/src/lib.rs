@@ -116,6 +116,7 @@ pub fn router(state: Shared) -> Router {
         .route("/item/{identifier}", get(pages::item))
         .route("/contributions", get(pages::contributions))
         .route("/about", get(pages::about))
+        .route("/privacy", get(pages::privacy))
         .route("/contribute", get(pages::contribute))
         .route("/contribute/random", get(pages::contribute_random))
         .route("/lookup", get(pages::lookup_redirect))

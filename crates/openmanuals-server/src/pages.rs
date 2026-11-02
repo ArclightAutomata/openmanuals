@@ -32,6 +32,7 @@ fn build_env() -> Environment<'static> {
     e.add_template("key.html", include_str!("../templates/key.html")).unwrap();
     e.add_template("contributions.html", include_str!("../templates/contributions.html")).unwrap();
     e.add_template("about.html", include_str!("../templates/about.html")).unwrap();
+    e.add_template("privacy.html", include_str!("../templates/privacy.html")).unwrap();
     e.add_template("notfound.html", include_str!("../templates/notfound.html")).unwrap();
     e.add_template("_facts.html", include_str!("../templates/_facts.html")).unwrap();
     e.add_template("home.html", include_str!("../templates/home.html")).unwrap();
@@ -445,6 +446,10 @@ pub async fn contributions(State(state): State<Shared>) -> Response {
 
 pub async fn about(State(state): State<Shared>) -> Response {
     render("about.html", context! { fp => state.fingerprint.clone() })
+}
+
+pub async fn privacy() -> Response {
+    render("privacy.html", context! {})
 }
 
 /// `/lookup?url=` convenience redirect to the manual page.
