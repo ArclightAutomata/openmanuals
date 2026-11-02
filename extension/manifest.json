@@ -3,7 +3,7 @@
   "name": "OpenManuals",
   "version": "0.3.0",
   "minimum_chrome_version": "137",
-  "description": "Shows when a manual you're viewing on a manuals site is already free to download and, with upload on, preserves the manuals you download on the Internet Archive and records them on OpenManuals.",
+  "description": "Find free downloads of device manuals and help preserve the ones you download on the Internet Archive.",
   "permissions": ["storage", "alarms", "offscreen", "scripting", "sidePanel", "cookies", "downloads"],
   "host_permissions": [
     "*://*.manualslib.com/*",
