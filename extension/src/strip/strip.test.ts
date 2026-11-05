@@ -60,7 +60,7 @@ test("the TypeScript constants match the wasm's", async () => {
   const m = await stripWasm();
   assert.equal(STRIP_TOOL, m.strip_tool());
   assert.equal(STRIP_VERSION, m.strip_version());
-  assert.equal(STRIP_VERSION, "om-strip-rs/1");
+  assert.equal(STRIP_VERSION, "om-strip-rs/2");
 });
 
 test("wrapper pages, footers and manualslib links are removed", async () => {

@@ -1,7 +1,7 @@
 //! Watermark stripper: removes what ManualsLib adds to a manual (wrapper
 //! pages, the per-page footer, link annotations) and the marks of sites the
-//! manual passed through before (text stamps, advert cover pages, banner
-//! images), using the detection constants in `constants.json`.
+//! manual passed through before (text stamps, Acrobat header/footer
+//! stamps, advert cover pages, banner images), using the detection constants in `constants.json`.
 //!
 //! Built on [lopdf]. Pure Rust; builds for `wasm32-unknown-unknown`, which is how the
 //! browser extension runs it (`crates/openmanuals-strip-wasm`).
@@ -26,7 +26,10 @@ pub const STRIP_TOOL: &str = "om-strip";
 /// `tool_version`. Distinct from `om-strip/1`, an earlier TypeScript port whose
 /// output bytes differ. Bump whenever the output for any input can change
 /// (constants included).
-pub const STRIP_VERSION: &str = "om-strip-rs/1";
+pub const STRIP_VERSION: &str = "om-strip-rs/2";
+
+/// Bound on the Header & Footer settings read per piece (they're ~1 kB).
+const MAX_PIECE_SETTINGS: usize = 64 * 1024;
 
 /// Bound on an outline's nesting; deeper trees are left as they are.
 const MAX_OUTLINE_DEPTH: usize = 64;
@@ -587,12 +590,16 @@ fn strip_third_party_stamps(doc: &mut Document) -> usize {
     let max = c.max_stamp_form_bytes;
     let mut changed = 0;
     let mut emptied: HashSet<ObjectId> = HashSet::new();
+    // Stampings (see `pagination_piece`) that put a known site's address on a page.
+    let mut stamped_with: HashSet<Vec<u8>> = HashSet::new();
     for p in pdfio::pages(doc) {
         let mut page_changed = false;
         let Ok(node) = doc.get_dictionary(p.id) else {
             continue;
         };
         let mut to_empty = Vec::new();
+        // Acrobat header/footer pieces on this page, by the stamping they came from.
+        let mut pieces: Vec<(ObjectId, Vec<u8>)> = Vec::new();
         for e in pdfio::walk_xobjects(doc, node) {
             let Some(s) = pdfio::get_stream(doc, e.id) else {
                 continue;
@@ -610,8 +617,22 @@ fn strip_third_party_stamps(doc: &mut Document) -> usize {
             let Some(data) = pdfio::read_stream(s) else {
                 continue;
             };
+            let piece = pagination_piece(doc, s);
             if data.len() <= max && constants::is_match(&c.third_party, &data) {
                 to_empty.push(e.id);
+            } else if let Some(stamping) = piece.clone() {
+                pieces.push((e.id, stamping));
+            }
+            if let (Some(stamping), true) = (piece, to_empty.last() == Some(&e.id)) {
+                stamped_with.insert(stamping);
+            }
+        }
+        // A site that stamps its address with Acrobat's Header & Footer adds
+        // more lines in the same go ("Not for sale!", a date): those pieces
+        // share the stamped one's modification time, so they go too.
+        for (id, stamping) in pieces {
+            if stamped_with.contains(&stamping) && !to_empty.contains(&id) {
+                to_empty.push(id);
             }
         }
         let text = page_content(doc, node);
@@ -623,6 +644,10 @@ fn strip_third_party_stamps(doc: &mut Document) -> usize {
         for id in to_empty {
             if emptied.insert(id) {
                 pdfio::rewrite_stream(doc, id, b"");
+                // Acrobat's record of the stamping (its settings name the site too).
+                if let Ok(Object::Stream(st)) = doc.get_object_mut(id) {
+                    st.dict.remove(b"PieceInfo");
+                }
             }
             page_changed = true;
         }
@@ -638,6 +663,31 @@ fn strip_third_party_stamps(doc: &mut Document) -> usize {
         }
     }
     changed
+}
+
+/// For a form XObject that Acrobat's Header & Footer (or Watermark) tool
+/// added, the stamping it came from, as bytes shared by every piece added in
+/// one go: the tool's settings (`/DocSettings`, an XML stream naming every
+/// line), else the `/LastModified` time. (Times are no good in an encrypted
+/// file: lopdf leaves strings inside stream dictionaries encrypted, under a
+/// different key for each object.) `None` for any other form.
+fn pagination_piece(doc: &Document, s: &lopdf::Stream) -> Option<Vec<u8>> {
+    let compound = pdfio::dict_of(doc, pdfio::dict_of(doc, &s.dict, b"PieceInfo")?, b"ADBE_CompoundType")?;
+    let private = pdfio::name_of(dict_get(doc, compound, b"Private"))?;
+    if !matches!(private, b"Header" | b"Footer" | b"Watermark") {
+        return None;
+    }
+    if let Some(Object::Stream(settings)) = dict_get(doc, compound, b"DocSettings") {
+        if let Ok(xml) = pdfio::decode_filters(settings, MAX_PIECE_SETTINGS) {
+            if !xml.is_empty() {
+                return Some(xml);
+            }
+        }
+    }
+    match dict_get(doc, compound, b"LastModified").or_else(|| dict_get(doc, &s.dict, b"LastModified"))? {
+        Object::String(t, _) if !t.is_empty() && doc.encryption_state.is_none() => Some(t.clone()),
+        _ => None,
+    }
 }
 
 /// Python's `re.sub(rb'(?<![^\s\[\]()<>{}/%])' + re.escape(name) + rb'\s+Do\b', b'', data)`

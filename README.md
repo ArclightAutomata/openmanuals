@@ -156,7 +156,7 @@ labelers = []                    # their labels carry full weight (moderators im
 servers = []                     # their verified/location_status/identity_link facts are trusted;
                                  # the running server's own key always is
 include_unverified = false       # publish pending/dark/gone copies too (development only)
-derivation_tools = ["qpdf/1", "salli-cat pdf_utils/1", "om-strip/1", "om-strip-rs/1"]
+derivation_tools = ["qpdf/1", "salli-cat pdf_utils/1", "om-strip/1", "om-strip-rs/1", "om-strip-rs/2"]
                                  # tool_versions whose variants count when choosing a download, least
                                  # preferred first: a tool later in the list outranks an earlier one, and
                                  # between versions of one tool the higher version wins (the default;
@@ -223,7 +223,7 @@ Contributor facts (anyone):
 | `manual_file` | `manual`, `file`, `role: primary\|supplement` | attaches bytes to a work |
 | `product` | `brand`, `model` | display forms; key = `openmanuals_core::product::product_key`, normalized `brand\|MODEL` |
 | `covers` | `manual`, `product` (product key) | one manual, many models |
-| `derivation` | `derived`, `source`, `transform`, `tool`, `tool_version` | e.g. `watermark-stripped` by `om-strip-rs/1` |
+| `derivation` | `derived`, `source`, `transform`, `tool`, `tool_version` | e.g. `watermark-stripped` by `om-strip-rs/2` |
 | `same_as` | `kind: manual\|product`, `a`, `b` | merges duplicates |
 | `identity_profile` | `jws` | Ariadne Signature Profile v0, verbatim |
 | `avatar` | exactly one of `{sha256, size, mime}`, `{url}`, `{none: true}` | the author's own picture; the newest live one wins (see [Avatars](#avatars)) |
@@ -874,7 +874,7 @@ What the extension asks on a source page.
               "url": "https://openmanuals.win/manual/01J9…" },
   "files": [
     { "id": "…", "sha256": "…", "sha1": "…", "md5": "…", "size": 1234567, "mime": "application/pdf", "pages": 42,
-      "derived_from": "…" | null, "transform": "watermark-stripped" | null, "tool_version": "om-strip-rs/1" | null,
+      "derived_from": "…" | null, "transform": "watermark-stripped" | null, "tool_version": "om-strip-rs/2" | null,
       "canonical": true, "author": "QPRG…",
       "copies": [
         { "url": "https://archive.org/download/openmanuals-…/manual.pdf", "kind": "archive",
@@ -1618,6 +1618,17 @@ the wasm memory, which never shrinks, is freed after each strip.
    [JVC InteriArt AV-21QT4BU](https://www.manualslib.com/manual/1681428/Jvc-Interiart-Av-21qt4bu.html),
    chinadse.org on 152 pages of
    [Sony KDE-P61MRX1D](https://www.manualslib.com/manual/1272147/Sony-Kde-P61mrx1d.html).
+
+   Some sites stamp with Acrobat's *Header & Footer* tool, which puts each
+   line in its own Form XObject (marked `/PieceInfo /ADBE_CompoundType
+   /Private /Header`). Only one line names the site, so when it does, every
+   other piece from the same stamping goes too: the pieces that carry the
+   same `/DocSettings` (the tool's settings, naming every line) or, without
+   settings, the same `/LastModified` time. A header or footer added at
+   another time, like the manual's own page numbers, stays. Example:
+   freeservicemanuals.info's "www.freeservicemanuals.info", the date,
+   "Digitized in Heiloo the Netherlands" and "Not for sale!" on
+   [DPS-375](https://freeservicemanuals.info/en/bookcats/DIGITAL%20PROCESSING%20SYSTEMS/TBC%20FRAMESTORE/DPS-375/).
 4. **Known banner images** (`stamp_image_hashes`; only images at least
    `stamp_image_min_aspect` times wider than tall are hashed): every
    `/Name Do` that paints one is removed from the page or form.
@@ -1686,15 +1697,17 @@ and optionally `OM_STRIP_SAMPLES=n`, `OM_STRIP_LARGE=<pdf>`, `OM_STRIP_OUT=dir`)
 the extension's `samples.test.ts` takes the same variables except
 `OM_STRIP_OUT`.
 
-**Versions:** `om-strip-rs/1` (2026-10-31) is the current version. On all 40
+**Versions:** `om-strip-rs/2` (2026-11-05) is the current version: it adds
+the freeservicemanuals.info stamp and Acrobat header/footer stamps (step 3).
+`om-strip-rs/1` (2026-10-31) came before; on all 40
 real samples it agrees with the reference fixture: page counts before and
 after, wrapper counts and the changed flag, with no footers or manualslib
 links left. The wasm build's output is
 byte-identical to the native build's on all 40. `om-strip/1` was an earlier
 TypeScript port on pdf-lib (2026-10-23 to 2026-10-31); facts that name it stay
 valid, and it stays on the default `derivation_tools` list, below
-`om-strip-rs/1`. Files stripped by an older version can be re-stripped with
-`om restrip` (see [Re-stripping](#re-stripping)).
+`om-strip-rs/1` and `/2`. Files stripped by an older version can be
+re-stripped with `om restrip` (see [Re-stripping](#re-stripping)).
 
 Bump `STRIP_VERSION` (in `crates/openmanuals-strip/src/lib.rs`, and the copy in
 `extension/src/strip/index.ts`, which a test checks against the wasm) whenever
@@ -1816,7 +1829,7 @@ extension does. When anything was removed, it uploads the stripped file and
 records:
 - the original `file` and the stripped `file`;
 - a `derivation` (`transform: "watermark-stripped"`, `tool: "om-strip"`,
-  `tool_version: "om-strip-rs/1"`);
+  `tool_version: "om-strip-rs/2"`);
 - the copy's `location`;
 - a `manual_file` for each file, when `--manual` is given.
 
@@ -1848,7 +1861,7 @@ file is a new file, and the build moves the manual's download to it:
      name the new bytes, other values (`urn:original-sha1:…`) are kept, and
      `openmanuals-original-sha256` names the source;
    - queues the facts: the source's `file` (with its sha256, which also merges
-     a legacy sha1-only record), the new `file`, a `derivation` (`om-strip-rs/1`
+     a legacy sha1-only record), the new `file`, a `derivation` (`om-strip-rs/2`
      from the source), a `manual_file`, and the archive.org `location` (same
      URL, new file). With `--ledger`, it also retracts this key's earlier
      `location` facts for that URL.
@@ -1860,7 +1873,7 @@ file is a new file, and the build moves the manual's download to it:
    the old one fully, finds other bytes at the URL and records it `changed`.
    The build then offers the new file. When the re-stripping key created the
    manual (or is trusted), the switch happens as soon as the new copy is
-   verified, because `om-strip-rs/1` outranks the bootstrap's tools; another
+   verified, because `om-strip-rs/2` outranks the bootstrap's tools; another
    key's re-strip takes over once the old location is marked `changed`.
 
 The old file's facts stay: they record what was at that URL until then.

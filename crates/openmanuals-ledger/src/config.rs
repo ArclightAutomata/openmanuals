@@ -30,7 +30,7 @@ pub struct TrustConfig {
 /// The tools that have produced the catalog's variants so far, least
 /// preferred first: the bootstrap import's repaired and stripped files, then
 /// the TypeScript stripper, then the current one.
-pub const DEFAULT_DERIVATION_TOOLS: &[&str] = &["qpdf/1", "salli-cat pdf_utils/1", "om-strip/1", "om-strip-rs/1"];
+pub const DEFAULT_DERIVATION_TOOLS: &[&str] = &["qpdf/1", "salli-cat pdf_utils/1", "om-strip/1", "om-strip-rs/1", "om-strip-rs/2"];
 
 impl Default for TrustConfig {
     fn default() -> Self {
@@ -112,6 +112,7 @@ mod tests {
     fn later_tools_and_higher_versions_rank_higher() {
         let c = TrustConfig::default();
         let r = |t: &str| c.tool_rank(t);
+        assert!(r("om-strip-rs/2") > r("om-strip-rs/1"));
         assert!(r("om-strip-rs/1") > r("om-strip/1"));
         assert!(r("om-strip/1") > r("salli-cat pdf_utils/1"));
         assert!(r("salli-cat pdf_utils/1") > r("qpdf/1"));

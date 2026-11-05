@@ -14,7 +14,7 @@ export interface StripResult {
   changed: boolean;
   /** The stripped file when changed, otherwise the input bytes unchanged. */
   bytes: Uint8Array;
-  /** Identifies the algorithm, "om-strip-rs/1"; recorded on derivation facts as tool_version. */
+  /** Identifies the algorithm, "om-strip-rs/2"; recorded on derivation facts as tool_version. */
   version: string;
   /** Human-readable notes on what was removed. */
   log: string[];
@@ -23,7 +23,7 @@ export interface StripResult {
 /** Tool name recorded on derivation facts (openmanuals_strip::STRIP_TOOL). */
 export const STRIP_TOOL = "om-strip";
 /** openmanuals_strip::STRIP_VERSION; the tests check it against the wasm. */
-export const STRIP_VERSION = "om-strip-rs/1";
+export const STRIP_VERSION = "om-strip-rs/2";
 
 type Source = BufferSource | URL | string;
 let source: Source | undefined;

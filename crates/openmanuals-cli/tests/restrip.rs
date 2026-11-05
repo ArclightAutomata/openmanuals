@@ -207,7 +207,7 @@ async fn restrip_replaces_the_file_and_the_build_switches_to_it() {
     let new_sha = sha256_hex(&new);
     assert_eq!(facts[2].body["derived"], new_sha);
     assert_eq!(facts[2].body["source"], sha256_hex(&orig1));
-    assert_eq!(facts[2].body["tool_version"], "om-strip-rs/1");
+    assert_eq!(facts[2].body["tool_version"], "om-strip-rs/2");
     assert_eq!(facts[4].body, json!({"file": new_sha, "url": "https://archive.org/download/manualslib-id-111/one.pdf", "kind": "archive", "ia": {"identifier": "manualslib-id-111", "filename": "one.pdf"}}));
 
     // Resumable: a second run skips the finished item.

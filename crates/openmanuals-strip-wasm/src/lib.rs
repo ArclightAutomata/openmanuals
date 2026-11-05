@@ -34,7 +34,7 @@ pub fn strip_tool() -> String {
     openmanuals_strip::STRIP_TOOL.into()
 }
 
-/// `om-strip-rs/1`: recorded on derivation facts as `tool_version`.
+/// `om-strip-rs/2`: recorded on derivation facts as `tool_version`.
 #[wasm_bindgen]
 pub fn strip_version() -> String {
     openmanuals_strip::STRIP_VERSION.into()

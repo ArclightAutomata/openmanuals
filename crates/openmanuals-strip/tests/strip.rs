@@ -216,7 +216,7 @@ fn wrapper_pages_footers_and_manualslib_links_are_removed_outlines_pruned() {
         "{:?}",
         r.log
     );
-    assert_eq!(STRIP_VERSION, "om-strip-rs/1");
+    assert_eq!(STRIP_VERSION, "om-strip-rs/2");
 }
 
 #[test]
@@ -673,4 +673,69 @@ fn encrypted_with_a_user_password_is_left_unchanged() {
     let r = strip(&enc).unwrap();
     assert!(!r.changed);
     assert_eq!(r.bytes, enc);
+}
+
+/// What a page's form XObject `name` draws after stripping.
+fn form_text(doc: &Document, page: ObjectId, name: &str) -> String {
+    let d = doc.get_dictionary(page).unwrap();
+    let res = d.get(b"Resources").unwrap().as_dict().unwrap();
+    let id = res.get(b"XObject").unwrap().as_dict().unwrap().get(name.as_bytes()).unwrap().as_reference().unwrap();
+    let s = doc.get_object(id).unwrap().as_stream().unwrap();
+    String::from_utf8_lossy(&s.decompressed_content().unwrap_or_else(|_| s.content.clone())).into_owned()
+}
+
+#[test]
+fn acrobat_header_footer_stamps_go_with_every_line_of_the_same_stamping() {
+    // freeservicemanuals.info stamps four lines with Acrobat's Header &
+    // Footer tool; only the first names the site. A stamping of the
+    // manual's own (page numbers) is left alone.
+    let mut b = Builder::new();
+    let settings_site = b.stream(b"<HeaderFooterSettings><Header><Left>www.freeservicemanuals.info</Left></Header><Footer><Right>Not for sale!</Right></Footer></HeaderFooterSettings>", true, Dictionary::new());
+    let settings_own = b.stream(b"<HeaderFooterSettings><Footer><Center>Page <PageNumber/></Center></Footer></HeaderFooterSettings>", true, Dictionary::new());
+    let piece = |b: &mut Builder, text: &str, settings: Option<ObjectId>, modified: &str| {
+        let mut compound = dictionary! { "Private" => "Header", "LastModified" => Object::string_literal(modified) };
+        if let Some(s) = settings {
+            compound.set("DocSettings", s);
+        }
+        let dict = dictionary! {
+            "Type" => "XObject", "Subtype" => "Form", "BBox" => vec![0.into(), (-9).into(), 150.into(), 0.into()],
+            "PieceInfo" => dictionary! { "ADBE_CompoundType" => compound },
+        };
+        b.stream(format!("BT /F1 9 Tf 1 0 0 rg 0 -7 Td ({text}) Tj ET\n").as_bytes(), true, dict)
+    };
+    let site = piece(&mut b, "www.freeservicemanuals.info", Some(settings_site), "D:20251009150908+02'00'");
+    let date = piece(&mut b, "10/9/2025", Some(settings_site), "D:20251009150908+02'00'");
+    let sale = piece(&mut b, "Not for sale!", Some(settings_site), "D:20251009150908+02'00'");
+    let own = piece(&mut b, "Page 1", Some(settings_own), "D:20200101000000Z");
+    // No settings: tied to the site's line by the time alone.
+    let timed_site = piece(&mut b, "freeservicemanuals.info", None, "D:20251010000000Z");
+    let timed_sibling = piece(&mut b, "Digitized in Heiloo", None, "D:20251010000000Z");
+    let timed_other = piece(&mut b, "Chapter 2", None, "D:20190101000000Z");
+    let p1 = b.font_page("BT /F1 12 Tf 72 700 Td (Real text) Tj ET\n/Fm0 Do /Fm1 Do /Fm2 Do /Fm3 Do\n");
+    for (n, f) in [("Fm0", site), ("Fm1", date), ("Fm2", sale), ("Fm3", own)] {
+        b.set_xobject(p1, n, f);
+    }
+    let p2 = b.font_page("BT /F1 12 Tf 72 700 Td (More text) Tj ET\n/Fm0 Do /Fm1 Do /Fm2 Do\n");
+    for (n, f) in [("Fm0", timed_site), ("Fm1", timed_sibling), ("Fm2", timed_other)] {
+        b.set_xobject(p2, n, f);
+    }
+    let r = strip(&b.finish()).unwrap();
+    assert!(r.changed);
+    assert!(r.log.iter().any(|l| l == "Removed third-party site stamps from 2 pages"), "{:?}", r.log);
+    let out = load(&r.bytes);
+    let ps: Vec<ObjectId> = pages(&out).iter().map(|p| p.id).collect();
+    for n in ["Fm0", "Fm1", "Fm2"] {
+        assert_eq!(form_text(&out, ps[0], n), "", "page 1 {n}");
+    }
+    assert!(form_text(&out, ps[0], "Fm3").contains("Page 1"));
+    assert_eq!(form_text(&out, ps[1], "Fm0"), "");
+    assert_eq!(form_text(&out, ps[1], "Fm1"), "");
+    assert!(form_text(&out, ps[1], "Fm2").contains("Chapter 2"));
+    assert!(texts(&out)[0].contains("Real text"));
+    // The stamping's settings (which name the site) are gone; the manual's own stay.
+    let all: Vec<u8> = out.objects.values().filter_map(|o| o.as_stream().ok()).flat_map(|s| s.decompressed_content().unwrap_or_else(|_| s.content.clone())).collect();
+    assert!(!String::from_utf8_lossy(&all).contains("freeservicemanuals"));
+    assert!(String::from_utf8_lossy(&all).contains("<PageNumber/>"));
+    // Idempotent: nothing left to remove.
+    assert!(!strip(&r.bytes).unwrap().changed);
 }
