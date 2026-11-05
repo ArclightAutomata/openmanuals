@@ -37,6 +37,10 @@ test("bundle for a stripped upload of a new manual", async () => {
   assert.deepEqual(deriv.body, { derived: h("b").sha256, source: h("a").sha256, transform: "watermark-stripped", tool: "om-strip", tool_version: "om-strip-rs/1" });
   const manual = facts.find((f) => f.type === "manual")!;
   assert.equal(manual.body.doc_type, "service");
+  // The source page, so lookups and the per-site counts find it.
+  assert.equal(manual.body.source, "manualslib");
+  assert.equal(manual.body.source_id, "331384");
+  assert.equal(manual.body.source_url, "https://www.manualslib.com/manual/331384/Jvc-Av-2168tee.html");
   assert.match(String(manual.body.id), /^[0-9A-HJKMNP-TV-Z]{26}$/);
 
   // Signed, every fact verifies with openmanuals-core and fits the size cap.

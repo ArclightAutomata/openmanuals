@@ -1261,7 +1261,9 @@ A Manifest V3 extension (TypeScript, built with esbuild). While you browse
    worker, and the stripped bytes are uploaded to archive.org **under your
    archive.org account** as a new item. A bundle of signed facts (original file,
    origin location, stripped file, derivation, archive location, manual,
-   products, covers) is then queued for `POST /api/facts`. If stripping changes
+   products, covers) is then queued for `POST /api/facts`. A new manual names
+   its source page (`source`, `source_id`, `source_url`), which the lookups,
+   the lookup filter and the home page's per-site counts go by. If stripping changes
    nothing or fails, the original is uploaded. If the exact file is already
    archived, nothing is uploaded unless you choose **Add another copy**; its
    origin is still recorded. Accepted trade-off: the original bytes are not

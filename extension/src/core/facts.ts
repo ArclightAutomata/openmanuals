@@ -62,8 +62,12 @@ export const bodies = {
     ({ sha256: h.sha256, sha1: h.sha1, md5: h.md5, size: h.size, mime, ...(pages ? { pages } : {}) }),
   location: (file: string, url: string, kind: LocationKind, ia?: { identifier: string; filename: string }) =>
     ({ file, url, kind, ...(ia ? { ia } : {}) }),
-  manual: (id: string, title: string, doc_type: string, language?: string) =>
-    ({ id, title, doc_type, ...(language ? { language } : {}) }),
+  /** `src` names the source page (`manualslib`/`331384` and its URL): lookups, the lookup filter and the per-site counts use it. */
+  manual: (id: string, title: string, doc_type: string, language?: string, src?: { source: string; sourceId: string; sourceUrl: string }) =>
+    ({
+      id, title, doc_type, ...(language ? { language } : {}),
+      ...(src?.source && src.sourceId ? { source: src.source, source_id: src.sourceId, ...(src.sourceUrl ? { source_url: src.sourceUrl } : {}) } : {}),
+    }),
   manualFile: (manual: string, file: string, role: "primary" | "supplement" = "primary") => ({ manual, file, role }),
   product: (brand: string, model: string) => ({ brand, model }),
   covers: (manual: string, product: string) => ({ manual, product }),

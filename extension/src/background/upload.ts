@@ -48,7 +48,7 @@ export function buildBundle(p: {
   const manual = p.manualId ?? ulid();
   if (!p.manualId) {
     const title = p.job.metadata.title || p.filename;
-    f("manual", bodies.manual(manual, title, guessDocType(title), p.job.metadata.language));
+    f("manual", bodies.manual(manual, title, guessDocType(title), p.job.metadata.language, p.job.sourceInfo));
     const seen = new Set<string>();
     for (const pr of p.job.metadata.products ?? []) {
       const key = p.productKey(pr.brand, pr.model);
