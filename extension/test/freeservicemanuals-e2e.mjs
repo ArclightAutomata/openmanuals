@@ -1,8 +1,9 @@
 // End to end: FreeServiceManuals.info downloads are preserved, stamps
-// stripped. Both kinds of page end the same way: the site's script appends
-// <a id="captchalink" href="<file>"> and clicks it. A books page has no
-// captcha (the URL is in the script); a service-manual page posts the captcha
-// code to /<lang>/servicemanuals/decaptcha/ and gets the URL back as JSON.
+// stripped. Every kind of page ends the same way: the site's script appends
+// <a id="captchalink" href="<file>"> and clicks it. Books and datasheet pages
+// have no captcha (the URL is in the script); a service-manual page posts the
+// captcha code to /<lang>/servicemanuals/decaptcha/ and gets the URL back as
+// JSON.
 // The extension catches that click, hands the file to the user and uploads
 // the stripped copy. Not part of `npm test`.
 //
@@ -65,6 +66,7 @@ function makePdf(label) {
 }
 const BOOK_PDF = makePdf("DPS-375 test");
 const SM_PDF = makePdf("Philips 14PV100 test");
+const DS_PDF = makePdf("1N4148 test");
 
 execFileSync("openssl", ["req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-subj", "/CN=om-e2e",
   "-keyout", join(work, "key.pem"), "-out", join(work, "cert.pem")], { stdio: "ignore" });
@@ -74,6 +76,8 @@ const BOOK_FILE = "/bookcats/download/dps-375.pdf";
 const SM = "/en/servicemanuals/viewmanual/Philips/14PV100/51TVB61/37TR216/DELTA2000/";
 const SM_FILE = "/media/sm/14pv100.pdf"; // the real decaptcha answer's shape is unknown; any URL works
 const CODE = "k7q2x";
+const DS = "/nl/tubedata/1N4148_3/"; // Dutch, to cover the language prefix
+const DS_FILE = "/media//tubedata/1N4148_3.pdf";
 
 // The site's page: a table whose model number opens the (captcha) download box.
 const page = ({ title, rows, start }) => `<!doctype html><title>${title} Service Manual PDF Free Download</title>
@@ -123,6 +127,14 @@ const server = createServer({ key: readFileSync(join(work, "key.pem")), cert: re
         }`,
       }));
     }
+    if (host === "freeservicemanuals.info" && req.url === DS) {
+      return html(page({
+        title: "1N4148_3 Datasheet PDF Download",
+        rows: `<tr class="downloadwidth"><th colspan="2">Data Sheet Information</th></tr><tr class="row1"><td>Type a</td><td>${typeCell("1N4148_3", false)}</td></tr>
+          <tr class="row2"><td>Type b</td><td></td></tr><tr class="row1"><td>Type c</td><td></td></tr><tr class="row2"><td>Product</td><td>Semi conducter</td></tr>`,
+        start: `function start_download() { go("${DS_FILE}"); }`,
+      }).replace(" Service Manual PDF Free Download</title>", "</title>"));
+    }
     if (host === "freeservicemanuals.info" && req.method === "POST" && req.url === "/en/servicemanuals/decaptcha/") {
       const form = Object.fromEntries(new URLSearchParams(body.toString()));
       decaptcha.push(form);
@@ -130,6 +142,7 @@ const server = createServer({ key: readFileSync(join(work, "key.pem")), cert: re
     }
     if (host === "freeservicemanuals.info" && req.url === BOOK_FILE) return pdf(BOOK_PDF, "dps-375.pdf");
     if (host === "freeservicemanuals.info" && req.url === SM_FILE) return pdf(SM_PDF, "14pv100.pdf");
+    if (host === "freeservicemanuals.info" && req.url === DS_FILE) return pdf(DS_PDF, "1N4148_3.pdf");
     if (host === "archive.org" && req.url.startsWith("/services/check_identifier.php")) return json({ type: "success", code: "available" });
     if (host === "archive.org" && req.url.startsWith("/metadata/")) return json({});
     if (host === "archive.org" && req.url.startsWith("/advancedsearch.php")) return json({ response: { docs: [] } });
@@ -148,7 +161,7 @@ const b = await Browser.launch({
 });
 
 const metaOf = (put) => Object.fromEntries(Object.entries(put.headers).filter(([k]) => k.startsWith("x-archive-meta")));
-async function checkPreserved({ tab, filename, original, sourcePage, models }) {
+async function checkPreserved({ tab, filename, original, sourcePage, models, title }) {
   const saved = await until(`${filename} saved`, async () => readdirSync(downloads).find((f) => f === filename) ?? null);
   assert.ok(readFileSync(join(downloads, saved)).equals(original), "the user gets the site's file as it is");
   const put = await until(`S3 PUT of ${filename}`, async () => puts.find((p) => /\.pdf$/i.test(p.url.split("?")[0]) && !p.done) ?? null, 30000);
@@ -163,6 +176,7 @@ async function checkPreserved({ tab, filename, original, sourcePage, models }) {
   const values = Object.values(meta).map(String);
   assert.ok(values.some((v) => v.includes(`https://freeservicemanuals.info${sourcePage}`)), "source is the manual page");
   for (const m of models) assert.ok(values.some((v) => v.includes(m)), `metadata names ${m}`);
+  if (title) assert.ok(values.includes(title), `title is ${title}`);
   const banner = await until("banner says done", () => tab.eval(`(() => { const b = document.querySelector(".openmanuals-banner"); return b && /om-done/.test(b.className) ? b.textContent : null; })()`), 30000);
   console.log({ banner: banner.trim().slice(0, 120) });
 }
@@ -181,7 +195,7 @@ try {
   await tab.click("a.typedownload");
   await tab.click("#download-button");
   await until("the site's script clicked its link", () => tab.eval(`window.siteClicks === 1`));
-  await checkPreserved({ tab, filename: "dps-375.pdf", original: BOOK_PDF, sourcePage: BOOK, models: ["DPS-375", "DIGITAL PROCESSING SYSTEMS"] });
+  await checkPreserved({ tab, filename: "dps-375.pdf", original: BOOK_PDF, sourcePage: BOOK, models: ["DPS-375", "DIGITAL PROCESSING SYSTEMS"], title: "DPS-375 TBC FRAMESTORE DIGITAL PROCESSING SYSTEMS" });
   assert.equal(fileGets.filter((u) => u === BOOK_FILE).length, 1, "the file was fetched once");
 
   step("a service-manual page: wrong captcha code does nothing, the right one downloads");
@@ -199,6 +213,14 @@ try {
   assert.equal(decaptcha[1].captcha_code, CODE);
   await checkPreserved({ tab, filename: "14pv100.pdf", original: SM_PDF, sourcePage: SM, models: ["14PV100", "51TVB61", "DELTA 2000", "Philips"] });
   assert.equal(fileGets.filter((u) => u === SM_FILE).length, 1, "the file was fetched once");
+
+  step("a datasheet page, in Dutch (no captcha)");
+  await tab.navigate(`https://freeservicemanuals.info${DS}`, `document.readyState === "complete"`);
+  await until("banner on the datasheet page", () => tab.eval(`!!document.querySelector(".openmanuals-banner")`));
+  await tab.click("a.typedownload");
+  await tab.click("#download-button");
+  await checkPreserved({ tab, filename: "1N4148_3.pdf", original: DS_PDF, sourcePage: DS, models: [], title: "1N4148_3 datasheet" });
+  assert.equal(fileGets.filter((u) => u === DS_FILE).length, 1, "the file was fetched once");
   ok = true;
 } finally {
   if (!ok) console.log("requests seen:", seen);

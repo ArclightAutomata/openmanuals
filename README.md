@@ -1232,7 +1232,8 @@ A Manifest V3 extension (TypeScript, built with esbuild). While you browse
 (`elektrotanya.com/<slug>/download.html`), **Manualzz**
 (`manualzz.com/doc/<id>/…`, `/download/<id>`) or **FreeServiceManuals.info**
 (`/<lang>/servicemanuals/viewmanual/<Brand>/<Type>/…/`,
-`/<lang>/bookcats/<Publisher>/<Author>/<Title>/`):
+`/<lang>/bookcats/<Publisher>/<Author>/<Title>/`, datasheets at
+`/<lang>/tubedata/<Type>/`; `<lang>` is `en` or `nl`):
 
 1. **Availability.** The service worker asks the OpenManuals server what it
    knows about the page (`GET /api/lookup?url=`). Old-style archive.org items
@@ -1293,18 +1294,21 @@ A Manifest V3 extension (TypeScript, built with esbuild). While you browse
    FreeServiceManuals.info has no ids, so a manual's source id is its page
    path, decoded and lowercased without the language prefix
    (`servicemanuals/philips/14pv100/51tvb61/…`,
-   `bookcats/<publisher>/<author>/<title>`): the site serves every spelling
-   (`+` or `%20`, any case, `en` or `nl`) as the same page. The download link
-   is the model number in the table. On a service-manual page it opens an
-   image captcha, whose code the site's script posts to
-   `/<lang>/servicemanuals/decaptcha/` for the file's URL; on a books page
-   there's no captcha and the URL (`/bookcats/download/<file>`) is in the
-   script. Either way the script adds `<a id="captchalink">` and clicks it,
-   and the extension catches that click, so the file is fetched once, after
-   the site has handed it out. Brand and models come from the table
-   (Brand, Type number and "This manual also covers"; Publisher and Title on
-   books pages). `test/freeservicemanuals-e2e.mjs` covers both kinds of page
-   against a local mock.
+   `bookcats/<publisher>/<author>/<title>`, `datasheets/<type>`): the site
+   serves every spelling (`+` or `%20`, any case, `en` or `nl`, and
+   `/datasheets/<type>/` for `/tubedata/<type>/`) as the same page. The
+   download link is the model number in the table. On a service-manual page it
+   opens an image captcha, whose code the site's script posts to
+   `/<lang>/servicemanuals/decaptcha/` for the file's URL; books and datasheet
+   pages have no captcha and the URL (`/bookcats/download/<file>`,
+   `/media//tubedata/<file>`) is in the script. Each time the script adds
+   `<a id="captchalink">` and clicks it, and the extension catches that click,
+   so the file is fetched once, after the site has handed it out. Brand and
+   models come from the table (Brand, Type number and "This manual also
+   covers"; Publisher and Title on books pages). A datasheet has no brand, so
+   it names no products: its title is the part number plus "datasheet" and its
+   description the component kind. `test/freeservicemanuals-e2e.mjs` covers
+   all three kinds of page against a local mock.
 3. **Identity (optional).** No OpenManuals account: a WebCrypto key signs
    every fact (see [Identity](#identity)). It is only needed to contribute
    back (facts sent to the server, credit); looking up, downloading and
@@ -1489,9 +1493,10 @@ again and uploaded. `manualzz-e2e` checks the Manualzz page keeps the
 breadcrumb's brand and model, that clicking *Download PDF* posts the form once
 from the extension and not the site, that you get the file, and that the same
 bytes reach archive.org with the manual page as `source`.
-`freeservicemanuals-e2e` downloads from a books page and a captcha'd
-service-manual page (a wrong code first), and checks you get the site's file
-while archive.org gets the stripped copy, with the table's brand and models.
+`freeservicemanuals-e2e` downloads from a books page, a captcha'd
+service-manual page (a wrong code first) and a Dutch datasheet page, and
+checks you get the site's file while archive.org gets the stripped copy, with
+the table's brand and models.
 
 Acting on the server's pages, end to end (same setup):
 

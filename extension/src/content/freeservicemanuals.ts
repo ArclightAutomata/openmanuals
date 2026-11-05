@@ -1,16 +1,27 @@
-// FreeServiceManuals.info adapter. Two kinds of manual page, both a table
+// FreeServiceManuals.info adapter. Three kinds of page, each a table
 // whose model number is the download link (a.typedownload):
 //   /<lang>/servicemanuals/viewmanual/<Brand>/<TypeA>/…/  Brand, Type number,
 //     "This manual also covers", Product, Year; the link opens an image
 //     captcha, and the site's script posts it to /<lang>/servicemanuals/decaptcha/
 //     and gets back the file's URL;
 //   /<lang>/bookcats/<Publisher>/<Author>/<Title>/  Title, Author, Publisher;
-//     no captcha, the URL is in the page's script (/bookcats/download/<file>).
-// Either way the script then appends <a id="captchalink" href="<file>"> and
+//     no captcha, the URL is in the page's script (/bookcats/download/<file>);
+//   /<lang>/tubedata/<Type>/ (or /<lang>/datasheets/<Type>/)  Type a/b/c and
+//     Product (the component kind); no captcha, /media//tubedata/<file>. No
+//     brand, so a datasheet names no products.
+// Each time the script then appends <a id="captchalink" href="<file>"> and
 // clicks it, so we catch that click: once the site has handed out the file.
 import { init, type Adapter, type InterceptRequest } from "./common.ts";
 
-const DOWNLOAD_PATH = /\/(?:bookcats|servicemanuals)\/download\//i;
+const DOWNLOAD_PATH = /\/(?:bookcats|servicemanuals)\/download\/|\/media\/+tubedata\//i;
+
+type Section = "servicemanuals" | "bookcats" | "datasheets";
+function section(): Section {
+  const p = location.pathname.toLowerCase();
+  if (/^(\/[a-z]{2})?\/bookcats\//.test(p)) return "bookcats";
+  if (/^(\/[a-z]{2})?\/(tubedata|datasheets)\//.test(p)) return "datasheets";
+  return "servicemanuals";
+}
 
 interface Product { brand: string; model: string }
 
@@ -43,7 +54,8 @@ const linkText = (cell: HTMLTableCellElement | undefined) => clean(cell?.querySe
 
 function products(): Product[] {
   const r = rows();
-  if (location.pathname.toLowerCase().includes("/bookcats/")) {
+  if (section() === "datasheets") return [];
+  if (section() === "bookcats") {
     const brand = clean(r.get("publisher")?.textContent);
     const model = linkText(r.get("title"));
     return brand && model ? [{ brand, model }] : [];
@@ -64,8 +76,20 @@ const adapter: Adapter = {
   site: "freeservicemanuals",
   offersFile: isFileUrl,
   getMeta() {
-    const title = clean(document.title.replace(/\s+PDF Free Download\s*$/i, ""));
-    return { title, sourceUrl: location.href.split(/[?#]/)[0], products: products() };
+    const sourceUrl = location.href.split(/[?#]/)[0];
+    // Page titles end in "Service Manual PDF Free Download" on books pages
+    // too, which are often user manuals or brochures; keep that part only
+    // for service manuals.
+    const bare = clean(document.title.replace(/\s+(Service Manual\s+)?PDF( Free)? Download\s*$/i, ""));
+    switch (section()) {
+      case "datasheets": {
+        const r = rows();
+        const kind = clean(r.get("product")?.textContent);
+        return { title: `${bare.replace(/\s+datasheet$/i, "")} datasheet`, ...(kind ? { description: kind } : {}), sourceUrl, products: [] };
+      }
+      case "bookcats": return { title: bare, sourceUrl, products: products() };
+      default: return { title: clean(document.title.replace(/\s+PDF Free Download\s*$/i, "")), sourceUrl, products: products() };
+    }
   },
   hookDownloads(intercept: (r: InterceptRequest) => void) {
     // The site's own script clicks a link it has just added, so listen on the

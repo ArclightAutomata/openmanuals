@@ -141,9 +141,11 @@ pub fn parse_page_url(url: &str) -> Option<SourcePage> {
 /// matches ignoring case, with `+` or `%20` for spaces, under any language
 /// prefix. So the source id is that path decoded and lowercased, without the
 /// language: `servicemanuals/<brand>/<type>[/<type>…]` for
-/// `/<lang>/servicemanuals/viewmanual/<Brand>/<TypeA>/…/` and
+/// `/<lang>/servicemanuals/viewmanual/<Brand>/<TypeA>/…/`,
 /// `bookcats/<publisher>/<author>/<title>` for
-/// `/<lang>/bookcats/<Publisher>/<Author>/<Title>/`.
+/// `/<lang>/bookcats/<Publisher>/<Author>/<Title>/`, and
+/// `datasheets/<type>` for `/<lang>/tubedata/<Type>/` (the datasheet index
+/// links there) or `/<lang>/datasheets/<Type>/` (the same page).
 fn freeservicemanuals_page(path: &str) -> Option<SourcePage> {
     let mut segs: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
     if segs.first().is_some_and(|l| l.len() == 2 && l.bytes().all(|b| b.is_ascii_alphabetic())) {
@@ -152,6 +154,7 @@ fn freeservicemanuals_page(path: &str) -> Option<SourcePage> {
     let (section, parts) = match segs.as_slice() {
         [s, v, rest @ ..] if s.eq_ignore_ascii_case("servicemanuals") && v.eq_ignore_ascii_case("viewmanual") && rest.len() >= 2 => ("servicemanuals", rest),
         [s, rest @ ..] if s.eq_ignore_ascii_case("bookcats") && rest.len() == 3 && !rest[0].eq_ignore_ascii_case("download") => ("bookcats", rest),
+        [s, rest @ ..] if (s.eq_ignore_ascii_case("tubedata") || s.eq_ignore_ascii_case("datasheets")) && rest.len() == 1 => ("datasheets", rest),
         _ => return None,
     };
     let mut id = String::from(section);
@@ -289,6 +292,11 @@ mod tests {
             assert_eq!(parse_page_url(same).unwrap().source_id, b.source_id, "{same}");
         }
         assert_eq!(page_keys("https://freeservicemanuals.info/en/servicemanuals/viewmanual/Yamaha/01V/"), ["src:freeservicemanuals:servicemanuals/yamaha/01v"]);
+        let d = parse_page_url("https://freeservicemanuals.info/en/tubedata/1N4148_3/").unwrap();
+        assert_eq!((d.source_id.as_str(), d.slug.as_str()), ("datasheets/1n4148_3", "1n4148_3"));
+        for same in ["https://freeservicemanuals.info/nl/datasheets/1n4148_3/", "https://freeservicemanuals.info/tubedata/1N4148_3"] {
+            assert_eq!(parse_page_url(same).unwrap().source_id, d.source_id, "{same}");
+        }
         assert!(candidate_identifiers(&p).is_empty(), "no legacy archive.org items");
         for not in [
             "https://freeservicemanuals.info/en/servicemanuals/",
@@ -298,6 +306,9 @@ mod tests {
             "https://freeservicemanuals.info/bookcats/download/dps-375.pdf",
             "https://freeservicemanuals.info/en/bookcats/A/B%2FC/D/",
             "https://freeservicemanuals.info/en/datasheets/",
+            "https://freeservicemanuals.info/nl/datasheets/?page=3",
+            "https://freeservicemanuals.info/media//tubedata/1N4148_3.pdf",
+            "https://freeservicemanuals.info/en/tubedata/a/b/",
             "https://freeservicemanuals.info.evil.example/en/bookcats/A/B/C/",
         ] {
             assert_eq!(parse_page_url(not), None, "{not}");

@@ -215,6 +215,7 @@ mod tests {
         assert!(capturable_url("https://elektrotanya.com/11ak30-1_basicline_bl2100ntd.hex/download.html"));
         assert!(capturable_url("https://freeservicemanuals.info/en/bookcats/DIGITAL%20PROCESSING%20SYSTEMS/TBC%20FRAMESTORE/DPS-375/"));
         assert!(capturable_url("https://freeservicemanuals.info/en/servicemanuals/viewmanual/Philips/14PV100/51TVB61/37TR216/DELTA2000/"));
+        assert!(capturable_url("https://freeservicemanuals.info/en/tubedata/1N4148_3/"));
         for bad in [
             "http://www.manualslib.com/manual/1/X.html",
             "https://www.manualslib.com/logout",
