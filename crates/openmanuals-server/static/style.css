@@ -154,6 +154,10 @@ button:hover { filter: brightness(1.05); }
 .theme-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .theme-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .theme-switch svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.site-nav a.github-link { display: inline-flex; padding: 4px; border-radius: 999px; color: var(--muted); opacity: 1; }
+.site-nav a.github-link:hover { color: var(--ink); text-decoration: none; }
+.site-nav a.github-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.github-link svg { width: 22px; height: 22px; fill: currentColor; }
 .inline-form { display: inline; }
 .link-btn { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; opacity: 0.85; }
 .link-btn:hover { text-decoration: underline; opacity: 1; }
