@@ -4,9 +4,9 @@ OpenManuals is a metadata catalog of device manuals (service manuals, user
 manuals, schematics, etc.) that are free to download.
 
 Using our browser extension, when you download a manual from closed sites like
-ManualsLib, Elektrotanya, or Manualzz, the manual is transparently mirrored to
-the Internet Archive and the OpenManuals database is updated with that file's
-information.
+ManualsLib, Elektrotanya, Manualzz, or FreeServiceManuals.info, the manual is
+transparently mirrored to the Internet Archive and the OpenManuals database is
+updated with that file's information.
 
 Then, the next time someone is looking for that manual, they can locate it at
 the Internet Archive directly, without needing to visit those closed sites with
@@ -668,9 +668,10 @@ the table hashes, and otherwise downloads the `.db.zst` and checks its sha256.
 so the extension asks the server only about pages that may be known. Format
 `OMLF` v1 (`openmanuals_core::filter`): a 3-way binary fuse filter with 8-bit
 fingerprints (~1/256 false positives, ~1.2 bytes per key). Keys come from
-`openmanuals_core::ids::page_keys`: `src:<source>:<source_id>` for a parsed ManualsLib,
-Elektrotanya or Manualzz page (Elektrotanya: both the raw and the percent-decoded
-slug), else `url:<url without #fragment>`. It is built from every manual's
+`openmanuals_core::ids::page_keys`: `src:<source>:<source_id>` for a parsed
+ManualsLib, Elektrotanya, Manualzz or FreeServiceManuals.info page
+(Elektrotanya: both the raw and the percent-decoded slug), else
+`url:<url without #fragment>`. It is built from every manual's
 `source`, `source_id` and `source_url` and every `origin` location. Clients
 must ignore filters whose format or key-derivation version they don't know.
 
@@ -763,8 +764,9 @@ logo and theme script are served from `/static/`.
 
 **Help preserve a manual.** Many manuals are known only by their page on a
 source site, with no file yet. Of those, the ones on the sites the extension
-supports (ManualsLib, Elektrotanya, Manualzz) are pages it can capture. The home page shows how many there
-are, and `/contribute` explains the steps and lets you pick a brand. A brand's
+supports (ManualsLib, Elektrotanya, Manualzz, FreeServiceManuals.info) are
+pages it can capture. The home page shows how many there are, and
+`/contribute` explains the steps and lets you pick a brand. A brand's
 listing says how many of its manuals are missing. *Take me to one* opens
 `/contribute/random` in a new tab, which redirects to a random missing page
 (or back to `/contribute?none=1` when there is none).
@@ -773,8 +775,8 @@ Downloading it there with uploads on preserves it the usual way. The server:
 - remembers the pages it handed out for three hours, so helpers aren't sent to
   the same manual;
 - only redirects to a ManualsLib `/manual/<n>/…`, Elektrotanya
-  `…/download.html` or Manualzz `/doc/<n>/…` URL, since the URL comes from a
-  signed fact;
+  `…/download.html`, Manualzz `/doc/<n>/…` or FreeServiceManuals.info manual
+  page URL, since the URL comes from a signed fact;
 - sends no referrer.
 
 The extension tells the page whether it is installed and whether uploads are
@@ -1155,6 +1157,7 @@ facts:
 | Elektrotanya `elektrotanya.com/<slug>/download.html` | `elektrotanya-<sanitized slug>-<sha1(slug)[:8]>` |
 | Manualzz `manualzz.com/doc/<id>/…` or `/download/<id>` | `manualzz-id-<id>` |
 | ManualsBase (manuals already in the catalog; the extension doesn't support the site yet) | `manualsbase-id-<id>` |
+| FreeServiceManuals.info | none: no legacy items, so only new `openmanuals-…` uploads |
 
 For Elektrotanya the readable part is cut so the identifier stays within
 archive.org's 100 characters; the hash is never cut. A percent-encoded slug
@@ -1226,8 +1229,10 @@ as if there were none.
 
 A Manifest V3 extension (TypeScript, built with esbuild). While you browse
 **ManualsLib** (`manualslib.com/manual/…`, `/download/…`), **Elektrotanya**
-(`elektrotanya.com/<slug>/download.html`) or **Manualzz**
-(`manualzz.com/doc/<id>/…`, `/download/<id>`):
+(`elektrotanya.com/<slug>/download.html`), **Manualzz**
+(`manualzz.com/doc/<id>/…`, `/download/<id>`) or **FreeServiceManuals.info**
+(`/<lang>/servicemanuals/viewmanual/<Brand>/<Type>/…/`,
+`/<lang>/bookcats/<Publisher>/<Author>/<Title>/`):
 
 1. **Availability.** The service worker asks the OpenManuals server what it
    knows about the page (`GET /api/lookup?url=`). Old-style archive.org items
@@ -1284,6 +1289,22 @@ A Manifest V3 extension (TypeScript, built with esbuild). While you browse
    page lacks; it is kept in the tab's `sessionStorage`, with the title as a
    fallback. A form post goes only to the page's own site.
    `test/manualzz-e2e.mjs` covers this against a local mock.
+
+   FreeServiceManuals.info has no ids, so a manual's source id is its page
+   path, decoded and lowercased without the language prefix
+   (`servicemanuals/philips/14pv100/51tvb61/…`,
+   `bookcats/<publisher>/<author>/<title>`): the site serves every spelling
+   (`+` or `%20`, any case, `en` or `nl`) as the same page. The download link
+   is the model number in the table. On a service-manual page it opens an
+   image captcha, whose code the site's script posts to
+   `/<lang>/servicemanuals/decaptcha/` for the file's URL; on a books page
+   there's no captcha and the URL (`/bookcats/download/<file>`) is in the
+   script. Either way the script adds `<a id="captchalink">` and clicks it,
+   and the extension catches that click, so the file is fetched once, after
+   the site has handed it out. Brand and models come from the table
+   (Brand, Type number and "This manual also covers"; Publisher and Title on
+   books pages). `test/freeservicemanuals-e2e.mjs` covers both kinds of page
+   against a local mock.
 3. **Identity (optional).** No OpenManuals account: a WebCrypto key signs
    every fact (see [Identity](#identity)). It is only needed to contribute
    back (facts sent to the server, credit); looking up, downloading and
@@ -1459,6 +1480,7 @@ server: Chrome resolves the manual sites and archive.org to a local HTTPS mock
 ```sh
 node test/download-e2e.mjs           # headless; --headful, --chrome <path>
 node test/manualzz-e2e.mjs
+node test/freeservicemanuals-e2e.mjs
 ```
 
 `download-e2e` Ctrl-clicks a ManualsLib download link (which, like *Save link
@@ -1467,6 +1489,9 @@ again and uploaded. `manualzz-e2e` checks the Manualzz page keeps the
 breadcrumb's brand and model, that clicking *Download PDF* posts the form once
 from the extension and not the site, that you get the file, and that the same
 bytes reach archive.org with the manual page as `source`.
+`freeservicemanuals-e2e` downloads from a books page and a captcha'd
+service-manual page (a wrong code first), and checks you get the site's file
+while archive.org gets the stripped copy, with the table's brand and models.
 
 Acting on the server's pages, end to end (same setup):
 
@@ -1520,7 +1545,7 @@ the manifest allows them with `wasm-unsafe-eval`.
 |------|------|
 | `src/core/` | Wire-format pieces shared by every context: encodings, MD5, ULID, hashing, fingerprints, key storage and backup (`keys.ts`), the fact envelope and signing (`facts.ts`), profile JWS (`asp.ts`), the wasm loader, settings, message types. |
 | `src/background/` | The service worker: `index.ts` (router, ports), `icon.ts` (badges), `site.ts` (the server-page script and confirm window), `lookup.ts`, `filter.ts`, `mirror.ts`, `upload.ts`, `downloads.ts` (*Save link as…* capture), `outbox.ts`, `identity.ts`, `avatar.ts`, `mute.ts`, `ia.ts` (archive.org), `api.ts` (OpenManuals), `offscreen.ts`. |
-| `src/content/` | The banner, list marks, download interception (`common.ts`), the site adapters (`manualslib.ts`, `elektrotanya.ts`, `manualzz.ts`), and `site.ts` for the OpenManuals server's own pages. |
+| `src/content/` | The banner, list marks, download interception (`common.ts`), the site adapters (`manualslib.ts`, `elektrotanya.ts`, `manualzz.ts`, `freeservicemanuals.ts`), and `site.ts` for the OpenManuals server's own pages. |
 | `src/confirm/` | The confirmation window for Retract and Report started on the server's pages (the fallback when the side panel can't open). |
 | `src/panel/` | The side panel for the server's pages: every fact, copy and file on the page, one-click actions with undo, bulk actions. |
 | `src/offscreen/` | The offscreen document, the stripper worker and the mirror worker host. |

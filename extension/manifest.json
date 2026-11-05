@@ -9,6 +9,7 @@
     "*://*.manualslib.com/*",
     "*://*.elektrotanya.com/*",
     "*://*.manualzz.com/*",
+    "*://*.freeservicemanuals.info/*",
     "*://archive.org/*",
     "*://*.archive.org/*",
     "https://api.github.com/*",
@@ -22,7 +23,8 @@
   "content_scripts": [
     { "matches": ["*://*.manualslib.com/*"], "js": ["content-manualslib.js"], "css": ["content.css"], "run_at": "document_idle" },
     { "matches": ["*://*.elektrotanya.com/*"], "js": ["content-elektrotanya.js"], "css": ["content.css"], "run_at": "document_idle" },
-    { "matches": ["*://*.manualzz.com/*"], "js": ["content-manualzz.js"], "css": ["content.css"], "run_at": "document_idle" }
+    { "matches": ["*://*.manualzz.com/*"], "js": ["content-manualzz.js"], "css": ["content.css"], "run_at": "document_idle" },
+    { "matches": ["*://*.freeservicemanuals.info/*"], "js": ["content-freeservicemanuals.js"], "css": ["content.css"], "run_at": "document_idle" }
   ],
   "action": {
     "default_popup": "popup.html",

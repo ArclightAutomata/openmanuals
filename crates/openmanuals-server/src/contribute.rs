@@ -12,7 +12,7 @@ use rusqlite::Connection;
 use serde_json::{json, Value};
 
 /// Sources the extension captures downloads from.
-pub const SOURCES_SQL: &str = "('manualslib', 'elektrotanya', 'manualzz')";
+pub const SOURCES_SQL: &str = "('manualslib', 'elektrotanya', 'manualzz', 'freeservicemanuals')";
 
 /// A manuals site the extension checks, as the home page lists it.
 pub struct Site {
@@ -27,6 +27,7 @@ pub const SITES: &[Site] = &[
     Site { key: "manualslib", name: "ManualsLib", url: "https://www.manualslib.com/" },
     Site { key: "elektrotanya", name: "Elektrotanya", url: "https://www.elektrotanya.com/" },
     Site { key: "manualzz", name: "Manualzz", url: "https://manualzz.com/" },
+    Site { key: "freeservicemanuals", name: "FreeServiceManuals.info", url: "https://freeservicemanuals.info/en/" },
 ];
 
 /// A page handed out isn't handed out again for this long, so two visitors
@@ -187,6 +188,9 @@ pub fn capturable_url(url: &str) -> bool {
         let (num, tail) = p.split_once('/').unwrap_or((p, ""));
         return !num.is_empty() && num.bytes().all(|b| b.is_ascii_digit()) && path_ok(tail);
     }
+    if let Some(p) = rest.strip_prefix("freeservicemanuals.info/") {
+        return path_ok(p) && openmanuals_core::ids::parse_page_url(url).is_some_and(|m| m.source == "freeservicemanuals");
+    }
     if let Some(p) = rest.strip_prefix("elektrotanya.com/") {
         return p.strip_suffix("/download.html").is_some_and(|name| !name.is_empty() && !name.contains('/') && path_ok(name));
     }
@@ -209,6 +213,8 @@ mod tests {
         assert!(capturable_url("https://manualslib.com/manual/12/X.html"));
         assert!(capturable_url("https://manualzz.com/doc/6961161/hitachi-cm721f---19--crt-display-user-manual"));
         assert!(capturable_url("https://elektrotanya.com/11ak30-1_basicline_bl2100ntd.hex/download.html"));
+        assert!(capturable_url("https://freeservicemanuals.info/en/bookcats/DIGITAL%20PROCESSING%20SYSTEMS/TBC%20FRAMESTORE/DPS-375/"));
+        assert!(capturable_url("https://freeservicemanuals.info/en/servicemanuals/viewmanual/Philips/14PV100/51TVB61/37TR216/DELTA2000/"));
         for bad in [
             "http://www.manualslib.com/manual/1/X.html",
             "https://www.manualslib.com/logout",
@@ -222,6 +228,11 @@ mod tests {
             "https://manualzz.com/download/6961161",
             "https://manualzz.com/doc/1/x-5z...",
             "https://manualzz.com.evil.example/doc/1/x",
+            "https://freeservicemanuals.info/en/contact/",
+            "https://freeservicemanuals.info/bookcats/download/dps-375.pdf",
+            "https://freeservicemanuals.info/en/bookcats/A/B/../../contact/",
+            "https://freeservicemanuals.info/en/bookcats/A/B/C/?next=x",
+            "http://freeservicemanuals.info/en/bookcats/A/B/C/",
             "javascript:alert(1)",
         ] {
             assert!(!capturable_url(bad), "{bad}");

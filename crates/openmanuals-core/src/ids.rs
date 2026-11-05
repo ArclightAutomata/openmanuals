@@ -125,6 +125,7 @@ pub fn parse_page_url(url: &str) -> Option<SourcePage> {
             let slug = it.next().unwrap_or("").split('/').next().unwrap_or("").to_string();
             Some(SourcePage { source: "manualzz".into(), source_id: id.into(), kind: kind.into(), slug })
         }
+        "freeservicemanuals.info" => freeservicemanuals_page(path),
         "elektrotanya.com" => {
             let (slug, tail) = path.split_once('/')?;
             if slug.is_empty() || !tail.eq_ignore_ascii_case("download.html") && !tail.to_ascii_lowercase().starts_with("download.html") {
@@ -134,6 +135,37 @@ pub fn parse_page_url(url: &str) -> Option<SourcePage> {
         }
         _ => None,
     }
+}
+
+/// FreeServiceManuals.info has no ids; a manual is its path, which the site
+/// matches ignoring case, with `+` or `%20` for spaces, under any language
+/// prefix. So the source id is that path decoded and lowercased, without the
+/// language: `servicemanuals/<brand>/<type>[/<type>…]` for
+/// `/<lang>/servicemanuals/viewmanual/<Brand>/<TypeA>/…/` and
+/// `bookcats/<publisher>/<author>/<title>` for
+/// `/<lang>/bookcats/<Publisher>/<Author>/<Title>/`.
+fn freeservicemanuals_page(path: &str) -> Option<SourcePage> {
+    let mut segs: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
+    if segs.first().is_some_and(|l| l.len() == 2 && l.bytes().all(|b| b.is_ascii_alphabetic())) {
+        segs.remove(0);
+    }
+    let (section, parts) = match segs.as_slice() {
+        [s, v, rest @ ..] if s.eq_ignore_ascii_case("servicemanuals") && v.eq_ignore_ascii_case("viewmanual") && rest.len() >= 2 => ("servicemanuals", rest),
+        [s, rest @ ..] if s.eq_ignore_ascii_case("bookcats") && rest.len() == 3 && !rest[0].eq_ignore_ascii_case("download") => ("bookcats", rest),
+        _ => return None,
+    };
+    let mut id = String::from(section);
+    for part in parts {
+        let decoded = percent_decode(&part.replace('+', " "))?;
+        let clean = decoded.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase();
+        if clean.is_empty() || clean.contains('/') {
+            return None;
+        }
+        id.push('/');
+        id.push_str(&clean);
+    }
+    let slug = id.rsplit('/').next().unwrap_or("").to_string();
+    Some(SourcePage { source: "freeservicemanuals".into(), source_id: id, kind: "manual".into(), slug })
 }
 
 /// A ManualsLib page name from a title, in ManualsLib's style
@@ -242,6 +274,35 @@ pub fn page_keys(url: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn freeservicemanuals_pages() {
+        let p = parse_page_url("https://freeservicemanuals.info/en/servicemanuals/viewmanual/Philips/14PV100/51TVB61/37TR216/DELTA2000/").unwrap();
+        assert_eq!((p.source.as_str(), p.source_id.as_str(), p.kind.as_str(), p.slug.as_str()), ("freeservicemanuals", "servicemanuals/philips/14pv100/51tvb61/37tr216/delta2000", "manual", "delta2000"));
+        let b = parse_page_url("https://freeservicemanuals.info/en/bookcats/DIGITAL%20PROCESSING%20SYSTEMS/TBC%20FRAMESTORE/DPS-375/").unwrap();
+        assert_eq!((b.source_id.as_str(), b.slug.as_str()), ("bookcats/digital processing systems/tbc framestore/dps-375", "dps-375"));
+        // Every spelling the site serves is the same manual.
+        for same in [
+            "https://www.freeservicemanuals.info/nl/bookcats/digital+processing+systems/TBC%20%20Framestore/dps-375",
+            "http://freeservicemanuals.info/bookcats/DIGITAL%20PROCESSING%20SYSTEMS/TBC%20FRAMESTORE/DPS-375/?x=1#top",
+        ] {
+            assert_eq!(parse_page_url(same).unwrap().source_id, b.source_id, "{same}");
+        }
+        assert_eq!(page_keys("https://freeservicemanuals.info/en/servicemanuals/viewmanual/Yamaha/01V/"), ["src:freeservicemanuals:servicemanuals/yamaha/01v"]);
+        assert!(candidate_identifiers(&p).is_empty(), "no legacy archive.org items");
+        for not in [
+            "https://freeservicemanuals.info/en/servicemanuals/",
+            "https://freeservicemanuals.info/en/servicemanuals/viewmanual/Philips/",
+            "https://freeservicemanuals.info/en/bookcats/",
+            "https://freeservicemanuals.info/en/bookcats/A/B/",
+            "https://freeservicemanuals.info/bookcats/download/dps-375.pdf",
+            "https://freeservicemanuals.info/en/bookcats/A/B%2FC/D/",
+            "https://freeservicemanuals.info/en/datasheets/",
+            "https://freeservicemanuals.info.evil.example/en/bookcats/A/B/C/",
+        ] {
+            assert_eq!(parse_page_url(not), None, "{not}");
+        }
+    }
 
     #[test]
     fn manualzz_pages() {

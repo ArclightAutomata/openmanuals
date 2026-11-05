@@ -265,7 +265,7 @@ const safePost = (port: chrome.runtime.Port, msg: unknown) => { try { port.postM
 
 /** The download/upload ports are for the manuals sites' content scripts only. */
 function fromManualSite(port: chrome.runtime.Port): boolean {
-  try { return /(^|\.)(manualslib|elektrotanya|manualzz)\.com$/.test(new URL(port.sender?.url ?? "").hostname); } catch { return false; }
+  try { return /(^|\.)((manualslib|elektrotanya|manualzz)\.com|freeservicemanuals\.info)$/.test(new URL(port.sender?.url ?? "").hostname); } catch { return false; }
 }
 
 chrome.runtime.onConnect.addListener((port) => {
