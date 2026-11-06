@@ -107,11 +107,13 @@ async fn manual_facts_hooks_and_an_edit() {
         fact(&alice, "retract", t1, json!({"fact": covers_wrong.id().unwrap()})),
         fact(&alice, "product", t1, json!({"brand": "Philips", "model": "14PV100"})),
         fact(&alice, "covers", t1, json!({"manual": manual, "product": right})),
+        fact(&alice, "product", t1, json!({"brand": "Philips", "model": "14PV210/01"})),
+        fact(&alice, "covers", t1, json!({"manual": manual, "product": product_key("Philips", "14PV210/01").unwrap()})),
     ])
     .await;
     let v: Value = get(format!("{base}/api/manual/{manual}/facts")).await.json().await.unwrap();
     let flags: Vec<(bool, bool)> = v["facts"].as_array().unwrap().iter().map(|f| (f["folded"].as_bool().unwrap(), f["retracted"].as_bool().unwrap())).collect();
-    assert_eq!(flags, [(true, false), (true, true), (true, false), (false, false), (false, false)], "the retraction counts before the build");
+    assert_eq!(flags, [(true, false), (true, true), (true, false), (false, false), (false, false), (false, false)], "the retraction counts before the build");
 
     openmanuals_server::fold::fold_and_build(st.clone()).await.unwrap();
     let page = get(format!("{base}/manual/{manual}")).await.text().await.unwrap();
@@ -122,4 +124,10 @@ async fn manual_facts_hooks_and_an_edit() {
     assert!(list.contains("<h1>Philips service manuals</h1>") && list.contains(r#"<span class="doc-tag">Service manual</span>"#), "{list}");
     assert!(page.contains(">14PV100</a>") && page.contains(">21PT1354</a>"), "{page}");
     assert!(!page.contains(">14PV1OO</a>"), "the retracted model is gone:\n{page}");
+    // A "/" in a model name stays inside its path segment.
+    assert!(page.contains(r#"href="/product/Philips/14PV210%2F01""#), "{page}");
+    let slashed = get(format!("{base}/product/Philips/14PV210%2F01")).await;
+    assert_eq!(slashed.status(), 200);
+    let body = slashed.text().await.unwrap();
+    assert!(body.contains("Philips</a> 14PV210&#x2f;01</h1>"), "{body}");
 }

@@ -6,7 +6,7 @@
   {#- data-om-manual marks what the extension's editor can change; it adds an edit button to each .om-actions slot. -#}
   <h1 data-om-manual="{{ m.id }}" data-om-edit="title">{{ m.title }}<span class="om-actions"></span></h1>
   <p class="detail-meta"><span class="doc-tag">{{ m.doc_type|doc_label }}</span>
-    {% for p in products %} <span class="product-chip" data-om-manual="{{ m.id }}" data-om-edit="product:{{ p.key }}"><a class="product-brand" href="/manuals?brand={{ p.brand_key|urlencode }}" title="All {{ p.brand }} manuals">{{ p.brand }}</a><a class="product-model" href="/product/{{ p.brand|urlencode }}/{{ p.model|urlencode }}" title="Manuals for the {{ p.brand }} {{ p.model }}">{{ p.model }}</a><span class="om-actions"></span></span>{% endfor %}
+    {% for p in products %} <span class="product-chip" data-om-manual="{{ m.id }}" data-om-edit="product:{{ p.key }}"><a class="product-brand" href="/manuals?brand={{ p.brand_key|urlencode }}" title="All {{ p.brand }} manuals">{{ p.brand }}</a><a class="product-model" href="/product/{{ p.brand|path_segment }}/{{ p.model|path_segment }}" title="Manuals for the {{ p.brand }} {{ p.model }}">{{ p.model }}</a><span class="om-actions"></span></span>{% endfor %}
     <span class="om-add-model" data-om-manual="{{ m.id }}" data-om-edit="add"><span class="om-actions"></span></span>
   </p>
   {% if download %}

@@ -25,6 +25,7 @@ fn build_env() -> Environment<'static> {
     let mut e = Environment::new();
     e.add_filter("doc_label", |t: &str| doc_label(t, false).to_string());
     e.add_filter("doc_plural", |t: &str| doc_label(t, true).to_string());
+    e.add_filter("path_segment", |t: &str| path_segment(t));
     e.add_template("base.html", include_str!("../templates/base.html")).unwrap();
     e.add_template("index.html", include_str!("../templates/index.html")).unwrap();
     e.add_template("list.html", include_str!("../templates/list.html")).unwrap();
@@ -57,6 +58,21 @@ pub(crate) fn doc_label(t: &str, plural: bool) -> std::borrow::Cow<'_, str> {
         _ => return t.into(),
     };
     (if plural { many } else { one }).into()
+}
+
+/// One URL path segment: everything but unreserved characters escaped,
+/// `/` included (minijinja's `urlencode` keeps it, so a model like
+/// `14PV210/01` would become two segments).
+pub(crate) fn path_segment(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for b in s.bytes() {
+        if b.is_ascii_alphanumeric() || matches!(b, b'-' | b'.' | b'_' | b'~') {
+            out.push(b as char);
+        } else {
+            out.push_str(&format!("%{b:02X}"));
+        }
+    }
+    out
 }
 
 pub(crate) fn render(name: &str, ctx: JValue) -> Response {
