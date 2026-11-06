@@ -178,6 +178,30 @@ async fn inbox_fold_build_lookup() {
     assert!(html.contains("Download from archive.org"), "{html}");
     assert!(html.contains("Alice"));
 
+    // Sites: the home page's site names list what was preserved from each site.
+    let page = |path: String| {
+        let client = client.clone();
+        async move { client.get(path).send().await.unwrap().text().await.unwrap() }
+    };
+    let html = page(format!("{base}/")).await;
+    assert!(html.contains(r#"<a href="/manuals?site=manualslib" title="Manuals preserved from ManualsLib">ManualsLib</a>"#), "{html}");
+    let html = page(format!("{base}/manuals?site=manualslib")).await;
+    assert!(html.contains("<h1>Manuals from ManualsLib</h1>") && html.contains(&format!("/manual/{MANUAL}")), "{html}");
+    assert!(!html.contains("still need"), "nothing left to preserve there");
+    let html = page(format!("{base}/manuals?site=manualslib&brand=jvc&doc_type=service")).await;
+    assert!(html.contains("<h1>JVC service manuals from ManualsLib</h1>"), "{html}");
+    let html = page(format!("{base}/manuals?site=manualzz")).await;
+    assert!(html.contains("<h1>Manuals from Manualzz</h1>") && !html.contains(&format!("/manual/{MANUAL}")), "{html}");
+    let html = page(format!("{base}/manuals?site=nowhere")).await;
+    assert!(html.contains("<h1>All manuals</h1>"), "an unknown site is ignored: {html}");
+    // The contribute page picks by site too; with none missing it says so.
+    let html = page(format!("{base}/contribute")).await;
+    assert!(html.contains(r#"<select id="site" name="site">"#) && html.contains(r#"<option value="manualzz" disabled>Manualzz (0)</option>"#), "{html}");
+    let r = client.get(format!("{base}/contribute/random?site=manualzz")).send().await.unwrap();
+    assert!(r.url().as_str().ends_with("/contribute?none=1&site=manualzz"), "{}", r.url());
+    let html = r.text().await.unwrap();
+    assert!(html.contains("No manuals on Manualzz are missing right now. Try another site.") && html.contains(r#"<option value="manualzz" selected>"#), "{html}");
+
     // The ledger browser: newest first, retractions struck through, pending
     // facts marked, filters, and one page per fact.
     let product = signed(&alice, "product", json!({"brand": "JVC", "model": "AV-2168TEE"}));

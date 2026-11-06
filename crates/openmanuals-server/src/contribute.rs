@@ -30,6 +30,35 @@ pub const SITES: &[Site] = &[
     Site { key: "freeservicemanuals", name: "FreeServiceManuals.info", url: "https://freeservicemanuals.info/en/" },
 ];
 
+/// The site with this `manuals.source` key, if the extension checks it.
+pub fn site(key: &str) -> Option<&'static Site> {
+    SITES.iter().find(|s| s.key == key)
+}
+
+/// Which missing manuals: all of them, or one brand's (a `brands.brand_key`),
+/// one site's (a [`Site::key`]), or both.
+#[derive(Clone, Copy, Default)]
+pub struct Want<'a> {
+    pub brand: Option<&'a str>,
+    pub site: Option<&'a str>,
+}
+
+impl Want<'_> {
+    /// `AND …` clauses on `m` and their parameters, numbered from 1.
+    fn sql(&self) -> (String, Vec<&str>) {
+        let (mut sql, mut args) = (String::new(), Vec::new());
+        if let Some(b) = self.brand {
+            args.push(b);
+            sql += &format!(" AND m.id IN (SELECT c.manual FROM covers c JOIN products p ON p.key = c.product WHERE p.brand_key = ?{})", args.len());
+        }
+        if let Some(s) = self.site {
+            args.push(s);
+            sql += &format!(" AND m.source = ?{}", args.len());
+        }
+        (sql, args)
+    }
+}
+
 /// A page handed out isn't handed out again for this long, so two visitors
 /// aren't sent to the same manual.
 const HOLD: Duration = Duration::from_secs(3 * 3600);
@@ -67,16 +96,12 @@ impl Contribute {
         h.insert(id.to_string(), Instant::now());
     }
 
-    /// A random missing manual's source page, optionally for one brand
-    /// (a `brands.brand_key`). None when there is none left.
-    pub fn pick(&self, db: &Connection, brand_key: Option<&str>) -> Option<String> {
-        let (filter, args): (&str, Vec<&str>) = match brand_key {
-            Some(b) => ("AND m.id IN (SELECT c.manual FROM covers c JOIN products p ON p.key = c.product WHERE p.brand_key = ?1)", vec![b]),
-            None => ("", vec![]),
-        };
+    /// A random missing manual's source page. None when there is none left.
+    pub fn pick(&self, db: &Connection, want: Want) -> Option<String> {
+        let (filter, args) = want.sql();
         let sql = format!(
             "SELECT m.id, m.source_url FROM manuals m JOIN manual_search s ON s.manual = m.id \
-             WHERE s.downloadable = 0 AND m.source IN {SOURCES_SQL} AND m.source_url IS NOT NULL {filter} \
+             WHERE s.downloadable = 0 AND m.source IN {SOURCES_SQL} AND m.source_url IS NOT NULL{filter} \
              ORDER BY random() LIMIT {DRAW}"
         );
         let mut st = db.prepare_cached(&sql).ok()?;
@@ -91,14 +116,14 @@ impl Contribute {
         Some(url)
     }
 
-    /// How many are missing, overall and for the brands with the most.
+    /// How many are missing: overall, for the brands with the most, and per site.
     pub fn counts(&self, db: &Connection) -> Value {
         if let Some((at, v)) = self.counts.lock().unwrap().as_ref() {
             if at.elapsed() < COUNTS_TTL {
                 return v.clone();
             }
         }
-        let total = missing(db, None);
+        let total = missing(db, Want::default());
         let mut brands = Vec::new();
         let sql = format!(
             "SELECT p.brand_key, coalesce(b.brand, p.brand_key), count(DISTINCT m.id) AS n \
@@ -111,7 +136,11 @@ impl Contribute {
             let rows = s.query_map([], |r| Ok(json!({"key": r.get::<_, String>(0)?, "brand": r.get::<_, String>(1)?, "n": r.get::<_, i64>(2)?})));
             brands.extend(rows.into_iter().flatten().flatten());
         }
-        let v = json!({ "total": total, "brands": brands });
+        let sites: Vec<Value> = SITES
+            .iter()
+            .map(|s| json!({"key": s.key, "name": s.name, "n": missing(db, Want { brand: None, site: Some(s.key) })}))
+            .collect();
+        let v = json!({ "total": total, "brands": brands, "sites": sites });
         *self.counts.lock().unwrap() = Some((Instant::now(), v.clone()));
         v
     }
@@ -140,7 +169,7 @@ impl Contribute {
                 let (known, preserved) = n.get(site.key).copied().unwrap_or((0, 0));
                 let pct = if known > 0 { preserved as f64 * 100.0 / known as f64 } else { 0.0 };
                 json!({
-                    "name": site.name, "url": site.url,
+                    "key": site.key, "name": site.name, "url": site.url,
                     // Only a site we've catalogued has manuals known but not
                     // yet preserved; elsewhere "known" just repeats "preserved".
                     "preserved": g(preserved), "needed": g(known - preserved), "has_needed": known > preserved,
@@ -161,18 +190,14 @@ impl Contribute {
     }
 }
 
-/// Missing manuals at capturable sources, overall or for one brand.
-pub fn missing(db: &Connection, brand_key: Option<&str>) -> i64 {
-    let base = format!(
+/// Missing manuals at capturable sources.
+pub fn missing(db: &Connection, want: Want) -> i64 {
+    let (filter, args) = want.sql();
+    let sql = format!(
         "SELECT count(*) FROM manuals m JOIN manual_search s ON s.manual = m.id \
-         WHERE s.downloadable = 0 AND m.source IN {SOURCES_SQL} AND m.source_url IS NOT NULL"
+         WHERE s.downloadable = 0 AND m.source IN {SOURCES_SQL} AND m.source_url IS NOT NULL{filter}"
     );
-    match brand_key {
-        Some(b) => db
-            .query_row_cached(&format!("{base} AND m.id IN (SELECT c.manual FROM covers c JOIN products p ON p.key = c.product WHERE p.brand_key = ?1)"), [b], |r| r.get(0))
-            .unwrap_or(0),
-        None => db.query_row_cached(&base, [], |r| r.get(0)).unwrap_or(0),
-    }
+    db.query_row_cached(&sql, rusqlite::params_from_iter(args), |r| r.get(0)).unwrap_or(0)
 }
 
 /// Only redirect to the source pages the extension works on. The URL comes
@@ -273,14 +298,20 @@ mod tests {
         let db = db();
         let c = Contribute::default();
         // Overall: A, B, E and F are missing at capturable sources (F's URL is then refused).
-        assert_eq!(missing(&db, None), 4);
-        assert_eq!(missing(&db, Some("rca")), 2);
-        let first = c.pick(&db, Some("rca")).unwrap();
-        let second = c.pick(&db, Some("rca")).unwrap();
+        let brand = |b| Want { brand: Some(b), site: None };
+        let site = |s| Want { brand: None, site: Some(s) };
+        assert_eq!(missing(&db, Want::default()), 4);
+        assert_eq!(missing(&db, brand("rca")), 2);
+        assert_eq!(missing(&db, site("elektrotanya")), 1);
+        assert_eq!(missing(&db, Want { brand: Some("rca"), site: Some("elektrotanya") }), 0);
+        let first = c.pick(&db, brand("rca")).unwrap();
+        let second = c.pick(&db, brand("rca")).unwrap();
         assert_ne!(first, second, "a page just handed out isn't handed out again while others remain");
-        assert!(c.pick(&db, Some("rca")).is_some(), "when all are held, one is still handed out");
-        assert_eq!(c.pick(&db, Some("sony")).as_deref(), Some("https://elektrotanya.com/sony_e.pdf/download.html"));
-        assert_eq!(c.pick(&db, Some("nobody")), None);
+        assert!(c.pick(&db, brand("rca")).is_some(), "when all are held, one is still handed out");
+        assert_eq!(c.pick(&db, brand("sony")).as_deref(), Some("https://elektrotanya.com/sony_e.pdf/download.html"));
+        assert_eq!(c.pick(&db, site("elektrotanya")).as_deref(), Some("https://elektrotanya.com/sony_e.pdf/download.html"));
+        assert_eq!(c.pick(&db, brand("nobody")), None);
+        assert_eq!(c.pick(&db, Want { brand: Some("rca"), site: Some("elektrotanya") }), None);
         let counts = c.counts(&db);
         assert_eq!(counts["total"], 4);
         assert_eq!(counts["brands"][0]["key"], "rca");

@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block title %}{% if q %}{{ q }}{% elif brand and doc_type %}{{ brand }} {{ doc_type|doc_plural }}{% else %}{{ brand or 'All manuals' }}{% endif %} — OpenManuals{% endblock %}
+{% block title %}{% if q %}{{ q }}{% elif brand or doc_type or site %}{{ heading }}{% else %}All manuals{% endif %} — OpenManuals{% endblock %}
 {% block content %}
 <section class="results">
   <div class="results-head">
-    <h1>{% if q %}Results for “{{ q }}”{% elif brand and doc_type %}{{ brand }} {{ doc_type|doc_plural }}{% elif brand %}{{ brand }} manuals{% elif doc_type %}{{ doc_type|doc_plural|capitalize }}{% else %}All manuals{% endif %}</h1>
+    <h1>{% if q %}Results for “{{ q }}”{% elif brand or doc_type or site %}{{ heading }}{% else %}All manuals{% endif %}</h1>
     <p class="count">{{ total }} manual{% if total != 1 %}s{% endif %}</p>
   </div>
-  {% if brand and brand_missing > 0 %}
-  <p class="brand-missing">{{ brand_missing_label }} {{ brand }} manual{% if brand_missing != 1 %}s{% endif %} still need{% if brand_missing == 1 %}s{% endif %} a copy. <a href="/contribute/random?brand={{ brand_key|urlencode }}" target="_blank" rel="noreferrer">Preserve a random one →</a> <a class="muted-link" href="/contribute?brand={{ brand_key|urlencode }}">How it works</a></p>
+  {% if site %}<p class="site-note">Manuals people have preserved from <a href="{{ site.url }}" rel="noopener noreferrer" target="_blank">{{ site.name }}</a>{% if q or brand or doc_type %}, filtered{% endif %}.</p>{% endif %}
+  {% if missing > 0 %}
+  <p class="brand-missing">{{ missing_label }} {% if brand %}{{ brand }} {% endif %}manual{% if missing != 1 %}s{% endif %}{% if site %} on {{ site.name }}{% endif %} still need{% if missing == 1 %}s{% endif %} a copy. <a href="/contribute/random?{{ wanted }}" target="_blank" rel="noreferrer">Preserve a random one →</a> <a class="muted-link" href="/contribute?{{ wanted }}">How it works</a></p>
   {% endif %}
   {% if results %}
   <ul class="manual-list">
@@ -24,9 +25,9 @@
   </ul>
   {% if pages > 1 %}
   <nav class="pager">
-    {% if page > 1 %}<a href="/manuals?q={{ q|urlencode }}&brand={{ brand_key|urlencode }}&doc_type={{ doc_type|urlencode }}&page={{ page - 1 }}">← Prev</a>{% endif %}
+    {% if page > 1 %}<a href="/manuals?{{ filters }}&page={{ page - 1 }}">← Prev</a>{% endif %}
     <span>Page {{ page }} of {{ pages }}</span>
-    {% if page < pages %}<a href="/manuals?q={{ q|urlencode }}&brand={{ brand_key|urlencode }}&doc_type={{ doc_type|urlencode }}&page={{ page + 1 }}">Next →</a>{% endif %}
+    {% if page < pages %}<a href="/manuals?{{ filters }}&page={{ page + 1 }}">Next →</a>{% endif %}
   </nav>
   {% endif %}
   {% else %}

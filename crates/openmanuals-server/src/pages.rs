@@ -75,6 +75,12 @@ pub(crate) fn path_segment(s: &str) -> String {
     out
 }
 
+/// The first letter upper-cased.
+fn capitalize(s: &str) -> String {
+    let mut c = s.chars();
+    c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default()
+}
+
 pub(crate) fn render(name: &str, ctx: JValue) -> Response {
     match env().get_template(name).and_then(|t| t.render(ctx)) {
         Ok(html) => Html(html).into_response(),
@@ -189,8 +195,15 @@ pub struct ListQuery {
     pub q: Option<String>,
     pub brand: Option<String>,
     pub doc_type: Option<String>,
+    /// A [`crate::contribute::Site`] key: manuals from that site.
+    pub site: Option<String>,
     pub page: Option<i64>,
     pub all: Option<String>,
+}
+
+/// A `site` parameter naming a site the extension checks.
+fn site_param(s: &Option<String>) -> Option<&'static crate::contribute::Site> {
+    s.as_deref().map(str::trim).and_then(crate::contribute::site)
 }
 
 pub async fn manuals(State(state): State<Shared>, Query(q): Query<ListQuery>) -> Response {
@@ -230,9 +243,14 @@ pub async fn manuals(State(state): State<Shared>, Query(q): Query<ListQuery>) ->
             wheres.push(format!("lower(m.doc_type) = ?{}", args.len() + 1));
             args.push(doc_type.to_lowercase());
         }
+        let site = site_param(&q.site);
+        if let Some(s) = site {
+            wheres.push(format!("m.source = ?{}", args.len() + 1));
+            args.push(s.key.into());
+        }
         let where_sql = if wheres.is_empty() { String::new() } else { format!("WHERE {}", wheres.join(" AND ")) };
         // Every manual has a manual_search row; join manuals only when filtering on it.
-        let from = if brand_key.is_empty() && doc_type.is_empty() { "manual_search s" } else { "manuals m JOIN manual_search s ON s.manual = m.id" };
+        let from = if brand_key.is_empty() && doc_type.is_empty() && site.is_none() { "manual_search s" } else { "manuals m JOIN manual_search s ON s.manual = m.id" };
         let total: i64 = db
             .query_row_cached(&format!("SELECT count(*) FROM {from} {where_sql}"), rusqlite::params_from_iter(args.iter()), |r| r.get(0))
             .unwrap_or(0);
@@ -252,9 +270,26 @@ pub async fn manuals(State(state): State<Shared>, Query(q): Query<ListQuery>) ->
                     "download": dl.as_ref().map(|d| d.0.clone()), "host": dl.as_ref().map(|d| d.1.clone())}));
             }
         }
-        let brand_missing = if brand_key.is_empty() { 0 } else { crate::contribute::missing(db, Some(&openmanuals_core::product::normalize_brand(&brand_key))) };
-        render("list.html", context! { q => text, brand => brand_name, brand_key => brand_key, doc_type => doc_type, results => results, total => total, page => page, pages => pages,
-            brand_missing => brand_missing, brand_missing_label => crate::activity::grouped(brand_missing) })
+        let bk = (!brand_key.is_empty()).then(|| openmanuals_core::product::normalize_brand(&brand_key));
+        let want = crate::contribute::Want { brand: bk.as_deref(), site: site.map(|s| s.key) };
+        let missing = if want.brand.is_none() && want.site.is_none() { 0 } else { crate::contribute::missing(db, want) };
+        // "Philips service manuals from ManualsLib", "Manuals from Manualzz", …
+        let what = if doc_type.is_empty() { "manuals".into() } else { doc_label(&doc_type, true).into_owned() };
+        let mut heading = if brand_name.is_empty() { capitalize(&what) } else { format!("{brand_name} {what}") };
+        if let Some(s) = site {
+            heading += &format!(" from {}", s.name);
+        }
+        // The filters, for the pager and the "preserve one" links.
+        let query = |pairs: &[(&str, &str)]| -> String {
+            pairs.iter().filter(|(_, v)| !v.is_empty()).map(|(k, v)| format!("{k}={}", urlencoding::encode(v))).collect::<Vec<_>>().join("&")
+        };
+        let filters = query(&[("q", &text), ("brand", &brand_key), ("doc_type", &doc_type), ("site", site.map_or("", |s| s.key)), ("all", if q.all.is_some() { "1" } else { "" })]);
+        let wanted = query(&[("brand", want.brand.unwrap_or_default()), ("site", want.site.unwrap_or_default())]);
+        render("list.html", context! { q => text, brand => brand_name, brand_key => brand_key, doc_type => doc_type, heading => heading,
+            site => site.map(|s| json!({"key": s.key, "name": s.name, "url": s.url})),
+            filters => filters, wanted => wanted,
+            results => results, total => total, page => page, pages => pages,
+            missing => missing, missing_label => crate::activity::grouped(missing) })
     })
     .await
 }
@@ -494,6 +529,7 @@ pub async fn privacy() -> Response {
 #[derive(Deserialize, Default)]
 pub struct ContributeQuery {
     pub brand: Option<String>,
+    pub site: Option<String>,
     pub none: Option<String>,
 }
 
@@ -501,25 +537,24 @@ fn brand_param(b: &Option<String>) -> Option<String> {
     b.as_deref().map(str::trim).filter(|b| !b.is_empty()).map(openmanuals_core::product::normalize_brand)
 }
 
-/// "Help preserve a manual": what it is, how many are missing, by brand.
+/// "Help preserve a manual": what it is, how many are missing, by brand and site.
 pub async fn contribute(State(state): State<Shared>, Query(q): Query<ContributeQuery>) -> Response {
     with_db(state, move |state, db| {
         let counts = state.contribute.counts(db);
         let brand_key = brand_param(&q.brand);
-        let (brand, brand_missing) = match &brand_key {
-            Some(b) => (
-                db.query_row_cached("SELECT brand FROM brands WHERE brand_key = ?1", [b], |r| r.get::<_, String>(0)).unwrap_or_else(|_| b.clone()),
-                crate::contribute::missing(db, Some(b)),
-            ),
-            None => (String::new(), 0),
-        };
+        let site = site_param(&q.site);
+        let brand = brand_key.as_ref().map(|b| db.query_row_cached("SELECT brand FROM brands WHERE brand_key = ?1", [b], |r| r.get::<_, String>(0)).unwrap_or_else(|_| b.clone()));
+        let brand_missing = brand_key.as_deref().map_or(0, |b| crate::contribute::missing(db, crate::contribute::Want { brand: Some(b), site: None }));
         render("contribute.html", context! {
             total => crate::activity::grouped(counts["total"].as_i64().unwrap_or(0)),
             brands => counts["brands"].clone(),
+            sites => counts["sites"].clone(),
             brand_key => brand_key.unwrap_or_default(),
-            brand => brand,
+            brand => brand.unwrap_or_default(),
             brand_missing => crate::activity::grouped(brand_missing),
-            none => q.none.is_some(),
+            site_key => site.map_or("", |s| s.key),
+            site_name => site.map_or("", |s| s.name),
+            none_left => q.none.is_some(),
         })
     })
     .await
@@ -529,12 +564,20 @@ pub async fn contribute(State(state): State<Shared>, Query(q): Query<ContributeQ
 pub async fn contribute_random(State(state): State<Shared>, Query(q): Query<ContributeQuery>) -> Response {
     with_db(state, move |state, db| {
         let brand_key = brand_param(&q.brand);
-        let to = match state.contribute.pick(db, brand_key.as_deref()) {
+        let site = site_param(&q.site);
+        let want = crate::contribute::Want { brand: brand_key.as_deref(), site: site.map(|s| s.key) };
+        let to = match state.contribute.pick(db, want) {
             Some(url) => url,
-            None => match &brand_key {
-                Some(b) => format!("/contribute?brand={}&none=1", urlencoding::encode(b)),
-                None => "/contribute?none=1".into(),
-            },
+            None => {
+                let mut to = String::from("/contribute?none=1");
+                if let Some(b) = &brand_key {
+                    to += &format!("&brand={}", urlencoding::encode(b));
+                }
+                if let Some(s) = site {
+                    to += &format!("&site={}", s.key);
+                }
+                to
+            }
         };
         let mut r = axum::response::Redirect::to(&to).into_response();
         let h = r.headers_mut();

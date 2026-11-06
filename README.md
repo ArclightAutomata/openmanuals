@@ -752,14 +752,16 @@ unlimited. Verification budgets: 20 copies to start, likewise scaled.
 
 ### Pages
 
-`/`, `/manuals?q=&brand=&doc_type=&page=`, `/manual/<ulid>`,
+`/`, `/manuals?q=&brand=&doc_type=&site=&page=` (`site` is a
+`contribute::SITES` key; add `all=1` for manuals with no download yet),
+`/manual/<ulid>`,
 `/product/<brand>/<model>`, `/file/<sha256>`, `/k/<fingerprint>` (a key's
 contributions and linked identities; with `Accept: application/activity+json`
 an ActivityStreams `Person`, see [Linking from
 Keyoxide](#linking-from-keyoxide)), `/contributions`, `/about`,
 `/item/<archive.org identifier>` (legacy; redirects to the manual),
 `/lookup?url=<source page>` (redirects to the manual, or 404),
-`/contribute?brand=` and `/contribute/random?brand=` (below). The stylesheet,
+`/contribute?brand=&site=` and `/contribute/random?brand=&site=` (below). The stylesheet,
 logo and theme script are served from `/static/`.
 
 **A manual's page** shows each model it covers as two links: the brand, to
@@ -772,10 +774,12 @@ manual](#editing-a-manual)).
 source site, with no file yet. Of those, the ones on the sites the extension
 supports (ManualsLib, Elektrotanya, Manualzz, FreeServiceManuals.info) are
 pages it can capture. The home page shows how many there are, and
-`/contribute` explains the steps and lets you pick a brand. A brand's
-listing says how many of its manuals are missing. *Take me to one* opens
+`/contribute` explains the steps and lets you pick a brand, a site or both.
+A brand's or a site's listing says how many of its manuals are missing, with
+a link to a random one. *Take me to one* opens
 `/contribute/random` in a new tab, which redirects to a random missing page
-(or back to `/contribute?none=1` when there is none).
+(or back to `/contribute?none=1`, with the same brand and site, when there is
+none).
 Downloading it there with uploads on preserves it the usual way. The server:
 
 - remembers the pages it handed out for three hours, so helpers aren't sent to
@@ -792,7 +796,8 @@ the configured server's pages (`crates/openmanuals-server/src/contribute.rs`).
 **The home page** (`/`) has search, totals, the latest facts and brand chips,
 and a **Sites we check** section: one card per supported site with how many of
 its manuals are preserved and, for a site whose pages we've catalogued, how
-many we know of there that still aren't (`contribute::SITES`; counts are cached
+many we know of there that still aren't. The site's name links to the manuals
+preserved from it (`/manuals?site=`), and ↗ opens the site itself (`contribute::SITES`; counts are cached
 for up to 10 minutes and refreshed when a snapshot is published).
 
 **The ledger browser.** `/ledger?type=&author=&before=&after=` lists every fact
