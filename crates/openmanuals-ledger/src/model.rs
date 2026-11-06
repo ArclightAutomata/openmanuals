@@ -1257,6 +1257,30 @@ impl Resolver {
             man.canonical_file = cands.first().map(|(id, _)| *id);
         }
 
+        // A manual whose facts don't name its source page (uploads made before
+        // the extension sent one) takes it from the page its uploader
+        // downloaded it from: the `origin` copy of one of its files, or of the
+        // file a stripped copy was made from. The earliest such page wins.
+        let mut origins: HashMap<FileId, Vec<(u128, Sym, &str)>> = HashMap::new();
+        for loc in locations.values().filter(|l| l.kind == origin) {
+            origins.entry(loc.file).or_default().push((loc.cursor, loc.author, &loc.url));
+        }
+        for (man_id, man) in manuals.iter_mut().filter(|(_, m)| m.source.is_none()) {
+            let attached = files_of.get(man_id).map(Vec::as_slice).unwrap_or_default();
+            let found = attached
+                .iter()
+                .flat_map(|id| std::iter::once(*id).chain(files.get(id).and_then(|f| f.derived_from)))
+                .flat_map(|id| origins.get(&id).into_iter().flatten())
+                .filter(|(_, who, _)| *who == man.author)
+                .filter_map(|(at, _, url)| openmanuals_core::ids::parse_page_url(url).map(|p| (*at, p, *url)))
+                .min_by_key(|(at, ..)| *at);
+            if let Some((_, page, url)) = found {
+                man.source = Some(syms.intern(&page.source));
+                man.source_id = Some(page.source_id.into());
+                man.source_url = man.source_url.take().or_else(|| Some(url.into()));
+            }
+        }
+
         Model {
             syms, keys, contributor_of, manuals, products, covers, manual_files, files, locations, derivations, labels, stats,
             head: (!head.is_empty()).then_some(head),

@@ -296,7 +296,7 @@ fn random_moderation_matches_full_builds() {
     let (mut undone, mut in_place, mut from_day, mut full) = (0, 0, 0, 0);
     let seeds: u64 = std::env::var("OM_TEST_SEEDS").ok().and_then(|s| s.parse().ok()).unwrap_or(6);
     for seed in 1..=seeds {
-        let mut rng = Rng(seed * 0x9E37_79B9_7F4A_7C15);
+        let mut rng = Rng(seed.wrapping_mul(0x9E37_79B9_7F4A_7C15));
         let tmp = tempfile::tempdir().unwrap();
         let l = Ledger::open(tmp.path().join("l")).unwrap();
         let opts = BuildOptions { checkpoint: Some(tmp.path().join("checkpoint.bin")), ..Default::default() };

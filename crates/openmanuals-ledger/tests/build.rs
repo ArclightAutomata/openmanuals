@@ -329,3 +329,32 @@ fn later_derivation_tools_win_the_download() {
     assert_eq!(canon(2), Some(h(0x60)), "an older tool's variant doesn't displace a newer one");
     assert_eq!(canon(3), Some(h(0x70)), "between versions of one tool, the higher version wins");
 }
+
+#[test]
+fn a_manual_without_a_source_takes_its_uploaders_origin_page() {
+    let alice = SigningKey::from_seed(Alg::Ed25519, &[2; 32]).unwrap();
+    let bob = SigningKey::from_seed(Alg::Ed25519, &[3; 32]).unwrap();
+    let cfg = TrustConfig { include_unverified: true, ..Default::default() };
+    let page = "https://www.freeservicemanuals.info/en/servicemanuals/viewmanual/Philips/14PV100/51TVB61/37TR216/DELTA2000/";
+    let mut c = Ctx { gen: CursorGen::new(), entries: vec![] };
+    // As the extension uploaded before manual facts named their page: only the
+    // stripped copy is attached, and the origin is the original's.
+    c.add(&alice, "manual", json!({"id": MANUAL, "title": "Philips 14PV100 Service Manual", "doc_type": "service"}));
+    c.add(&alice, "file", json!({"sha256": SHA, "size": 4, "mime": "application/pdf"}));
+    c.add(&alice, "file", json!({"sha256": SHA_STRIPPED, "size": 3, "mime": "application/pdf"}));
+    c.add(&alice, "derivation", json!({"derived": SHA_STRIPPED, "source": SHA, "transform": "watermark-stripped", "tool": "om-strip", "tool_version": "om-strip/2"}));
+    c.add(&alice, "manual_file", json!({"manual": MANUAL, "file": SHA_STRIPPED, "role": "primary"}));
+    // Someone else's origin for the same bytes doesn't name alice's manual.
+    c.add(&bob, "location", json!({"file": SHA, "url": "https://www.manualslib.com/manual/331384/Jvc-Av-2168tee.html", "kind": "origin"}));
+    c.add(&alice, "location", json!({"file": SHA, "url": page, "kind": "origin"}));
+    let dir = tempfile::tempdir().unwrap();
+    let out = dir.path().join("a.db");
+    build_from_entries(&c.entries, &cfg, &out, &BuildOptions::default()).unwrap();
+    let db = Connection::open(&out).unwrap();
+    let (source, id, url): (String, String, String) = db
+        .query_row(&format!("SELECT source, source_id, source_url FROM manuals WHERE id = '{MANUAL}'"), [], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))
+        .unwrap();
+    assert_eq!(source, "freeservicemanuals");
+    assert_eq!(id, "servicemanuals/philips/14pv100/51tvb61/37tr216/delta2000");
+    assert!(url.starts_with("https://www.freeservicemanuals.info/"), "{url}");
+}

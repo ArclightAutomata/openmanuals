@@ -791,8 +791,9 @@ the configured server's pages (`crates/openmanuals-server/src/contribute.rs`).
 
 **The home page** (`/`) has search, totals, the latest facts and brand chips,
 and a **Sites we check** section: one card per supported site with how many of
-its known manuals are preserved, out of how many (`contribute::SITES`; counts
-are cached for up to 10 minutes and refreshed when a snapshot is published).
+its manuals are preserved and, for a site whose pages we've catalogued, how
+many we know of there that still aren't (`contribute::SITES`; counts are cached
+for up to 10 minutes and refreshed when a snapshot is published).
 
 **The ledger browser.** `/ledger?type=&author=&before=&after=` lists every fact
 the inbox has accepted, newest first by arrival cursor, 50 to a page, grouped
@@ -1287,7 +1288,9 @@ A Manifest V3 extension (TypeScript, built with esbuild). While you browse
    origin location, stripped file, derivation, archive location, manual,
    products, covers) is then queued for `POST /api/facts`. A new manual names
    its source page (`source`, `source_id`, `source_url`), which the lookups,
-   the lookup filter and the home page's per-site counts go by. If stripping changes
+   the lookup filter and the home page's per-site counts go by. (For a manual
+   whose facts don't, as with uploads from before the extension sent them, the
+   build takes them from its uploader's `origin` location.) If stripping changes
    nothing or fails, the original is uploaded. If the exact file is already
    archived, nothing is uploaded unless you choose **Add another copy**; its
    origin is still recorded. Accepted trade-off: the original bytes are not
