@@ -3,7 +3,7 @@
 // manual's facts as the server sends them (GET /api/manual/{id}/facts),
 // checking every one itself (signature, id); the page only told us which
 // manual. Saving shows the changes, and only "Sign and send" signs them.
-import { DOC_TYPES, draftOf, manualState, planEdit, type CheckedFact, type EditPlan, type ManualState } from "../core/edit.ts";
+import { DOC_LABELS, DOC_TYPES, draftOf, manualState, planEdit, type CheckedFact, type EditPlan, type ManualState } from "../core/edit.ts";
 import { checkServedFact } from "../core/site-check.ts";
 import { ensureWasm } from "../core/wasm.ts";
 
@@ -45,7 +45,7 @@ export function mountEditor(root: HTMLElement, o: EditorOptions): Editor {
   const say = (text: string, ok?: boolean) => { msg.textContent = text; msg.className = "ed-msg" + (ok === undefined ? "" : ok ? " ok" : " bad"); };
   const title = el("input", { type: "text", id: "edTitle", maxLength: 300, autocomplete: "off" });
   const type = el("select", { id: "edType" });
-  for (const t of DOC_TYPES) type.append(el("option", { value: t, textContent: t }));
+  for (const t of DOC_TYPES) type.append(el("option", { value: t, textContent: DOC_LABELS[t] }));
   const list = el("ul", { className: "ed-models" });
   const add = el("button", { type: "button", className: "secondary", textContent: "+ Add model" });
   const review = el("button", { type: "button", textContent: "Review changes" });

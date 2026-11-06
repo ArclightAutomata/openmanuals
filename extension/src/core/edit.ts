@@ -11,6 +11,10 @@
 import { bodies, nowIso, type Fact, type UnsignedFact } from "./facts.ts";
 
 export const DOC_TYPES = ["user", "service", "schematic", "parts", "other"] as const;
+/** How each type reads, as the website labels it. */
+export const DOC_LABELS: Record<(typeof DOC_TYPES)[number], string> = {
+  user: "User manual", service: "Service manual", schematic: "Schematic", parts: "Parts list", other: "Other document",
+};
 export const MAX_TITLE = 300;
 export const MAX_NAME = 120;
 
@@ -83,6 +87,7 @@ export interface EditPlan {
   error?: string;
 }
 
+const label = (t: string) => (DOC_LABELS as Record<string, string>)[t] ?? (t || "none");
 const clean = (s: string) => s.replace(/\s+/g, " ").trim();
 
 /**
@@ -113,7 +118,7 @@ export function planEdit(s: ManualState, d: Draft, me: string | null, productKey
   if (title !== s.title || d.docType !== s.docType) {
     plan.facts.push({ type: "manual", at, body: bodies.manual(s.id, title, d.docType) });
     if (title !== s.title) plan.changes.push(`Title: “${s.title}” → “${title}”`);
-    if (d.docType !== s.docType) plan.changes.push(`Type: ${s.docType || "none"} → ${d.docType}`);
+    if (d.docType !== s.docType) plan.changes.push(`Type: ${label(s.docType)} → ${label(d.docType)}`);
   }
   for (const m of s.models) {
     if (want.has(m.key)) continue;

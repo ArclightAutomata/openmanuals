@@ -15,6 +15,6 @@
   {% elif copies %}<ul class="copies">{% for c in copies %}<li data-om-location="{{ c.id }}" data-om-file="{{ f.id }}" data-om-author="{{ c.author }}"><a href="{{ c.url }}" rel="noopener nofollow ugc">{{ c.url }}</a> <small>{{ c.kind }} · verified {{ c.verified_at[:10] }} · by <a href="/k/{{ c.author }}">{{ c.author_name }}</a></small> <span class="om-actions"></span></li>{% endfor %}</ul>
   {% else %}<p class="muted">No verified copy.</p>{% endif %}
   <h2>Manuals</h2>
-  <ul class="manual-list">{% for m in manuals %}<li class="manual-card"><a class="manual-link" href="/manual/{{ m.id }}"><span class="manual-model">{{ m.title }}</span></a><span class="doc-tag">{{ m.doc_type }}</span></li>{% endfor %}</ul>
+  <ul class="manual-list">{% for m in manuals %}<li class="manual-card"><a class="manual-link" href="/manual/{{ m.id }}"><span class="manual-model">{{ m.title }}</span></a><span class="doc-tag">{{ m.doc_type|doc_label }}</span></li>{% endfor %}</ul>
 </article>
 {% endblock %}

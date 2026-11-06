@@ -10,7 +10,7 @@
     {% for m in results %}
     <li class="manual-card">
       <a class="manual-link" href="/manual/{{ m.id }}"><span class="manual-model">{{ m.title }}</span></a>
-      <span class="doc-tag">{{ m.doc_type }}</span>
+      <span class="doc-tag">{{ m.doc_type|doc_label }}</span>
       {% if m.download %}<a class="mini-dl" href="{{ m.download }}" target="_blank" rel="noopener nofollow ugc">↓ {{ m.host }}</a>{% endif %}
     </li>
     {% endfor %}

@@ -23,6 +23,8 @@ pub fn env() -> &'static Environment<'static> {
 
 fn build_env() -> Environment<'static> {
     let mut e = Environment::new();
+    e.add_filter("doc_label", |t: &str| doc_label(t, false).to_string());
+    e.add_filter("doc_plural", |t: &str| doc_label(t, true).to_string());
     e.add_template("base.html", include_str!("../templates/base.html")).unwrap();
     e.add_template("index.html", include_str!("../templates/index.html")).unwrap();
     e.add_template("list.html", include_str!("../templates/list.html")).unwrap();
@@ -41,6 +43,20 @@ fn build_env() -> Environment<'static> {
     e.add_template("_contribute.html", include_str!("../templates/_contribute.html")).unwrap();
     e.add_template("contribute.html", include_str!("../templates/contribute.html")).unwrap();
     e
+}
+
+/// How a manual's `doc_type` reads on a page: "Service manual", or in a
+/// heading "service manuals". Unknown types show as they are.
+pub(crate) fn doc_label(t: &str, plural: bool) -> std::borrow::Cow<'_, str> {
+    let (one, many) = match t {
+        "user" => ("User manual", "user manuals"),
+        "service" => ("Service manual", "service manuals"),
+        "schematic" => ("Schematic", "schematics"),
+        "parts" => ("Parts list", "parts lists"),
+        "other" => ("Other document", "other documents"),
+        _ => return t.into(),
+    };
+    (if plural { many } else { one }).into()
 }
 
 pub(crate) fn render(name: &str, ctx: JValue) -> Response {
@@ -193,7 +209,7 @@ pub async fn manuals(State(state): State<Shared>, Query(q): Query<ListQuery>) ->
             wheres.push(format!("m.id IN (SELECT c.manual FROM covers c JOIN products p ON p.key = c.product WHERE p.brand_key = ?{})", args.len() + 1));
             args.push(bk);
         }
-        let doc_type = q.doc_type.clone().unwrap_or_default();
+        let doc_type = q.doc_type.as_deref().unwrap_or_default().trim().to_lowercase();
         if !doc_type.is_empty() {
             wheres.push(format!("lower(m.doc_type) = ?{}", args.len() + 1));
             args.push(doc_type.to_lowercase());

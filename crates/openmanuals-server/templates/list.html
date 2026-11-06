@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ q or brand or 'All manuals' }} — OpenManuals{% endblock %}
+{% block title %}{% if q %}{{ q }}{% elif brand and doc_type %}{{ brand }} {{ doc_type|doc_plural }}{% else %}{{ brand or 'All manuals' }}{% endif %} — OpenManuals{% endblock %}
 {% block content %}
 <section class="results">
   <div class="results-head">
-    <h1>{% if q %}Results for “{{ q }}”{% elif brand %}{{ brand }} manuals{% else %}All manuals{% endif %}</h1>
+    <h1>{% if q %}Results for “{{ q }}”{% elif brand and doc_type %}{{ brand }} {{ doc_type|doc_plural }}{% elif brand %}{{ brand }} manuals{% elif doc_type %}{{ doc_type|doc_plural|capitalize }}{% else %}All manuals{% endif %}</h1>
     <p class="count">{{ total }} manual{% if total != 1 %}s{% endif %}</p>
   </div>
   {% if brand and brand_missing > 0 %}
@@ -17,7 +17,7 @@
         <span class="manual-brand">{{ m.brand or '' }}</span>
         <span class="manual-model">{{ m.model or m.title }}</span>
       </a>
-      <span class="doc-tag">{{ m.doc_type }}</span>
+      <span class="doc-tag">{{ m.doc_type|doc_label }}</span>
       {% if m.download %}<a class="mini-dl" href="{{ m.download }}" target="_blank" rel="noopener nofollow ugc" title="Download ({{ m.host }})">↓ {{ m.host }}</a>{% endif %}
     </li>
     {% endfor %}

@@ -148,7 +148,7 @@ try {
   console.log(rev);
   assert.deepEqual(rev, {
     q: "Sign and send 4 facts?",
-    changes: ["Title: “Philips 14PV1OO manual” → “Philips 14PV100 service manual”", "Type: user → service", "Remove model: Philips 14PV1OO", "Add model: Philips 14PV100"],
+    changes: ["Title: “Philips 14PV1OO manual” → “Philips 14PV100 service manual”", "Type: User manual → Service manual", "Remove model: Philips 14PV1OO", "Add model: Philips 14PV100"],
     notes: ["Philips 21PT1354 was listed by someone else, so you can't remove it."],
   });
 

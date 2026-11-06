@@ -61,7 +61,7 @@ test("an edit: title and type, a typo fixed, a model added; someone else's model
     { type: "product", at: AT, body: { brand: "Philips", model: "14PV100" } },
     { type: "covers", at: AT, body: { manual: M, product: pk("Philips", "14PV100") } },
   ]);
-  assert.deepEqual(p.changes, ["Title: “Newer title” → “Philips 14PV100 service manual”", "Type: user → service", "Remove model: Philips 14PV1OO", "Add model: Philips 14PV100"]);
+  assert.deepEqual(p.changes, ["Title: “Newer title” → “Philips 14PV100 service manual”", "Type: User manual → Service manual", "Remove model: Philips 14PV1OO", "Add model: Philips 14PV100"]);
   assert.deepEqual(p.notes, []);
 
   const theirs = draftOf(s);

@@ -116,7 +116,10 @@ async fn manual_facts_hooks_and_an_edit() {
     openmanuals_server::fold::fold_and_build(st.clone()).await.unwrap();
     let page = get(format!("{base}/manual/{manual}")).await.text().await.unwrap();
     assert!(page.contains(">Philips 14PV100 service manual<"), "the newer title wins");
-    assert!(page.contains(r#"<span class="doc-tag">service</span>"#));
+    assert!(page.contains(r#"<span class="doc-tag">Service manual</span>"#), "the type reads as a label");
+    assert!(page.contains(r#"<a href="/manuals?brand=philips&doc_type=service">Service manuals</a>"#), "the crumb links to the brand's manuals of that type:\n{page}");
+    let list = get(format!("{base}/manuals?brand=philips&doc_type=Service&all=1")).await.text().await.unwrap();
+    assert!(list.contains("<h1>Philips service manuals</h1>") && list.contains(r#"<span class="doc-tag">Service manual</span>"#), "{list}");
     assert!(page.contains(">14PV100</a>") && page.contains(">21PT1354</a>"), "{page}");
     assert!(!page.contains(">14PV1OO</a>"), "the retracted model is gone:\n{page}");
 }
