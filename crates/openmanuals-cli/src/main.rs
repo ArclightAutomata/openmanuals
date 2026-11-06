@@ -173,6 +173,16 @@ enum Cmd {
         as_verified: bool,
         #[arg(long)]
         limit: Option<usize>,
+        /// Only this source's rows (e.g. freeservicemanuals); no other source's facts are signed.
+        #[arg(long)]
+        source: Option<String>,
+        /// The target ledger's snapshot (e.g. a copy of /db/latest.db): pages it
+        /// already has a manual for are skipped, and its products aren't re-signed.
+        #[arg(long)]
+        known: Option<PathBuf>,
+        /// Leave out rows salli-cat marked unavailable (no file at the source).
+        #[arg(long)]
+        skip_unavailable: bool,
     },
     /// One-time import of old-style archive.org items (manualslib-id-<n>) the
     /// ledger doesn't know, so the extension needn't ask archive.org live.
@@ -487,10 +497,11 @@ fn main() -> Result<()> {
             let p = outbox::queue(&home, &facts)?;
             println!("queued {} facts in {}", facts.len(), p.display());
         }
-        Cmd::MigrateSalliCat { db, out, hash_local, as_verified, limit } => {
+        Cmd::MigrateSalliCat { db, out, hash_local, as_verified, limit, source, known, skip_unavailable } => {
             let key = home.key()?;
             let out = out.unwrap_or_else(|| home.dir.join("outbox").join(format!("{}-salli-cat.jsonl", ulid::Ulid::new())));
-            let stats = migrate::run(&key, &db, &out, hash_local, as_verified, limit)?;
+            let opts = migrate::Options { hash_local, as_verified, limit, source, known, skip_unavailable };
+            let stats = migrate::run(&key, &db, &out, &opts)?;
             println!("{stats:#?}\nwrote {}", out.display());
         }
         Cmd::RestripScan { db, files_root, out, limit, jobs, only } => {

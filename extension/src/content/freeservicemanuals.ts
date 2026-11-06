@@ -27,6 +27,9 @@ interface Product { brand: string; model: string }
 
 const clean = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
 
+/** The site's placeholders where a brand or publisher goes: no product under those. */
+const NO_BRAND = /^(?:none|unknown|miscellaneous|various|[^\p{L}\p{N}]*)$/iu;
+
 /** The info table as label → cell. */
 function rows(): Map<string, HTMLTableCellElement> {
   const out = new Map<string, HTMLTableCellElement>();
@@ -58,11 +61,11 @@ function products(): Product[] {
   if (section() === "bookcats") {
     const brand = clean(r.get("publisher")?.textContent);
     const model = linkText(r.get("title"));
-    return brand && model ? [{ brand, model }] : [];
+    return brand && model && !NO_BRAND.test(brand) ? [{ brand, model }] : [];
   }
   const brand = clean(r.get("brand")?.textContent);
   const models = [linkText(r.get("type number")), ...lines(r.get("this manual also covers"))].filter(Boolean);
-  return brand ? Array.from(new Set(models), (model) => ({ brand, model })) : [];
+  return brand && !NO_BRAND.test(brand) ? Array.from(new Set(models), (model) => ({ brand, model })) : [];
 }
 
 const isFileUrl = (url: string): boolean => {
