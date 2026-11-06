@@ -36,8 +36,9 @@
     {% for s in sites %}
     <div class="site-card">
       <div class="site-head"><a href="{{ s.url }}" rel="noopener noreferrer" target="_blank">{{ s.name }}</a></div>
-      <p class="site-count"><strong>{{ s.preserved }}</strong> preserved <span>of {{ s.known }} known ({{ s.pct }}%)</span></p>
-      <div class="site-bar" role="img" aria-label="{{ s.pct }}% preserved"><span style="width: {{ s.bar }}%"></span></div>
+      <p class="site-count"><strong>{{ s.preserved }}</strong> preserved</p>
+      {% if s.has_needed %}<p class="site-needed">{{ s.needed }} still to preserve</p>
+      <div class="site-bar" role="img" aria-label="{{ s.pct }}% of the manuals we know of there are preserved"><span style="width: {{ s.bar }}%"></span></div>{% endif %}
     </div>
     {% endfor %}
   </div>

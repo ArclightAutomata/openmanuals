@@ -315,7 +315,8 @@ a.button:hover { filter: brightness(1.05); }
 .site-head a:hover { text-decoration: underline; }
 .site-count { margin: 8px 0 8px; font-variant-numeric: tabular-nums; }
 .site-count strong { font-size: 22px; color: var(--accent); }
-.site-count span { color: var(--muted); font-size: 14px; }
+.site-count { margin-bottom: 2px; }
+.site-needed { margin: 0 0 8px; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 .site-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .site-bar span { display: block; height: 100%; background: var(--accent); }
 .contribute-page { max-width: 680px; padding: 40px 0; }

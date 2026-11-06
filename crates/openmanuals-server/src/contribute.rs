@@ -141,7 +141,9 @@ impl Contribute {
                 let pct = if known > 0 { preserved as f64 * 100.0 / known as f64 } else { 0.0 };
                 json!({
                     "name": site.name, "url": site.url,
-                    "known": g(known), "preserved": g(preserved),
+                    // Only a site we've catalogued has manuals known but not
+                    // yet preserved; elsewhere "known" just repeats "preserved".
+                    "preserved": g(preserved), "needed": g(known - preserved), "has_needed": known > preserved,
                     "pct": format!("{pct:.1}"),
                     // A sliver stays visible for a site with a few preserved.
                     "bar": format!("{:.1}", if preserved > 0 { pct.max(1.0) } else { 0.0 }),
