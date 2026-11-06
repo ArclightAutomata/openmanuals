@@ -3,11 +3,13 @@
 // checked here (the fact must verify and hash to its id; a copy's location
 // fact must name the page's file), and actions are signed only from here.
 // Single actions wait UNDO_MS for "Undo"; bulk actions take one confirmation.
+// On a manual's page, the manual editor (edit/editor.ts) sits above the list.
 import { getSettings } from "../core/config.ts";
 import type { Identity } from "../core/messages.ts";
 import { can, describeRow, groups, keyOf, kindOf, opFor, pageItems, planBulk, selectWhere, UNDO_MS, type BulkOp, type Op, type Row } from "../core/panel.ts";
 import type { ReportValue } from "../core/site.ts";
 import { checkServedFact } from "../core/site-check.ts";
+import { mountEditor, type Editor } from "../edit/editor.ts";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const send = <T,>(msg: unknown) => chrome.runtime.sendMessage(msg).catch((e) => ({ error: String(e) })) as Promise<T>;
@@ -26,6 +28,7 @@ const rows = new Map<string, Row>();
 const selected = new Set<string>();
 const pending = new Map<string, { op: BulkOp; kind: Op; until: number; timer: ReturnType<typeof setTimeout> }>();
 let plan: { op: Op; ops: BulkOp[]; rows: Row[] } | null = null;
+let editor: Editor | null = null;
 
 const reason = () => $<HTMLSelectElement>("reason").value as ReportValue;
 const visible = (): Row[] => order.map((k) => rows.get(k)!).filter(Boolean);
@@ -62,7 +65,11 @@ async function loadPage(): Promise<void> {
   const got = await chrome.storage.session.get(pageKey());
   const page = got[pageKey()] as { items?: unknown; url?: string } | undefined;
   if (!page) { order = []; render("Waiting for an OpenManuals server page in this tab…"); return; }
-  const items = pageItems(page.items);
+  const all = pageItems(page.items);
+  // A manual's edit hooks open the editor; the rest are rows.
+  const manual = all.find((a) => a.action === "manual");
+  const items = all.filter((a) => a.action !== "manual");
+  showEditor(manual?.action === "manual" ? manual.manual : null);
   order = [];
   const fresh: Row[] = [], known: Row[] = [];
   for (const a of items) {
@@ -73,7 +80,7 @@ async function loadPage(): Promise<void> {
     else { const r: Row = { key, action: a, status: "loading" }; rows.set(key, r); fresh.push(r); }
   }
   for (const k of [...selected]) if (!order.includes(k)) selected.delete(k);
-  render(items.length ? undefined : "Nothing on this page to act on.");
+  render(items.length || editor ? undefined : "Nothing on this page to act on.");
   // New rows first; rows already shown are re-checked quietly (they may have been retracted since).
   await checkAll(fresh);
   await checkAll(known.filter((r) => r.done === undefined && !pending.has(r.key)));
@@ -206,7 +213,7 @@ function render(empty?: string): void {
   const list = visible();
   const ul = $("rows");
   ul.replaceChildren(...list.map(renderRow));
-  $("empty").classList.toggle("hidden", list.length > 0);
+  $("empty").classList.toggle("hidden", list.length > 0 || (editor !== null && empty === undefined));
   if (empty !== undefined || !list.length) $("empty").textContent = empty ?? "Nothing on this page to act on.";
   renderPick(list);
   renderBulk();
@@ -254,12 +261,27 @@ $<HTMLSelectElement>("pick").addEventListener("change", () => {
   render();
 });
 
+// ---- the manual editor ---------------------------------------------------------------------------
+
+function showEditor(manual: string | null): void {
+  if (editor?.manual === manual) return;
+  editor?.destroy();
+  editor = null;
+  $("editor").classList.toggle("hidden", manual === null);
+  if (manual) editor = mountEditor($("editor"), { base, manual, me, hasKey, send });
+}
+
 // ---- focus from a click on the page ------------------------------------------------------------
 
 async function applyFocus(): Promise<void> {
   const got = await chrome.storage.session.get(focusKey());
-  const f = got[focusKey()] as { key?: string; at?: number } | undefined;
+  const f = got[focusKey()] as { key?: string; focus?: string; at?: number } | undefined;
   if (!f?.key || Date.now() - (f.at ?? 0) > 15000) return;
+  if (f.key.startsWith("manual:")) {
+    for (let i = 0; i < 40 && editor?.manual !== f.key.slice(7); i++) await new Promise((r) => setTimeout(r, 100));
+    if (editor?.manual === f.key.slice(7)) editor.focus(typeof f.focus === "string" ? f.focus : "title");
+    return;
+  }
   for (let i = 0; i < 40 && !document.querySelector(`li.row[data-key="${CSS.escape(f.key)}"]`); i++) await new Promise((r) => setTimeout(r, 100));
   const li = document.querySelector<HTMLLIElement>(`li.row[data-key="${CSS.escape(f.key)}"]`);
   if (!li) return;

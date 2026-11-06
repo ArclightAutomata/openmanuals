@@ -76,6 +76,9 @@ CREATE INDEX IF NOT EXISTS facts_folded ON facts(folded);
 -- Browsing the ledger newest first, optionally by type or author.
 CREATE INDEX IF NOT EXISTS facts_type_cursor ON facts(type, cursor);
 CREATE INDEX IF NOT EXISTS facts_author_cursor ON facts(author, cursor);
+-- One manual's facts, for the extension's editor (`manual_facts`).
+CREATE INDEX IF NOT EXISTS facts_manual_id ON facts(json_extract(json, '$.body.id')) WHERE type = 'manual';
+CREATE INDEX IF NOT EXISTS facts_covers_manual ON facts(json_extract(json, '$.body.manual')) WHERE type = 'covers';
 CREATE TABLE IF NOT EXISTS verifier_state (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 "#;
 
@@ -306,6 +309,32 @@ impl Inbox {
             Some((cursor, id, author, kind, json, folded)) => Some(LedgerRow { cursor, id, author, kind, folded: folded != 0, fact: Fact::from_json(&json).map_err(|e| anyhow!("{e}"))? }),
             None => None,
         })
+    }
+
+    /// A manual's `manual` and `covers` facts in ledger order (at most
+    /// `limit`), whether or not they are folded yet: what the extension's
+    /// editor starts from.
+    pub fn manual_facts(&self, manual: &str, limit: usize) -> Result<Vec<LedgerRow>> {
+        let conn = self.conn.lock().unwrap();
+        // Two queries, each on its partial index; sorting in SQL would make
+        // SQLite walk every fact of the type in cursor order instead.
+        let mut out = Vec::new();
+        for sql in [
+            "SELECT cursor, id, author, type, json, folded FROM facts WHERE type = 'manual' AND json_extract(json, '$.body.id') = ?1 LIMIT ?2",
+            "SELECT cursor, id, author, type, json, folded FROM facts WHERE type = 'covers' AND json_extract(json, '$.body.manual') = ?1 LIMIT ?2",
+        ] {
+            let mut stmt = conn.prepare_cached(sql)?;
+            let rows = stmt.query_map(params![manual, limit as i64], |r| {
+                Ok((r.get::<_, String>(0)?, r.get::<_, String>(1)?, r.get::<_, String>(2)?, r.get::<_, String>(3)?, r.get::<_, String>(4)?, r.get::<_, i64>(5)?))
+            })?;
+            for row in rows {
+                let (cursor, id, author, kind, json, folded) = row?;
+                out.push(LedgerRow { cursor, id, author, kind, folded: folded != 0, fact: Fact::from_json(&json).map_err(|e| anyhow!("{e}"))? });
+            }
+        }
+        out.sort_by(|a, b| a.cursor.cmp(&b.cursor));
+        out.truncate(limit);
+        Ok(out)
     }
 
     /// Keys a moderator has blocked (the newest block/unblock wins). Cheaper

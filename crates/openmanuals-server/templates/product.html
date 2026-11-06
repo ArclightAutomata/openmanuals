@@ -3,7 +3,7 @@
 {% block content %}
 <section class="results">
   <div class="results-head">
-    <h1>{{ p.brand }} {{ p.model }}</h1>
+    <h1><a class="brand-link" href="/manuals?brand={{ p.brand_key|urlencode }}" title="All {{ p.brand }} manuals">{{ p.brand }}</a> {{ p.model }}</h1>
     <p class="count">{{ results|length }} manual{% if results|length != 1 %}s{% endif %}</p>
   </div>
   <ul class="manual-list">

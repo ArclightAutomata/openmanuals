@@ -1,14 +1,24 @@
 // Content script on the configured OpenManuals server's pages only (registered
 // at runtime for that origin, see background/site.ts). It adds the same small
 // "⋯" button to every hooked fact, copy and file, so the page can't tell which
-// facts are yours; a click only asks the service worker to open the side panel
-// (or the confirmation window). It also reports the page's hooks (ids only)
+// facts are yours, and an edit button to a manual's title and models; a click
+// only asks the service worker to open the side panel (or a window). It also reports the page's hooks (ids only)
 // for the side panel, which fetches and checks each one itself. Nothing here
 // signs, and nothing on the page is trusted beyond the ids.
 import { keyOf } from "../core/panel.ts";
 import { actionFor, type SiteAction } from "../core/site.ts";
 
-const HOOKS = "[data-om-fact], [data-om-location], [data-om-file]";
+const HOOKS = "[data-om-fact], [data-om-location], [data-om-file], [data-om-manual]";
+
+/** The button's text and tooltip. */
+function label(a: SiteAction): [string, string] {
+  if (a.action === "manual") {
+    if (a.focus === "add") return ["+ Add model", "Add a model this manual covers (OpenManuals extension)"];
+    if (a.focus?.startsWith("product:")) return ["✎", "Edit or remove this model (OpenManuals extension)"];
+    return ["✎", "Edit this manual's title, type and models (OpenManuals extension)"];
+  }
+  return ["⋯", a.action === "fact" ? "Retract or report this fact (OpenManuals extension)" : "Report or retract (OpenManuals extension)"];
+}
 
 function addButtons(root: ParentNode): void {
   for (const el of root.querySelectorAll<HTMLElement>(HOOKS)) {
@@ -19,9 +29,8 @@ function addButtons(root: ParentNode): void {
     if (!slot || slot.querySelector("button.om-act")) continue;
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "om-act";
-    b.textContent = "⋯";
-    b.title = a.action === "fact" ? "Retract or report this fact (OpenManuals extension)" : "Report or retract (OpenManuals extension)";
+    b.className = a.action === "manual" ? "om-act om-edit" : "om-act";
+    [b.textContent, b.title] = label(a);
     b.setAttribute("aria-label", b.title);
     b.addEventListener("click", (e) => {
       e.preventDefault();

@@ -82,6 +82,7 @@ pub fn router(state: Shared) -> Router {
         .route("/api/feed", get(api::feed))
         .route("/api/fact/{id}", get(activity::fact_json))
         .route("/api/lookup", get(api::lookup))
+        .route("/api/manual/{id}/facts", get(api::manual_facts))
         .route("/api/server", get(api::server_info))
         .route("/db/latest.db", get(api::latest_db))
         .route("/db/latest.db.sha256", get(api::latest_sha))

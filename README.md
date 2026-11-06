@@ -762,6 +762,12 @@ Keyoxide](#linking-from-keyoxide)), `/contributions`, `/about`,
 `/contribute?brand=` and `/contribute/random?brand=` (below). The stylesheet,
 logo and theme script are served from `/static/`.
 
+**A manual's page** shows each model it covers as two links: the brand, to
+all of that brand's manuals (`/manuals?brand=`), and the model, to that
+product's page. With the extension installed, the title and each model get an
+edit button, and there is a "+ Add model" button (see [Editing a
+manual](#editing-a-manual)).
+
 **Help preserve a manual.** Many manuals are known only by their page on a
 source site, with no file yet. Of those, the ones on the sites the extension
 supports (ManualsLib, Elektrotanya, Manualzz, FreeServiceManuals.info) are
@@ -863,6 +869,24 @@ moderation state, for the extension's confirmation window:
 
 A fact hidden by moderation comes with `"fact": null`. 400 for a malformed
 id, 404 for an unknown one.
+
+#### `GET /api/manual/<ulid>/facts`
+
+A manual's `manual` and `covers` facts, each in the form `GET /api/fact/<id>`
+uses, in ledger order (folded or not, so an edit shows up before the next
+build), and display names for the products they cover (from the snapshot),
+for the extension's [editor](#editing-a-manual):
+
+```json
+{ "manual": "01M6…", "facts": [ { "id": "sha256:…", "cursor": "01J9…", "folded": false,
+    "hidden": false, "retracted": false, "fact": { …envelope… } } ],
+  "products": { "philips|14PV100": { "brand": "Philips", "model": "14PV100" } },
+  "truncated": false }
+```
+
+At most 1000 facts (`truncated` says when there are more). The inbox finds
+them through two partial expression indexes, on `$.body.id` of `manual` facts
+and `$.body.manual` of `covers` facts. 400 for a malformed id.
 
 #### `GET /api/lookup?url=<origin page url>` / `?file=<sha256>`
 
@@ -1363,6 +1387,32 @@ server, and outlines the matching row on the page while you hover one:
   hooks, and is turned off when the tab leaves the server. The toolbar popup
   also offers it on server pages.
 
+#### Editing a manual
+
+On a manual's page the extension adds an edit button (✎) to the title and to
+each model, and a **+ Add model** button. Any of them opens the editor at the
+top of the side panel (or, where the panel can't open, an edit window), with
+the cursor on what was clicked. It has the title, the document type and the
+models (brand and model, one row each), and says who listed each model.
+
+The editor starts from `GET /api/manual/<ulid>/facts` and checks every fact
+itself, as the panel does: signature valid, id recomputed from the canonical
+bytes. Facts hidden by moderation or retracted don't count, and the newest
+`manual` fact wins per field, as in the build (`extension/src/core/edit.ts`).
+**Review changes** lists what will be signed; **Sign and send** signs it:
+
+| Change | Facts |
+|---|---|
+| title or type | a `manual` fact with the same id and both fields |
+| a model added | a `product` fact and a `covers` fact |
+| a model removed | a `retract` of each of your own `covers` facts for it |
+| a model's name fixed | both of the above (a different spelling of the same product key is the same model) |
+
+You can only retract your own facts, so a model someone else listed stays;
+the review says so. Titles may be up to 300 characters, brands and models up
+to 120. The server shows the edit after its next build, usually within a
+minute; the editor reloads from the inbox at once.
+
 Signing stays in the extension. There is no sign-in on the website:
 
 - Only your key can sign a retraction or a report, and the key lives in the
@@ -1379,6 +1429,8 @@ How it's kept that way:
   `data-om-fact` (fact id), `data-om-author`, `data-om-type`, plus
   `data-om-retracted` / `data-om-hidden` on fact rows and the fact page;
   `data-om-file` on a manual's file sections and a file page;
+  `data-om-manual` (the manual's id) with `data-om-edit` (`title`, `add` or
+  `product:<key>`) on a manual's title, models and add slot;
   `data-om-location` + `data-om-file` + `data-om-author` on each copy. The
   footer's `.om-ext-hint` ("install the extension") is hidden when the
   extension is present.
@@ -1393,12 +1445,13 @@ How it's kept that way:
   the page) is ignored.
 - **The page only names ids.** The content script reports the page's hooks
   (`sitePage`: fact, copy and file ids, validated and de-duplicated, at most
-  500) and, on a click, `siteAction` (validated: `fact`, `copy` or `file`,
-  with well-formed ids, from the server's exact origin, top frame). The
-  service worker keeps the ids in `chrome.storage.session`, which content
-  scripts can't read, and calls `chrome.sidePanel.open` straight from the
-  click (it needs the user gesture); when that fails it opens `confirm.html`
-  in an extension popup window instead.
+  500) and, on a click, `siteAction` (validated: `fact`, `copy`, `file` or
+  `manual`, with well-formed ids, from the server's exact origin, top
+  frame). The service worker keeps the ids in `chrome.storage.session`,
+  which content scripts can't read, and calls `chrome.sidePanel.open`
+  straight from the click (it needs the user gesture); when that fails it
+  opens `confirm.html` (or, to edit a manual, `edit.html`) in an extension
+  popup window instead.
 - **The panel and the window check everything themselves.** Both are
   extension pages the website can't script. They fetch each fact again from
   `GET /api/fact/<id>`, check its signature and that its id, recomputed from
@@ -1526,6 +1579,19 @@ with yours marked, that Retract then Undo sends nothing while a Retract left
 to lapse reaches the server, that selecting the other key's facts and
 reporting them as spam takes one confirmation and one bundle of label facts,
 and that the panel follows the tab to another page.
+
+Editing a manual, end to end (same setup):
+
+```sh
+node test/edit-e2e.mjs               # headless; --headful, --chrome <path>, --port 18734
+```
+
+It posts a manual with a model listed by you (with a typo) and one listed by
+another key, checks the page's brand and model links and edit buttons, clicks
+the typo's edit button for real and checks the editor opens with the cursor on
+it, fixes the title, type and typo, tries to remove the other key's model,
+checks the review, signs, and checks the facts on the server and, after the
+build, the page. Last, it opens the edit window with "+ Add model".
 
 The two wasm modules are `openmanuals-wasm` (openmanuals-core: facts,
 signing, lookups; loaded by the service worker and pages) and

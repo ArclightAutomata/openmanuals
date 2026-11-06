@@ -53,7 +53,8 @@ let confirmWindow: number | null = null;
 export async function openConfirm(params: unknown): Promise<{ ok: boolean; panel?: boolean }> {
   const a = validAction(params);
   if (!a) return { ok: false };
-  const url = chrome.runtime.getURL(`confirm.html?${toQuery(a)}`);
+  // Editing a manual has its own page; everything else is the confirmation window.
+  const url = chrome.runtime.getURL(`${a.action === "manual" ? "edit" : "confirm"}.html?${toQuery(a)}`);
   if (confirmWindow !== null) {
     const w = await chrome.windows.get(confirmWindow, { populate: true }).catch(() => null);
     const tab = w?.tabs?.[0];
@@ -63,7 +64,7 @@ export async function openConfirm(params: unknown): Promise<{ ok: boolean; panel
       return { ok: true };
     }
   }
-  const w = await chrome.windows.create({ url, type: "popup", width: 480, height: 560, focused: true });
+  const w = await chrome.windows.create({ url, type: "popup", width: 480, height: a.action === "manual" ? 680 : 560, focused: true });
   confirmWindow = w?.id ?? null;
   return { ok: true };
 }
@@ -118,7 +119,7 @@ export function siteAction(sender: chrome.runtime.MessageSender, params: unknown
     const a = validAction(params);
     if (!ok || !a) { await opening; return { ok: false }; }
     if (await opening) {
-      await chrome.storage.session.set({ [focusKey(tabId!)]: { key: keyOf(a), at: Date.now() } });
+      await chrome.storage.session.set({ [focusKey(tabId!)]: { key: keyOf(a), ...(a.action === "manual" && a.focus ? { focus: a.focus } : {}), at: Date.now() } });
       return { ok: true, panel: true };
     }
     return openConfirm(a);

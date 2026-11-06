@@ -401,3 +401,57 @@ pub async fn server_info(State(state): State<Shared>, _h: HeaderMap) -> Response
     }))
     .into_response()
 }
+
+/// Most facts `manual_facts` returns for one manual.
+pub const MAX_MANUAL_FACTS: usize = 1000;
+
+/// `GET /api/manual/{id}/facts`: a manual's `manual` and `covers` facts from
+/// the inbox (folded or not), each as `GET /api/fact/{id}` serves it, plus
+/// display names for the products they cover. The extension's editor verifies
+/// every fact itself; `products` is only for showing them.
+pub async fn manual_facts(State(state): State<Shared>, Path(id): Path<String>) -> Response {
+    let id = id.to_ascii_uppercase();
+    if !valid_ulid(&id) {
+        return err(StatusCode::BAD_REQUEST, "not a manual id");
+    }
+    tokio::task::spawn_blocking(move || -> anyhow::Result<Value> {
+        let rows = state.inbox.manual_facts(&id, MAX_MANUAL_FACTS)?;
+        let m = state.inbox.moderation(|fp| state.trust.read().unwrap().is_moderator(fp))?;
+        let mut keys = std::collections::BTreeSet::new();
+        let facts: Vec<Value> = rows
+            .iter()
+            .map(|r| {
+                let hidden = m.hidden(r);
+                if !hidden && r.kind == "covers" {
+                    if let Some(k) = r.fact.body.get("product").and_then(Value::as_str) {
+                        keys.insert(k.to_string());
+                    }
+                }
+                json!({
+                    "id": r.id, "cursor": r.cursor, "folded": r.folded, "hidden": hidden, "retracted": m.retracted(r),
+                    "fact": if hidden { Value::Null } else { serde_json::to_value(&r.fact).unwrap_or(Value::Null) },
+                })
+            })
+            .collect();
+        let mut products = serde_json::Map::new();
+        if let Some(db) = state.reader() {
+            for k in &keys {
+                let row: Option<(String, String)> = db.query_row_cached("SELECT brand, model FROM products WHERE key = ?1", [k], |r| Ok((r.get(0)?, r.get(1)?))).optional()?;
+                if let Some((brand, model)) = row {
+                    products.insert(k.clone(), json!({"brand": brand, "model": model}));
+                }
+            }
+        }
+        Ok(json!({"manual": id, "facts": facts, "products": products, "truncated": rows.len() >= MAX_MANUAL_FACTS}))
+    })
+    .await
+    .map_err(anyhow::Error::from)
+    .and_then(|r| r)
+    .map(|v| Json(v).into_response())
+    .unwrap_or_else(|e| err(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))
+}
+
+/// A manual id: an uppercase Crockford base32 ULID.
+fn valid_ulid(s: &str) -> bool {
+    s.len() == 26 && s.as_bytes()[0] <= b'7' && s.bytes().all(|b| matches!(b, b'0'..=b'9' | b'A'..=b'H' | b'J' | b'K' | b'M' | b'N' | b'P'..=b'T' | b'V'..=b'Z'))
+}

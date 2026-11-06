@@ -1,0 +1,26 @@
+/* The manual editor (editor.ts), in the side panel and the edit window. */
+:root { --green: #2f7d5b; --ink: #1c2321; --muted: #5f6b66; --line: #e1e5df; --bg: #f6f7f5; --red: #b91c1c; }
+.om-editor { background: #fff; border-bottom: 1px solid var(--line); padding: 10px 12px 12px; }
+.om-editor h2 { font-size: 14px; margin: 0 0 8px; }
+.om-editor label, .om-editor .ed-label { display: block; color: var(--muted); font-size: 12px; font-weight: 600; margin: 8px 0 3px; }
+.om-editor input[type="text"], .om-editor select { box-sizing: border-box; width: 100%; padding: 5px 7px; border: 1px solid #d5d9d3; border-radius: 6px; font: inherit; background: #fff; color: var(--ink); }
+.om-editor ul.ed-models { list-style: none; margin: 0; padding: 0; }
+.om-editor ul.ed-models li { display: grid; grid-template-columns: 2fr 3fr auto; gap: 6px; align-items: center; padding: 3px 0; }
+.om-editor ul.ed-models li.ed-none { display: block; color: var(--muted); }
+.om-editor ul.ed-models li.ed-flash { animation: ed-flash 1.6s ease-out; }
+@keyframes ed-flash { from { background: #d6ecdf; } to { background: transparent; } }
+.om-editor .ed-who { grid-column: 1 / 4; color: var(--muted); font-size: 11px; margin: -2px 0 4px; }
+.om-editor .ed-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.om-editor .ed-review { margin-top: 10px; padding: 8px 10px; background: #fff7e0; border-radius: 8px; }
+.om-editor .ed-review ul { margin: 6px 0; padding-left: 18px; }
+.om-editor .ed-q { margin: 0; font-weight: 600; }
+.om-editor .ed-note { margin: 6px 0 0; color: var(--muted); }
+.om-editor .ed-msg { margin: 8px 0 0; min-height: 16px; color: var(--muted); }
+.om-editor .ed-msg:empty { display: none; }
+.om-editor .ed-msg.ok { color: var(--green); font-weight: 600; } .om-editor .ed-msg.bad { color: var(--red); font-weight: 600; }
+.om-editor button { padding: 5px 10px; border: none; border-radius: 6px; background: var(--green); color: #fff; font-weight: 600; cursor: pointer; font-size: 12px; }
+.om-editor button.secondary { background: #e5efe9; color: #1f5b40; }
+.om-editor button.danger { background: var(--red); }
+.om-editor button.link { background: none; color: #1a6ea8; padding: 0 2px; text-decoration: underline; font-weight: 600; }
+.om-editor button:disabled { opacity: .45; cursor: default; }
+.om-editor .hidden { display: none !important; }

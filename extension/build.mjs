@@ -35,6 +35,7 @@ const modules = esbuild.context({
     popup: "src/popup/popup.ts",
     options: "src/options/options.ts",
     confirm: "src/confirm/confirm.ts",
+    edit: "src/edit/edit.ts",
     panel: "src/panel/panel.ts",
     offscreen: "src/offscreen/offscreen.ts",
     "strip-worker": "src/offscreen/strip-worker.ts",
@@ -51,6 +52,8 @@ function copyStatic() {
   cpSync("content.css", `${outdir}/content.css`);
   cpSync("content-site.css", `${outdir}/content-site.css`);
   cpSync("src/confirm/confirm.html", `${outdir}/confirm.html`);
+  cpSync("src/edit/edit.html", `${outdir}/edit.html`);
+  cpSync("src/edit/editor.css", `${outdir}/editor.css`);
   cpSync("src/panel/panel.html", `${outdir}/panel.html`);
   cpSync("src/popup/popup.html", `${outdir}/popup.html`);
   cpSync("src/options/options.html", `${outdir}/options.html`);

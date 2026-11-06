@@ -13,9 +13,14 @@ export const MAX_BULK = 2000;
 /** How long a single action waits for "Undo" before it is signed. */
 export const UNDO_MS = 8000;
 
-/** A stable key per item: the fact id, the copy's location fact id, or file:<id>. */
+/** A stable key per item: the fact id, the copy's location fact id, file:<id>, or manual:<id> (every edit hook of a manual is one item). */
 export function keyOf(a: SiteAction): string {
-  return a.action === "fact" ? a.fact : a.action === "copy" ? a.location : `file:${a.file}`;
+  switch (a.action) {
+    case "fact": return a.fact;
+    case "copy": return a.location;
+    case "file": return `file:${a.file}`;
+    case "manual": return `manual:${a.manual}`;
+  }
 }
 
 /** The page's hooks, validated and de-duplicated, in page order. */
@@ -56,7 +61,7 @@ export type BulkOp =
 
 /** Your own verified fact or copy, not retracted, not itself a retraction. */
 export function canRetract(r: Row, me: string | null): boolean {
-  return r.status === "ok" && r.action.action !== "file" && !!r.fact && me !== null && r.fact.author === me
+  return r.status === "ok" && r.action.action !== "file" && r.action.action !== "manual" && !!r.fact && me !== null && r.fact.author === me
     && !r.retracted && r.fact.type !== "retract" && r.done === undefined;
 }
 
@@ -75,6 +80,7 @@ const isSha256 = (s: string) => /^[0-9a-f]{64}$/.test(s);
 export function opFor(r: Row, op: Op, me: string | null, value: ReportValue = "spam"): BulkOp | null {
   if (!can(r, me, op)) return null;
   const a = r.action;
+  if (a.action === "manual") return null;
   if (op === "retract") return { op: "retract", fact: r.key };
   if (a.action === "file") return { op: "report", target: `file:${a.file}`, value, ...(isSha256(a.file) ? { sha256: a.file } : {}) };
   const f = r.fact!;
@@ -120,6 +126,7 @@ export function groups(rows: Row[]): { kinds: [string, number][]; authors: [stri
 /** A one-line description of a row. */
 export function describeRow(r: Row): string {
   if (r.action.action === "file") return `File ${r.action.file.slice(0, 16)}…`;
+  if (r.action.action === "manual") return `Manual ${r.action.manual}`;
   if (!r.fact) return r.key.slice(0, 18) + "…";
   const f = r.fact;
   const b = f.body;

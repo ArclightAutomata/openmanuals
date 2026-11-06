@@ -60,3 +60,17 @@ test("body summaries are short", () => {
   assert.ok(lines[0].length <= 96 && lines[0].endsWith("…"));
   assert.equal(lines[2], "n: 3");
 });
+
+test("manual edit hooks: one action per manual, the focus when it checks out", () => {
+  const M = "01M69JSKVAY3Z9RCYD22GCY64Q";
+  assert.deepEqual(actionFor(el({ "data-om-manual": M, "data-om-edit": "title" })), { action: "manual", manual: M, focus: "title" });
+  assert.deepEqual(actionFor(el({ "data-om-manual": M, "data-om-edit": "product:philips|14PV100" })), { action: "manual", manual: M, focus: "product:philips|14PV100" });
+  assert.deepEqual(actionFor(el({ "data-om-manual": M, "data-om-edit": "sign everything" })), { action: "manual", manual: M }, "a bad focus is dropped, not the action");
+  assert.deepEqual(actionFor(el({ "data-om-manual": M })), { action: "manual", manual: M });
+  assert.equal(actionFor(el({ "data-om-manual": M.toLowerCase() })), null);
+  assert.equal(actionFor(el({ "data-om-manual": "81M69JSKVAY3Z9RCYD22GCY64Q" })), null, "past the ULID range");
+  assert.equal(actionFor(el({ "data-om-manual": M, "data-om-hidden": "" })), null);
+  const a = validAction({ action: "manual", manual: M, focus: "add" })!;
+  assert.deepEqual(fromQuery("?" + toQuery(a)), a);
+  assert.deepEqual(fromQuery(`?action=manual&manual=${M}&focus=product:%0a`), { action: "manual", manual: M });
+});

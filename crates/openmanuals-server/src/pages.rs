@@ -241,8 +241,13 @@ pub async fn manual(State(state): State<Shared>, Path(id): Path<String>) -> Resp
         let mut names = Names::new(db);
         let dl = download_of(&db, cf.as_deref()).map(|d| json!({"url": d.0, "host": d.1, "ia_identifier": d.2}));
         let mut products = Vec::new();
-        if let Ok(mut s) = db.prepare_cached("SELECT p.brand, p.model FROM covers c JOIN products p ON p.key = c.product WHERE c.manual = ?1 ORDER BY p.key") {
-            for r in s.query_map([&id], |r| Ok(json!({"brand": r.get::<_, String>(0)?, "model": r.get::<_, String>(1)?}))).into_iter().flatten().flatten() {
+        if let Ok(mut s) = db.prepare_cached("SELECT p.brand, p.model, p.key, p.brand_key FROM covers c JOIN products p ON p.key = c.product WHERE c.manual = ?1 ORDER BY p.key") {
+            for r in s
+                .query_map([&id], |r| Ok(json!({"brand": r.get::<_, String>(0)?, "model": r.get::<_, String>(1)?, "key": r.get::<_, String>(2)?, "brand_key": r.get::<_, String>(3)?})))
+                .into_iter()
+                .flatten()
+                .flatten()
+            {
                 products.push(r);
             }
         }
@@ -286,7 +291,8 @@ pub async fn product(State(state): State<Shared>, Path((brand, model)): Path<(St
                 results.push(json!({"id": id, "title": title, "doc_type": dt, "download": dl.as_ref().map(|d| d.0.clone()), "host": dl.as_ref().map(|d| d.1.clone())}));
             }
         }
-        render("product.html", context! { p => json!({"brand": pb, "model": pm}), results => results })
+        let brand_key = openmanuals_core::product::normalize_brand(&pb);
+        render("product.html", context! { p => json!({"brand": pb, "model": pm, "brand_key": brand_key}), results => results })
     })
     .await
 }

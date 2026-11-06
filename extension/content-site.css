@@ -15,3 +15,7 @@ button.om-act {
 button.om-act:hover, button.om-act:focus-visible { opacity: 1; background: rgba(47, 125, 91, 0.15); outline: none; }
 /* The row hovered in the side panel. */
 .om-highlight { outline: 2px solid #2f7d5b !important; outline-offset: 2px; border-radius: 4px; }
+/* Edit buttons on a manual's title and models: quieter until hovered. */
+button.om-act.om-edit { border-color: transparent; opacity: 0.55; font-weight: 500; }
+h1 button.om-act.om-edit { font-size: 15px; }
+button.om-act.om-edit:hover, button.om-act.om-edit:focus-visible { opacity: 1; border-color: rgba(127, 127, 127, 0.45); }

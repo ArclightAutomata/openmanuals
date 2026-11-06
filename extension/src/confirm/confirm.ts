@@ -5,7 +5,7 @@
 import { getSettings } from "../core/config.ts";
 import { bodies, nowIso, type Fact } from "../core/facts.ts";
 import type { Identity } from "../core/messages.ts";
-import { fromQuery, summarizeBody, type SiteAction } from "../core/site.ts";
+import { fromQuery, summarizeBody, toQuery, type SiteAction } from "../core/site.ts";
 import { checkServedFact, type ServedFact } from "../core/site-check.ts";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -55,6 +55,11 @@ async function main(a: SiteAction): Promise<void> {
   const reportOf = (target: string, extra: Record<string, string | undefined>) => () =>
     finish(send({ type: "report", target, value: $<HTMLSelectElement>("reason").value, ...extra }), "Report signed and sent.");
 
+  if (a.action === "manual") {
+    // Editing has its own window.
+    location.replace(chrome.runtime.getURL(`edit.html?${toQuery(a)}`));
+    return;
+  }
   if (a.action === "file") {
     $("title").textContent = "Report a file";
     const box = $("what"); box.textContent = ""; const p = document.createElement("p"); p.className = "meta"; p.textContent = `File ${a.file}`; box.append(p); show("what");

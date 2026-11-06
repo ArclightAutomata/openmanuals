@@ -7,6 +7,10 @@
 export const FACT_ID_RE = /^sha256:[0-9a-f]{64}$/;
 /** A file reference: sha256 hex, or `sha1:<hex>` for legacy files. */
 export const FILE_ID_RE = /^(?:[0-9a-f]{64}|sha1:[0-9a-f]{40})$/;
+/** A manual id: an uppercase ULID. */
+export const MANUAL_ID_RE = /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/;
+/** Where the editor starts: the title, adding a model, or one product (by its key, `brand|MODEL`). */
+export const EDIT_FOCUS_RE = /^(?:title|add|product:[^\u0000-\u001f\u007f]{3,300})$/;
 export const REPORT_VALUES = ["wrong-file", "spam", "malware", "impersonation"] as const;
 export type ReportValue = (typeof REPORT_VALUES)[number];
 
@@ -14,7 +18,8 @@ export type ReportValue = (typeof REPORT_VALUES)[number];
 export type SiteAction =
   | { action: "fact"; fact: string }
   | { action: "copy"; location: string; file: string }
-  | { action: "file"; file: string };
+  | { action: "file"; file: string }
+  | { action: "manual"; manual: string; focus?: string };
 
 /** Accept only the exact shapes above, with well-formed ids; anything else is null. */
 export function validAction(x: unknown): SiteAction | null {
@@ -25,6 +30,12 @@ export function validAction(x: unknown): SiteAction | null {
     case "fact": return FACT_ID_RE.test(str("fact")) ? { action: "fact", fact: str("fact") } : null;
     case "copy": return FACT_ID_RE.test(str("location")) && FILE_ID_RE.test(str("file")) ? { action: "copy", location: str("location"), file: str("file") } : null;
     case "file": return FILE_ID_RE.test(str("file")) ? { action: "file", file: str("file") } : null;
+    case "manual": {
+      if (!MANUAL_ID_RE.test(str("manual"))) return null;
+      // A focus that doesn't check out only loses the focus, not the action.
+      const focus = EDIT_FOCUS_RE.test(str("focus")) ? str("focus") : undefined;
+      return { action: "manual", manual: str("manual"), ...(focus ? { focus } : {}) };
+    }
     default: return null;
   }
 }
@@ -36,7 +47,7 @@ export function toQuery(a: SiteAction): string {
 export function fromQuery(search: string): SiteAction | null {
   const p = new URLSearchParams(search);
   const o: Record<string, string> = {};
-  for (const k of ["action", "fact", "location", "file"]) { const v = p.get(k); if (v !== null) o[k] = v; }
+  for (const k of ["action", "fact", "location", "file", "manual", "focus"]) { const v = p.get(k); if (v !== null) o[k] = v; }
   return validAction(o);
 }
 
@@ -45,7 +56,8 @@ export interface HookElement { getAttribute(name: string): string | null; hasAtt
 
 /**
  * The action a hooked element offers, or null (hidden by moderation, or not a
- * hook). A copy (has a location) wins over its file; a fact row is a fact.
+ * hook). A copy (has a location) wins over its file; a fact row is a fact;
+ * `data-om-manual` (with `data-om-edit` saying which part) opens the editor.
  */
 export function actionFor(el: HookElement): SiteAction | null {
   if (el.hasAttribute("data-om-hidden")) return null;
@@ -55,6 +67,8 @@ export function actionFor(el: HookElement): SiteAction | null {
   const file = el.getAttribute("data-om-file");
   if (location !== null) return validAction({ action: "copy", location, file });
   if (file !== null) return validAction({ action: "file", file });
+  const manual = el.getAttribute("data-om-manual");
+  if (manual !== null) return validAction({ action: "manual", manual, focus: el.getAttribute("data-om-edit") ?? undefined });
   return null;
 }
 
