@@ -1,6 +1,7 @@
 [package]
 name = "openmanuals-server"
 description = "OpenManuals server: facts inbox, feed, snapshot, identity hosting, verifier, pages"
+publish = false
 version.workspace = true
 edition.workspace = true
 license.workspace = true
