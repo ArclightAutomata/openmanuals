@@ -75,6 +75,7 @@ struct Row {
     archived_by_us: bool,
     archive_checked_at: Option<String>,
     scraped_at: Option<String>,
+    doc_description: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -169,7 +170,7 @@ pub fn run(key: &SigningKey, db: &Path, out: &Path, o: &Options) -> Result<Stats
         let where_sql = if wheres.is_empty() { String::new() } else { format!("WHERE {}", wheres.join(" AND ")) };
         let mut s = conn.prepare(&format!(
             "SELECT id, brand, model, doc_type, doc_name, manual_url, source, COALESCE(manualslib_id, source_id, CAST(id AS TEXT)), file_path, file_sha1, file_md5, file_size,
-                    original_file_sha1, original_file_md5, original_filename, archive_url, archived, archive_dark, archive_checked_at, COALESCE(scraped_at, created_at), archived_by_us
+                    original_file_sha1, original_file_md5, original_filename, archive_url, archived, archive_dark, archive_checked_at, COALESCE(scraped_at, created_at), archived_by_us, doc_description
              FROM manuals {where_sql} ORDER BY id",
         ))?;
         for r in s.query_map(rusqlite::params_from_iter(args.iter()), |r| {
@@ -178,7 +179,7 @@ pub fn run(key: &SigningKey, db: &Path, out: &Path, o: &Options) -> Result<Stats
                 source: r.get::<_, Option<String>>(6)?.unwrap_or_else(|| "manualslib".into()), source_key: r.get(7)?, file_path: r.get(8)?, file_sha1: r.get(9)?,
                 file_md5: r.get(10)?, file_size: r.get(11)?, original_file_sha1: r.get(12)?, original_file_md5: r.get(13)?, original_filename: r.get(14)?,
                 archive_url: r.get(15)?, archived: r.get::<_, Option<i64>>(16)?.unwrap_or(0) == 1, archive_dark: r.get::<_, Option<i64>>(17)?.unwrap_or(0) == 1,
-                archive_checked_at: r.get(18)?, scraped_at: r.get(19)?, archived_by_us: r.get::<_, Option<i64>>(20)?.unwrap_or(0) == 1,
+                archive_checked_at: r.get(18)?, scraped_at: r.get(19)?, archived_by_us: r.get::<_, Option<i64>>(20)?.unwrap_or(0) == 1, doc_description: r.get(21)?,
             })
         })? {
             rows.push(r?);
@@ -230,6 +231,8 @@ pub fn run(key: &SigningKey, db: &Path, out: &Path, o: &Options) -> Result<Stats
         match &fsm {
             Some(FsmPage::Service { brand, models }) => {
                 let brand = brand_names.get(&first.brand).cloned().unwrap_or_else(|| brand.clone());
+                let models = fsm_spellings(models, &first.model, first.doc_description.as_deref(), |m| openmanuals_core::product::product_key(&brand, m));
+                let models = &models;
                 title = clean(&format!("{brand} {} Service Manual", models.join(" ")));
                 if !fsm_no_brand(&brand) {
                     products = models.iter().map(|m| (brand.clone(), m.clone())).collect();
@@ -393,6 +396,25 @@ fn fsm_no_brand(name: &str) -> bool {
     n.is_empty() || !n.chars().any(char::is_alphanumeric) || ["none", "unknown", "miscellaneous", "various"].contains(&n.as_str())
 }
 
+/// The page URL drops punctuation and spaces from type numbers (VCR-D4501 is
+/// `VCRD4501`), so each takes its spelling from salli-cat when one has the
+/// same product key: `model` (Type A) and the description's "also covers
+/// X, Y". A model with a comma in it can't be split out, so it keeps the URL's.
+fn fsm_spellings(url_models: &[String], model: &str, description: Option<&str>, key: impl Fn(&str) -> Option<String>) -> Vec<String> {
+    let mut names: Vec<&str> = vec![model];
+    if let Some(also) = description.and_then(|d| d.split_once("also covers ")).map(|(_, rest)| rest) {
+        names.extend(also.split(", "));
+    }
+    let names: Vec<(Option<String>, &str)> = names.into_iter().map(str::trim).filter(|n| !n.is_empty()).map(|n| (key(n), n)).collect();
+    url_models
+        .iter()
+        .map(|u| {
+            let k = key(u);
+            names.iter().find(|(nk, _)| k.is_some() && *nk == k).map_or_else(|| u.clone(), |(_, n)| n.to_string())
+        })
+        .collect()
+}
+
 /// What a FreeServiceManuals.info page URL says about its manual.
 #[derive(Debug, PartialEq)]
 enum FsmPage {
@@ -490,6 +512,10 @@ mod tests {
         );
         assert_eq!(fsm_page("https://freeservicemanuals.info/en/tubedata/1N4001G_1/"), Some(FsmPage::Datasheet { part: "1N4001G_1".into() }));
         assert_eq!(fsm_page("https://freeservicemanuals.info/en/contact/"), None);
+        let key = |m: &str| openmanuals_core::product::product_key("Philips", m);
+        let url: Vec<String> = ["VCRD4501", "DVDR4509VCR", "AB12"].map(String::from).into();
+        assert_eq!(fsm_spellings(&url, "VCR-D4501", Some("VIDEO; also covers DVD--R4509VCR, X, 1"), key), ["VCR-D4501", "DVD--R4509VCR", "AB12"], "salli-cat's spelling, else the URL's");
+        assert_eq!(fsm_spellings(&url[..1], "VCR-D4501", None, key), ["VCR-D4501"]);
         assert!(fsm_no_brand("None") && fsm_no_brand("??") && fsm_no_brand("Miscellaneous") && !fsm_no_brand("Philips"));
         assert_eq!(tool_of("om-strip-rs/2"), "om-strip");
         assert_eq!(tool_of("qpdf/11"), "qpdf");
