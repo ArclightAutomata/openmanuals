@@ -250,3 +250,39 @@ function slugCandidates(slug: string): string[] {
   }
   return out;
 }
+
+// ---- products on a listing (turuta.md) -------------------------------------------
+
+const productCache = new Map<string, { at: number; hit: ProductHit | null }>();
+export interface ProductHit { url: string; title: string }
+
+/**
+ * The manual covering each listed product (aligned with `products`), from the
+ * server's `POST /api/lookup/products`. A manual from `source` itself is
+ * preferred, then any other. Null where none is known or there's no server.
+ */
+export async function lookupProducts(source: string, products: { brand: string; model: string }[]): Promise<{ found: (ProductHit | null)[] }> {
+  const s = await getSettings();
+  const om = wasmSync();
+  if (!s.apiBase || !om) return { found: products.map(() => null) };
+  const keys = products.slice(0, 1000).map((p) => (typeof p?.brand === "string" && typeof p?.model === "string" ? om.product_key(p.brand, p.model) ?? null : null));
+  const now = Date.now();
+  const todo = [...new Set(keys.filter((k): k is string => !!k && !(now - (productCache.get(`${source}\0${k}`)?.at ?? 0) < OM_TTL)))];
+  for (let i = 0; i < todo.length; i += 300) {
+    const batch = todo.slice(i, i + 300);
+    try {
+      const res = await fetch(`${s.apiBase}/api/lookup/products`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ keys: batch }) });
+      if (!res.ok) break;
+      const body = (await res.json()) as { found?: Record<string, { url: string; title: string; source?: string | null }[]> };
+      for (const k of batch) {
+        const ms = body.found?.[k] ?? [];
+        const m = ms.find((x) => x.source === source) ?? ms[0];
+        productCache.set(`${source}\0${k}`, { at: now, hit: m ? { url: m.url, title: m.title } : null });
+      }
+    } catch {
+      break;
+    }
+  }
+  if (productCache.size > 5000) for (const k of [...productCache.keys()].slice(0, 2000)) productCache.delete(k);
+  return { found: keys.map((k) => (k ? productCache.get(`${source}\0${k}`)?.hit ?? null : null)).concat(products.slice(1000).map(() => null)) };
+}

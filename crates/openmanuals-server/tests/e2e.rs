@@ -158,6 +158,17 @@ async fn inbox_fold_build_lookup() {
     let v: Value = client.get(format!("{base}/api/lookup?file={SHA}")).send().await.unwrap().json().await.unwrap();
     assert_eq!(v["manual"]["id"], MANUAL);
 
+    // Lookup by product: a listing's models, optionally from one site only.
+    let v: Value = client.post(format!("{base}/api/lookup/products")).json(&json!({"keys": ["jvc|AV2168TEE", "jvc|NOSUCH"]})).send().await.unwrap().json().await.unwrap();
+    assert_eq!(v["found"]["jvc|AV2168TEE"][0]["id"], MANUAL);
+    assert_eq!(v["found"]["jvc|AV2168TEE"][0]["url"], format!("http://test/manual/{MANUAL}"));
+    assert!(v["found"].get("jvc|NOSUCH").is_none());
+    let v: Value = client.post(format!("{base}/api/lookup/products")).json(&json!({"keys": ["jvc|AV2168TEE"], "source": "turuta"})).send().await.unwrap().json().await.unwrap();
+    assert_eq!(v["found"], json!({}));
+    let many: Vec<String> = (0..301).map(|i| format!("x|{i}")).collect();
+    let r = client.post(format!("{base}/api/lookup/products")).json(&json!({"keys": many})).send().await.unwrap();
+    assert_eq!(r.status(), 413);
+
     // Snapshot files and signature.
     let sha_line = client.get(format!("{base}/db/latest.db.sha256")).send().await.unwrap().text().await.unwrap();
     let db_bytes = client.get(format!("{base}/db/latest.db")).send().await.unwrap().bytes().await.unwrap();

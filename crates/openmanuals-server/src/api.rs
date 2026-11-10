@@ -262,6 +262,56 @@ pub async fn lookup(State(state): State<Shared>, Query(q): Query<LookupQuery>) -
     }
 }
 
+pub const MAX_PRODUCT_KEYS: usize = 300;
+
+#[derive(Deserialize)]
+pub struct ProductLookup {
+    /// Product keys (`brand|MODEL`, as `openmanuals_core::product::product_key` makes them).
+    pub keys: Vec<String>,
+    /// Only manuals from this site (a `source` key such as "turuta").
+    pub source: Option<String>,
+}
+
+/// The manuals covering each of a listing page's products, for sites whose
+/// listing names models but doesn't link files (turuta.md, signed out).
+/// Answers `{"found": {"<key>": [{"id", "title", "doc_type", "source", "url"}…]}}`;
+/// keys with no manual are left out.
+pub async fn lookup_products(State(state): State<Shared>, Json(q): Json<ProductLookup>) -> Response {
+    if q.keys.len() > MAX_PRODUCT_KEYS {
+        return err(StatusCode::PAYLOAD_TOO_LARGE, format!("at most {MAX_PRODUCT_KEYS} keys"));
+    }
+    let st = state.clone();
+    let public_url = st.paths.public_url.clone();
+    let res = tokio::task::spawn_blocking(move || -> anyhow::Result<Value> {
+        let Some(db) = st.reader() else {
+            return Ok(json!({"found": {}, "snapshot": false}));
+        };
+        let mut s = db.prepare_cached(
+            "SELECT m.id, m.title, m.doc_type, m.source FROM covers c JOIN manuals m ON m.id = c.manual \
+             WHERE c.product = ?1 AND (?2 IS NULL OR m.source = ?2) ORDER BY m.id LIMIT 20",
+        )?;
+        let mut found = serde_json::Map::new();
+        for key in q.keys.iter().collect::<std::collections::BTreeSet<_>>() {
+            let rows: Vec<Value> = s
+                .query_map(params![key, q.source], |r| {
+                    let id: String = r.get(0)?;
+                    Ok(json!({"id": id, "title": r.get::<_, String>(1)?, "doc_type": r.get::<_, String>(2)?, "source": r.get::<_, Option<String>>(3)?, "url": format!("{public_url}/manual/{id}")}))
+                })?
+                .collect::<rusqlite::Result<_>>()?;
+            if !rows.is_empty() {
+                found.insert(key.clone(), Value::Array(rows));
+            }
+        }
+        Ok(json!({"found": found, "snapshot": true}))
+    })
+    .await;
+    match res {
+        Ok(Ok(v)) => Json(v).into_response(),
+        Ok(Err(e)) => err(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+        Err(e) => err(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+    }
+}
+
 async fn serve_file(path: std::path::PathBuf, content_type: &'static str) -> Response {
     match tokio::fs::read(&path).await {
         Ok(bytes) => ([(header::CONTENT_TYPE, content_type)], bytes).into_response(),

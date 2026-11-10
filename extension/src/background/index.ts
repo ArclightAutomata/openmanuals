@@ -10,7 +10,7 @@ import * as ia from "./ia.ts";
 import { serverVersion } from "./api.ts";
 import { refreshIfStale } from "./filter.ts";
 import { identity, saveProfile, submit } from "./identity.ts";
-import { initWasm, lookupMany, parsePage, refreshTab, tabInfo } from "./lookup.ts";
+import { initWasm, lookupMany, lookupProducts, parsePage, refreshTab, tabInfo } from "./lookup.ts";
 import { recordReport } from "./mute.ts";
 import { flush, installAlarm, state as outboxState } from "./outbox.ts";
 import { avatarState, installAvatarAlarm, setAvatar, uploadPending } from "./avatar.ts";
@@ -144,7 +144,7 @@ async function iaStatus(force = false): Promise<{ session: string | null; sessio
 type Reply = (v: unknown) => void;
 
 /** What a content script (any web page) may ask for. Everything else, signing above all, is for extension pages only. */
-const CONTENT_SCRIPT_MESSAGES = new Set(["lookup", "lookupMany", "openOptions", "siteHello", "siteAction", "sitePage"]);
+const CONTENT_SCRIPT_MESSAGES = new Set(["lookup", "lookupMany", "lookupProducts", "openOptions", "siteHello", "siteAction", "sitePage"]);
 const fromExtensionPage = (sender: chrome.runtime.MessageSender) => sender.id === chrome.runtime.id && (sender.url ?? "").startsWith(chrome.runtime.getURL(""));
 
 chrome.runtime.onMessage.addListener((msg: Message | { type: string; [k: string]: unknown }, sender, sendResponse: Reply) => {
@@ -173,6 +173,8 @@ chrome.runtime.onMessage.addListener((msg: Message | { type: string; [k: string]
       return false;
     }
     case "lookup": return run(refresh(tabId!, (msg as { url: string }).url));
+    // A listing's products (turuta.md rows): only brand + model text leaves the page.
+    case "lookupProducts": return run(wasmReady.then(() => lookupProducts(String((msg as { source?: unknown }).source ?? ""), Array.isArray((msg as { products?: unknown }).products) ? (msg as unknown as { products: { brand: string; model: string }[] }).products : [])));
     case "lookupMany": return run(wasmReady.then(() => lookupMany((msg as { source: string }).source, (msg as { sourceIds: string[] }).sourceIds ?? [])));
     // Whether a tab shows a manual page on a supported site (the core's page parser decides; one list for every site).
     case "isSourcePage": return run(chrome.tabs.get((msg as { tabId: number }).tabId).then((t) => Boolean(t?.url && parsePage(t.url)), () => false));

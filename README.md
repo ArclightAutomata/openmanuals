@@ -933,6 +933,24 @@ mute authors. `legacy_identifiers` lists the deterministic archive.org
 identifiers for the page, for the extension's optional live archive.org check
 when `known` is false.
 
+#### `POST /api/lookup/products`
+
+Which manuals cover these products, for sites that list models without
+linking to a page we know (the turuta.md listing). The body is
+`{"keys": ["jvc|AV2168TEE", …]}`, with product keys from `product_key`, at
+most 300 of them (413 above that). An optional `source` keeps only manuals
+from that source.
+
+```json
+{ "found": { "jvc|AV2168TEE": [ { "id": "01J9…", "title": "…", "doc_type": "service", "source": "manualslib",
+                                  "url": "https://openmanuals.win/manual/01J9…" } ] },
+  "snapshot": true }
+```
+
+Keys with no manual are left out, and each key has at most 20 manuals. The
+extension computes the keys itself and caches the answers. Unlike page
+lookups, this sends the server the brands and models a page lists.
+
 #### `GET /api/server`
 
 The server's name, public key (JWK), fingerprint, domain and `aspe:` URI,
@@ -1631,7 +1649,7 @@ the manifest allows them with `wasm-unsafe-eval`.
 |------|------|
 | `src/core/` | Wire-format pieces shared by every context: encodings, MD5, ULID, hashing, fingerprints, key storage and backup (`keys.ts`), the fact envelope and signing (`facts.ts`), profile JWS (`asp.ts`), the wasm loader, settings, message types. |
 | `src/background/` | The service worker: `index.ts` (router, ports), `icon.ts` (badges), `site.ts` (the server-page script and confirm window), `lookup.ts`, `filter.ts`, `mirror.ts`, `upload.ts`, `downloads.ts` (*Save link as…* capture), `outbox.ts`, `identity.ts`, `avatar.ts`, `mute.ts`, `ia.ts` (archive.org), `api.ts` (OpenManuals), `offscreen.ts`. |
-| `src/content/` | The banner, list marks, download interception (`common.ts`), the site adapters (`manualslib.ts`, `elektrotanya.ts`, `manualzz.ts`, `freeservicemanuals.ts`), and `site.ts` for the OpenManuals server's own pages. |
+| `src/content/` | The banner, list marks, download interception (`common.ts`), the site adapters (`manualslib.ts`, `elektrotanya.ts`, `manualzz.ts`, `freeservicemanuals.ts`, and `turuta.ts`, which only marks free manuals on turuta.md's listing), and `site.ts` for the OpenManuals server's own pages. |
 | `src/confirm/` | The confirmation window for Retract and Report started on the server's pages (the fallback when the side panel can't open). |
 | `src/panel/` | The side panel for the server's pages: every fact, copy and file on the page, one-click actions with undo, bulk actions. |
 | `src/offscreen/` | The offscreen document, the stripper worker and the mirror worker host. |

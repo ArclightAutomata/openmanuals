@@ -24,7 +24,7 @@ const common = { bundle: true, sourcemap: true, target: "chrome120", logLevel: "
 // Content scripts: classic scripts (no import.meta, no top-level await).
 const content = esbuild.context({
   ...common, format: "iife",
-  entryPoints: { "content-manualslib": "src/content/manualslib.ts", "content-elektrotanya": "src/content/elektrotanya.ts", "content-manualzz": "src/content/manualzz.ts", "content-freeservicemanuals": "src/content/freeservicemanuals.ts", "content-site": "src/content/site.ts" },
+  entryPoints: { "content-manualslib": "src/content/manualslib.ts", "content-elektrotanya": "src/content/elektrotanya.ts", "content-manualzz": "src/content/manualzz.ts", "content-freeservicemanuals": "src/content/freeservicemanuals.ts", "content-turuta": "src/content/turuta.ts", "content-site": "src/content/site.ts" },
   outdir,
 });
 // Service worker, pages and the worker: ES modules.
