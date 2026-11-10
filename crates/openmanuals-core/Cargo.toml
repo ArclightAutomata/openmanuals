@@ -25,6 +25,9 @@ hex = "0.4"
 ed25519-dalek = { version = "2", default-features = false, features = ["alloc", "zeroize"] }
 ssh-key = { version = "0.6", default-features = false, features = ["alloc", "ed25519"] }
 rand_core = { version = "0.6", features = ["getrandom"], optional = true }
+# Reading zip files (stored and deflate only; pure Rust, so it builds for wasm too).
+zip = { version = "7", default-features = false, features = ["deflate-flate2", "deflate64"] }
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 
 [dev-dependencies]
 

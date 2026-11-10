@@ -100,6 +100,18 @@ fn file_fact(key: &SigningKey, bytes: &[u8], mime: &str) -> Result<(String, Fact
     Ok((sha256, sign(key, "file", body)?))
 }
 
+/// The file's type, if OpenManuals takes it: a PDF, a DjVu, or a zip that
+/// holds only those (the server refuses any other zip, so it isn't uploaded).
+pub fn document_type(bytes: &[u8]) -> Result<openmanuals_core::sniff::FileType> {
+    use openmanuals_core::sniff::FileType;
+    let ft = openmanuals_core::sniff::sniff(&bytes[..bytes.len().min(16)]).ok_or_else(|| anyhow!("not a document: only PDF, DjVu and zips of them are accepted"))?;
+    if ft == FileType::Zip {
+        let docs = openmanuals_core::container::zip_documents(std::io::Cursor::new(bytes)).map_err(|e| anyhow!("this zip isn't only documents: {e}"))?;
+        eprintln!("zip of {} documents", docs.len());
+    }
+    Ok(ft)
+}
+
 /// Upload a file and return the facts recording it. With `strip`, a PDF goes
 /// through the watermark stripper first, as in the extension: when anything
 /// was removed the stripped bytes are uploaded, and the bundle records the
@@ -108,7 +120,7 @@ fn file_fact(key: &SigningKey, bytes: &[u8], mime: &str) -> Result<(String, Fact
 #[allow(clippy::too_many_arguments)]
 pub async fn run(key: &SigningKey, path: &Path, target: Target, manual: Option<&str>, title: Option<&str>, source_url: Option<&str>, strip: bool, o: &TargetOpts) -> Result<Vec<Fact>> {
     let original = std::fs::read(path).with_context(|| path.display().to_string())?;
-    let ft = openmanuals_core::sniff::sniff(&original[..original.len().min(16)]).ok_or_else(|| anyhow!("not a document: only PDF and DjVu are accepted"))?;
+    let ft = document_type(&original)?;
     let (original_sha256, original_fact) = file_fact(key, &original, ft.mime())?;
     let mut facts = vec![original_fact];
     let stripped = if strip && ft == openmanuals_core::sniff::FileType::Pdf {
@@ -230,4 +242,30 @@ pub async fn run(key: &SigningKey, path: &Path, target: Target, manual: Option<&
         }
     }
     Ok(facts)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use openmanuals_core::sniff::FileType;
+
+    fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
+        use std::io::Write;
+        let mut w = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        for (name, data) in entries {
+            w.start_file(*name, zip::write::SimpleFileOptions::default()).unwrap();
+            w.write_all(data).unwrap();
+        }
+        w.finish().unwrap().into_inner()
+    }
+
+    #[test]
+    fn only_documents_and_zips_of_them() {
+        let pdf: &[u8] = b"%PDF-1.4\n%%EOF\n";
+        assert_eq!(document_type(pdf).unwrap(), FileType::Pdf);
+        assert_eq!(document_type(&zip_of(&[("a/1.pdf", pdf), ("a/2.pdf", pdf)])).unwrap(), FileType::Zip);
+        let e = document_type(&zip_of(&[("1.pdf", pdf), ("run.bat", b"@echo off")])).unwrap_err().to_string();
+        assert_eq!(e, "this zip isn't only documents: run.bat isn't a PDF or DjVu");
+        assert!(document_type(b"Rar!\x1a\x07\x01\x00").is_err());
+    }
 }

@@ -16,8 +16,9 @@ import { stripViaOffscreen } from "./offscreen.ts";
 import { omCacheDrop, tabInfo } from "./lookup.ts";
 import { paint as paintIcon, stateFor } from "./icon.ts";
 
-// Only documents are accepted (openmanuals-core sniff): PDF and DjVu.
-const MIME: Record<string, string> = { pdf: "application/pdf", djvu: "image/vnd.djvu" };
+// Only documents are accepted (openmanuals-core sniff): PDF, DjVu, and a zip
+// that holds nothing else (openmanuals-core zip_documents).
+const MIME: Record<string, string> = { pdf: "application/pdf", djvu: "image/vnd.djvu", zip: "application/zip" };
 
 export function safeFilename(name: string | undefined, kind: string): string {
   let n = String(name ?? "manual").split(/[\\/]/).pop()!.replace(/[\x00-\x1f"*:<>?|]/g, "_").trim();
@@ -70,6 +71,10 @@ export async function runUpload(status: Status, job: UploadJob, bytes: Uint8Arra
   const key = await getKey();
   const kind = om.sniff(bytes);
   if (!kind) return status("error", { message: "That wasn't a document (the site returned a web page)." });
+  if (kind === "zip") {
+    try { om.zip_documents(bytes); }
+    catch (e) { return status("error", { message: `Not preserved: this zip has more than PDF and DjVu files in it (${(e as Error).message}).` }); }
+  }
   const paint = (s: "uploading" | "archived" | "restore") => paintIcon(tabId, s === "restore" ? stateFor(tabInfo.get(tabId ?? -1)) : s);
 
   status("hashing");

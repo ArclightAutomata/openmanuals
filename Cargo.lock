@@ -574,6 +574,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06"
 
 [[package]]
+name = "deflate64"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac6b926516df9c60bfa16e107b21086399f8285a44ca9711344b9e553c5146e2"
+
+[[package]]
 name = "defmt"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1691,6 +1697,7 @@ dependencies = [
  "tracing-subscriber",
  "ulid",
  "urlencoding",
+ "zip",
 ]
 
 [[package]]
@@ -1700,6 +1707,7 @@ dependencies = [
  "base64 0.22.1",
  "data-encoding",
  "ed25519-dalek",
+ "flate2",
  "hex",
  "md-5 0.10.6",
  "rand_core 0.6.4",
@@ -1710,6 +1718,7 @@ dependencies = [
  "sha2 0.10.9",
  "ssh-key",
  "thiserror",
+ "zip",
 ]
 
 [[package]]
@@ -1775,6 +1784,7 @@ dependencies = [
  "tracing-subscriber",
  "ulid",
  "urlencoding",
+ "zip",
 ]
 
 [[package]]
@@ -3127,6 +3137,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
+name = "typed-path"
+version = "0.12.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54ec2755506471f54baf5e4bb5499d8e510cc1caf271270e778a736bd2d7336c"
+
+[[package]]
 name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3577,6 +3593,20 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.9",
+]
+
+[[package]]
+name = "zip"
+version = "7.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "268bf6f9ceb991e07155234071501490bb41fd1e39c6a588106dad10ae2a5804"
+dependencies = [
+ "crc32fast",
+ "deflate64",
+ "flate2",
+ "indexmap",
+ "memchr",
+ "typed-path",
 ]
 
 [[package]]

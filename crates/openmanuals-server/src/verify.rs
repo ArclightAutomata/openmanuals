@@ -16,13 +16,16 @@
 //! `verified` fact with `"method": "conditional"`, and only while the newest
 //! full verification is younger than FULL_RECHECK_DAYS.
 //!
-//! Every `verified` fact records `file_type` (pdf/djvu), sniffed by this
-//! server from the bytes: bytes that aren't a document never verify. Copies
-//! whose bytes were downloaded in full are also scanned for active content
-//! (`scan`, see scan.rs) and, with a MalwareBazaar key, looked up by sha256
-//! (`malware`). archive.org copies are typed from their first bytes (a range
-//! request) and downloaded in full only when the file was introduced by a key
-//! outside the trust config's moderators and servers.
+//! Every `verified` fact records `file_type` (pdf/djvu/zip), sniffed by this
+//! server from the bytes: bytes that aren't a document never verify. A zip
+//! is a document only when every file in it is a PDF or DjVu
+//! (`openmanuals_core::container`), so a zip is always downloaded in full and
+//! opened, and each PDF in it is scanned. Copies whose bytes were downloaded
+//! in full are also scanned for active content (`scan`, see scan.rs) and, with
+//! a MalwareBazaar key, looked up by sha256 (`malware`). Other archive.org
+//! copies are typed from their first bytes (a range request) and downloaded in
+//! full only when the file was introduced by a key outside the trust config's
+//! moderators and servers.
 
 use crate::config::{Shared, State};
 use crate::rate;
@@ -71,7 +74,7 @@ pub const IA_BATCH_MAX_IDS: usize = 250;
 /// between 9,800 and 11,000 characters, whatever the number of terms.
 pub const IA_BATCH_MAX_QUERY: usize = 8000;
 /// `detail` of the `location_status` recorded for bytes that aren't a PDF or DjVu.
-pub const NOT_A_DOCUMENT: &str = "not a document (pdf/djvu)";
+pub const NOT_A_DOCUMENT: &str = "not a document (pdf/djvu, or a zip of them)";
 /// Byte range asked for when only the type of a copy is needed (archive.org).
 pub const SNIFF_RANGE: &str = "bytes=0-1023";
 /// MalwareBazaar's API (sha256 lookups, `query=get_info`).
@@ -488,6 +491,7 @@ pub async fn ia_unchanged_verdict(prev: &IaPrevious) -> Verdict {
     }
     let Some(url) = ia_fetch_url(&prev.final_url) else { return Verdict::Unknown(format!("not an archive.org download URL: {}", prev.final_url)) };
     match sniff_url(&url).await {
+        Ok(Some(FileType::Zip)) => Verdict::Unknown("a zip is only verified by a full check".into()),
         Ok(Some(ft)) => ia_conditional_verdict(prev, ft),
         Ok(None) => Verdict::Changed { final_url: prev.final_url.clone(), detail: NOT_A_DOCUMENT.into() },
         Err(e) => Verdict::Unknown(format!("{e:#}")),
@@ -773,7 +777,7 @@ pub async fn fetch_small(url: &str, max: u64) -> Result<Vec<u8>> {
 /// Open `path` and write `head` to it if `head` sniffs as PDF.
 async fn start_saving(path: Option<&Path>, head: &[u8]) -> Result<Option<tokio::io::BufWriter<tokio::fs::File>>> {
     use tokio::io::AsyncWriteExt;
-    let Some(path) = path.filter(|_| openmanuals_core::sniff::sniff(head) == Some(FileType::Pdf)) else { return Ok(None) };
+    let Some(path) = path.filter(|_| matches!(openmanuals_core::sniff::sniff(head), Some(FileType::Pdf | FileType::Zip))) else { return Ok(None) };
     let f = tokio::fs::File::create(path).await.with_context(|| format!("creating {}", path.display()))?;
     let mut w = tokio::io::BufWriter::with_capacity(1 << 20, f);
     w.write_all(head).await.context("writing the scan copy")?;
@@ -872,14 +876,43 @@ fn sweep_tmp(dir: &Path) {
 }
 
 /// Scan and look up bytes that were downloaded in full and matched the file.
-/// `saved`: the PDF copy on disk (None for DjVu, which has no active content).
-async fn examine(ex: &Examine, file_type: FileType, saved: Option<&Path>, sha256: &str) -> Checks {
+/// `saved`: the PDF or zip copy on disk (None for DjVu, which has no active
+/// content). Err: a zip that isn't only documents, and why.
+async fn examine(ex: &Examine, file_type: FileType, saved: Option<&Path>, sha256: &str) -> std::result::Result<Checks, String> {
     let scan = match (file_type, saved) {
         (FileType::Djvu, _) => Scan::clean(),
         (FileType::Pdf, Some(p)) => scan::scan_pdf_file(p).await,
-        (FileType::Pdf, None) => Scan::unparseable(),
+        (FileType::Zip, Some(p)) => scan_zip(p, &ex.tmp_dir).await?,
+        (FileType::Pdf | FileType::Zip, None) => Scan::unparseable(),
     };
-    Checks { scan: Some(scan.to_json()), malware: malware_lookup(ex.malwarebazaar_key.as_deref(), sha256).await }
+    Ok(Checks { scan: Some(scan.to_json()), malware: malware_lookup(ex.malwarebazaar_key.as_deref(), sha256).await })
+}
+
+/// A zip is a document only when everything in it is a PDF or DjVu
+/// (`container::zip_documents`; Err says why not). Each PDF in it is then
+/// unpacked to a file of its own and scanned like any other, one at a time,
+/// and the zip's scan is everything they found.
+async fn scan_zip(path: &Path, tmp_dir: &Path) -> std::result::Result<Scan, String> {
+    let zip = path.to_path_buf();
+    let open = |p: &Path| std::fs::File::open(p).map(std::io::BufReader::new).map_err(|e| format!("reading the zip: {e}"));
+    let members = {
+        let z = zip.clone();
+        tokio::task::spawn_blocking(move || openmanuals_core::container::zip_documents(open(&z)?)).await.map_err(|e| e.to_string())??
+    };
+    let mut found = std::collections::BTreeSet::new();
+    for m in members.into_iter().filter(|m| m.file_type == FileType::Pdf) {
+        let tmp = TempFile::new(tmp_dir).map_err(|e| format!("{e:#}"))?;
+        let (z, out) = (zip.clone(), tmp.path().to_path_buf());
+        tokio::task::spawn_blocking(move || -> std::result::Result<(), String> {
+            let mut w = std::io::BufWriter::new(std::fs::File::create(&out).map_err(|e| format!("writing {}: {e}", out.display()))?);
+            openmanuals_core::container::copy_document(open(&z)?, &m, &mut w)?;
+            std::io::Write::flush(&mut w).map_err(|e| e.to_string())
+        })
+        .await
+        .map_err(|e| e.to_string())??;
+        found.extend(scan::scan_pdf_file(tmp.path()).await.active);
+    }
+    Ok(Scan { active: found.into_iter().collect() })
 }
 
 /// The `malware` member for `sha256`: None without a key, or when the lookup
@@ -958,6 +991,8 @@ pub async fn check_archive_item(identifier: &str, filename: Option<&str>, file: 
         return ia_download_and_scan(public, &fetch_url, file, m, ex).await;
     }
     match sniff_url(&fetch_url).await {
+        // Its first bytes say nothing about what's inside, whoever uploaded it.
+        Ok(Some(FileType::Zip)) => ia_download_and_scan(public, &fetch_url, file, m, ex).await,
         Ok(Some(file_type)) => Verdict::Verified { final_url: public, sha256: file.sha256.clone(), size: m.size, validators: Validators::default(), ia: m.ia, conditional: false, file_type, checks: Checks::default() },
         Ok(None) => Verdict::Changed { final_url: public, detail: NOT_A_DOCUMENT.into() },
         Err(e) => Verdict::Unknown(format!("{e:#}")),
@@ -978,7 +1013,10 @@ async fn ia_download_and_scan(public: String, fetch_url: &str, file: &FileFacts,
     if !hashes_match(file, &f) {
         return Verdict::Changed { final_url: public, detail: "checksum differs".into() };
     }
-    let checks = examine(ex, file_type, f.saved.then(|| tmp.path()), &f.sha256).await;
+    let checks = match examine(ex, file_type, f.saved.then(|| tmp.path()), &f.sha256).await {
+        Ok(c) => c,
+        Err(why) => return Verdict::Changed { final_url: public, detail: format!("{NOT_A_DOCUMENT}: {why}") },
+    };
     Verdict::Verified { final_url: public, sha256: Some(f.sha256), size: f.size, validators: Validators::default(), ia: m.ia, conditional: false, file_type, checks }
 }
 
@@ -1060,7 +1098,10 @@ pub async fn check_generic(url: &str, file: &FileFacts, prev: Option<&Previous>,
             if !hashes_match(file, &f) {
                 return Verdict::Changed { final_url: f.final_url, detail: "checksum differs".into() };
             }
-            let checks = examine(ex, file_type, f.saved.then(|| tmp.path()), &f.sha256).await;
+            let checks = match examine(ex, file_type, f.saved.then(|| tmp.path()), &f.sha256).await {
+                Ok(c) => c,
+                Err(why) => return Verdict::Changed { final_url: f.final_url, detail: format!("{NOT_A_DOCUMENT}: {why}") },
+            };
             Verdict::Verified { final_url: f.final_url, sha256: Some(f.sha256), size: f.size, validators: f.validators, ia: None, conditional: false, file_type, checks }
         }
         Err(e) => {
@@ -1588,9 +1629,9 @@ mod tests {
         let mut v2_launch = full.clone();
         v2_launch["scan"] = json!({"tool": "om-scan/2", "active": ["Launch", "LaunchDocument"]});
         assert_eq!(previous_verdict([("verified", &v2_launch)], now).unwrap().checks.scan, Some(v2_launch["scan"].clone()));
-        let mut zip = full.clone();
-        zip["file_type"] = json!("zip");
-        assert_eq!(previous_verdict([("verified", &zip)], now), None);
+        let mut rar = full.clone();
+        rar["file_type"] = json!("rar");
+        assert_eq!(previous_verdict([("verified", &rar)], now), None);
         // Newest verdict is a location_status → full fetch.
         let gone = json!({"location": "loc", "status": "gone", "checked_at": "2026-10-01T00:00:00Z"});
         assert_eq!(previous_verdict([("verified", &full), ("location_status", &gone)], now), None);
@@ -1682,9 +1723,24 @@ mod tests {
         }
 
         /// Bytes served at `/bytes/<name>`.
+        /// A zip of these files (deflated).
+        pub fn zip_of(entries: &[(&str, Vec<u8>)]) -> Vec<u8> {
+            use std::io::Write;
+            let mut w = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+            for (name, data) in entries {
+                w.start_file(*name, zip::write::SimpleFileOptions::default()).unwrap();
+                w.write_all(data).unwrap();
+            }
+            w.finish().unwrap().into_inner()
+        }
+
         pub fn special(name: &str) -> Option<Vec<u8>> {
             Some(match name {
+                // Zip headers, but no readable zip.
                 "zip" => b"PK\x03\x04\x14\x00\x00\x00\x08\x00manual.pdf".to_vec(),
+                "zip-docs" => zip_of(&[("q2500/Seite 1.pdf", special("clean")?), ("q2500/board.djvu", special("djvu")?)]),
+                "zip-js" => zip_of(&[("a.pdf", special("clean")?), ("b.pdf", special("js")?)]),
+                "zip-exe" => zip_of(&[("a.pdf", special("clean")?), ("setup.exe", special("exe")?)]),
                 "exe" => b"MZ\x90\x00\x03\x00\x00\x00\x04\x00\x00\x00\xff\xff".to_vec(),
                 "djvu" => b"AT&TFORM\x00\x00\x01\x00DJVMDIRM\x00\x00\x00\x10".to_vec(),
                 "js" => crate::scan::testpdf::classic(&[b"<< /Type /Catalog /Pages 2 0 R /OpenAction 3 0 R >>", crate::scan::testpdf::PAGES, b"<< /S /JavaScript /JS (app.alert\\(1\\)) >>"]),
@@ -2516,7 +2572,7 @@ mod tests {
             let bytes = local::special(name).unwrap();
             let file = FileFacts { sha256: Some(sha256_bytes(&bytes)), sha1: None, md5: None };
             let v = check_generic(&format!("{}/bytes/{name}", srv.base), &file, None, &ex()).await;
-            assert!(matches!(&v, Verdict::Changed { detail, .. } if detail == NOT_A_DOCUMENT), "{name}: {v:?}");
+            assert!(matches!(&v, Verdict::Changed { detail, .. } if detail.starts_with(NOT_A_DOCUMENT)), "{name}: {v:?}");
         }
     }
 
@@ -2540,6 +2596,14 @@ mod tests {
         // DjVu has no active content; it isn't parsed (or written to disk).
         let Verdict::Verified { file_type, checks, .. } = check("djvu").await else { panic!() };
         assert_eq!((file_type, checks.scan), (FileType::Djvu, Some(json!({"tool": "om-scan/2", "active": []}))));
+        // A zip of documents is checked and scanned file by file; one PDF's
+        // JavaScript is the zip's. A zip with anything else in it never verifies.
+        let Verdict::Verified { file_type, checks, .. } = check("zip-docs").await else { panic!() };
+        assert_eq!((file_type, checks.scan), (FileType::Zip, Some(json!({"tool": "om-scan/2", "active": []}))));
+        let Verdict::Verified { file_type, checks, .. } = check("zip-js").await else { panic!() };
+        assert_eq!((file_type, checks.scan), (FileType::Zip, Some(json!({"tool": "om-scan/2", "active": ["JavaScript"]}))));
+        let v = check("zip-exe").await;
+        assert!(matches!(&v, Verdict::Changed { detail, .. } if detail == &format!("{NOT_A_DOCUMENT}: setup.exe isn't a PDF or DjVu")), "{v:?}");
         // A "PDF" the parser can't read is risky, not clean.
         let v = check_generic(&format!("{}/file", srv.base), &file_v(0), None, &ex).await;
         let Verdict::Verified { checks, .. } = &v else { panic!("{v:?}") };
@@ -2583,6 +2647,36 @@ mod tests {
         let downloads = w.mock.downloads();
         assert!(downloads.contains(&("/download/node/item-exe/m.pdf".into(), Some(SNIFF_RANGE.into()))), "{downloads:?}");
         assert!(downloads.contains(&("/download/node/item-exe-u/m.pdf".into(), None)), "{downloads:?}");
+    }
+
+    #[tokio::test]
+    async fn ia_zips_are_always_opened() {
+        // A zip's first bytes say nothing about what's in it, so even a
+        // trusted key's zip is downloaded in full, opened and scanned.
+        let mut w = World::new().await;
+        let docs = local::special("zip-docs").unwrap();
+        let exe = local::special("zip-exe").unwrap();
+        {
+            let mut d = w.mock.data.lock().unwrap();
+            for (id, b) in [("item-zip", &docs), ("item-zip-exe", &exe)] {
+                d.meta.insert(id.into(), json!({"files": [{"name": "m.zip", "sha1": sha1_bytes(b), "size": b.len().to_string()}], "item_last_updated": 1, "item_size": 10, "files_count": 1}));
+                d.files.insert(format!("/download/{id}/m.zip"), b.clone());
+            }
+        }
+        for (id, b) in [("item-zip", &docs), ("item-zip-exe", &exe)] {
+            let s1 = sha1_bytes(b);
+            w.location_of(id, &format!("sha1:{s1}"), Some((json!({"sha1": s1, "size": b.len()}), None)));
+        }
+        let start = State::now();
+        assert_eq!(run_once(w.state.clone(), 100).await.unwrap(), 2);
+        let v = w.new_verdicts("item-zip", &start);
+        assert_eq!((v[0].0.as_str(), v[0].1["file_type"].as_str(), &v[0].1["scan"]["active"]), ("verified", Some("zip"), &json!([])), "{v:?}");
+        let v = w.new_verdicts("item-zip-exe", &start);
+        assert_eq!((v[0].0.as_str(), v[0].1["status"].as_str()), ("location_status", Some("changed")), "{v:?}");
+        let downloads = w.mock.downloads();
+        for id in ["item-zip", "item-zip-exe"] {
+            assert!(downloads.contains(&(format!("/download/node/{id}/m.zip"), None)), "{id}: {downloads:?}");
+        }
     }
 
     #[tokio::test]

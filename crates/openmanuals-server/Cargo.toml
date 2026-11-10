@@ -48,6 +48,8 @@ libc = "0.2.191"
 [dev-dependencies]
 # Building compressed object streams for the scanner tests.
 flate2 = "1.1"
+# Building zips of documents for the verifier tests.
+zip = { version = "7", default-features = false, features = ["deflate-flate2"] }
 tempfile = { workspace = true }
 # Paused time for the fold scheduler's tests.
 tokio = { workspace = true, features = ["test-util"] }

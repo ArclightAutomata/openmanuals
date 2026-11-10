@@ -10,6 +10,7 @@
 pub mod asp;
 pub mod avatar;
 pub mod canon;
+pub mod container;
 pub mod fact;
 pub mod filter;
 pub mod ids;

@@ -91,10 +91,19 @@ pub fn product_key(brand: &str, model: &str) -> Option<String> {
     product::product_key(brand, model)
 }
 
-/// "pdf" | "zip" | "rar" | "djvu" | null
+/// "pdf" | "djvu" | "zip" | null. A zip is a document only if `zip_documents` accepts it.
 #[wasm_bindgen]
 pub fn sniff(bytes: &[u8]) -> Option<String> {
     sniff::sniff(bytes).map(|t| t.extension().to_string())
+}
+
+/// The documents in a zip, as JSON `[{"name", "size", "type"}]`; throws why
+/// the zip isn't only PDF and DjVu files.
+#[wasm_bindgen]
+pub fn zip_documents(bytes: &[u8]) -> Result<String, JsValue> {
+    let m = openmanuals_core::container::zip_documents(std::io::Cursor::new(bytes)).map_err(js_err)?;
+    let v: Vec<serde_json::Value> = m.iter().map(|d| serde_json::json!({"name": d.name, "size": d.size, "type": d.file_type.extension()})).collect();
+    Ok(serde_json::Value::Array(v).to_string())
 }
 
 #[wasm_bindgen]

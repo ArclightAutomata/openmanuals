@@ -42,5 +42,6 @@ rpassword = "7"
 
 [dev-dependencies]
 tempfile = { workspace = true }
+zip = { version = "7", default-features = false, features = ["deflate-flate2"] }
 axum = "0.8"
 lopdf = { workspace = true }

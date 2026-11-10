@@ -499,9 +499,15 @@ meta. Same ledger and trust config, same bytes, however it was built.
   file's `mime` is the type the server sniffed, not what its author claimed.
 - **Canonical copy per file:** a `prefer` fact, else archive.org first, then
   other verified copies by verification age.
-- **What can be uploaded:** the extension and `om upload` accept only PDF and
-  DjVu (by their leading bytes); zip and rar are refused because they can
-  contain anything, executables included.
+- **What can be uploaded:** the extension and `om upload` accept PDF and
+  DjVu (by their leading bytes), and a zip that holds nothing else. Some sites
+  serve one manual as a zip of chapters, schematics and board layouts; it's
+  kept as it is, so its hash is the site's. A zip is refused if any file in it
+  isn't a PDF or DjVu, or if it is encrypted, holds a link, an unsafe path, another zip,
+  compression other than stored or deflate, more than 2,000 entries or
+  4 GiB unpacked, or a file that unpacks to over 200 times its packed size
+  (`openmanuals_core::container`). Rar and 7z are refused: they can contain
+  anything, executables included, and aren't opened.
 
 ### Streaming
 
@@ -1101,10 +1107,14 @@ requests go through one guarded path:
   list); the final URL is recorded;
 - 512 MiB and 10-minute caps, an identifying user agent, 2 s between requests
   to one host, per-key daily verification budgets;
-- the body is hashed (sha256, sha1, md5) and sniffed. Only PDF and DjVu bytes
-  verify. Zip and rar are refused because they can hold executables. Anything
-  else gets `location_status` `changed` with
-  `detail: "not a document (pdf/djvu)"`.
+- the body is hashed (sha256, sha1, md5) and sniffed. Only PDF and DjVu
+  bytes, and zips that hold only those, verify. A zip is always downloaded in
+  full (an archive.org copy too, whoever uploaded it): the server opens it
+  with the uploaders' rules, unpacks each PDF to a file of its own and scans
+  it, and the zip's `scan` is everything its PDFs had. Anything else,
+  including any other zip, gets `location_status` `changed` with a `detail`
+  that starts `"not a document (pdf/djvu, or a zip of them)"` (for a zip,
+  followed by why).
 
 When `final_url` is stable (the submitted URL, or one without signing or
 expiry query parameters), the `verified` fact records the response's HTTP
