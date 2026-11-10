@@ -70,6 +70,18 @@ test("a backup file made later, from a passkey-unlocked copy", async () => {
   await assert.rejects(importBackup(b, "wrong"), /wrong passphrase/);
 });
 
+test("a backup file without a passphrase holds the key in the clear", async () => {
+  const { record, wraps } = await createKey(null, { iterations: 1000, protect: protectWith(prfA, "Y3JlZC1h") });
+  const unlocked = await unwrapPrivateKey(wraps[0], prfA, true);
+  const b = await backupOf({ ...unlocked, createdAt: record.createdAt }, "", wraps);
+  assert.equal(b.kdf, undefined);
+  assert.equal(b.ciphertext, undefined);
+  assert.equal(typeof b.privateJwk?.d, "string");
+  assert.deepEqual(backupWraps(b).map((w) => w.credential), ["Y3JlZC1h"]);
+  await sameKey(record, await importBackup(JSON.parse(JSON.stringify(b)), ""));
+  await assert.rejects(importBackup({ ...b, privateJwk: undefined }, ""), /not an OpenManuals key backup/);
+});
+
 test("backup v2 round trip, and v1 still imports", async () => {
   const { record, backup } = await createKey("pw", { iterations: 1000, protect: protectWith(prfA, "Y3JlZC1h") });
   const v2 = JSON.parse(JSON.stringify(backup)) as KeyBackup;

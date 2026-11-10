@@ -29,10 +29,13 @@ export interface KeyBackup {
   alg: Alg;
   fingerprint: string;
   publicJwk: PublicJwk;
-  kdf: { name: "PBKDF2"; hash: "SHA-256"; iterations: number; salt: string };
-  cipher: { name: "AES-GCM"; iv: string };
+  /** The next three are absent from a file saved without a passphrase, which has `privateJwk` instead. */
+  kdf?: { name: "PBKDF2"; hash: "SHA-256"; iterations: number; salt: string };
+  cipher?: { name: "AES-GCM"; iv: string };
   /** AES-GCM ciphertext of the private JWK JSON (base64url). */
-  ciphertext: string;
+  ciphertext?: string;
+  /** The private key in the clear, when the file was saved without a passphrase. */
+  privateJwk?: { kty: string; crv: string; x: string; d: string };
   createdAt: string;
   /** v2: passkey-wrapped copies (see passkey.ts); restoring with a passkey needs no passphrase. */
   wraps?: KeyWrap[];
@@ -119,16 +122,20 @@ async function deriveWrapKey(passphrase: string, salt: Uint8Array, iterations: n
 
 /** Encrypt a private JWK under a passphrase as a backup file (v2). */
 async function sealBackup(privJwk: JsonWebKey, info: { publicJwk: PublicJwk; fingerprint: string; createdAt: string }, passphrase: string, iterations: number, wraps: KeyWrap[]): Promise<KeyBackup> {
+  const head = { format: "om-key-backup", v: 2, alg: "Ed25519", fingerprint: info.fingerprint, publicJwk: info.publicJwk } as const;
+  const own = mergeWraps(wraps.filter((w) => w.fingerprint === info.fingerprint));
+  // No passphrase: the key in the clear, like the CLI's own key file.
+  if (passphrase === "") return { ...head, privateJwk: { kty: privJwk.kty!, crv: privJwk.crv!, x: privJwk.x!, d: privJwk.d! }, createdAt: info.createdAt, wraps: own };
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const wrap = await deriveWrapKey(passphrase, salt, iterations);
   const plain = utf8.encode(JSON.stringify({ kty: privJwk.kty, crv: privJwk.crv, x: privJwk.x, d: privJwk.d }));
   const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv as BufferSource }, wrap, plain as BufferSource));
   return {
-    format: "om-key-backup", v: 2, alg: "Ed25519", fingerprint: info.fingerprint, publicJwk: info.publicJwk,
+    ...head,
     kdf: { name: "PBKDF2", hash: "SHA-256", iterations, salt: b64url(salt) },
     cipher: { name: "AES-GCM", iv: b64url(iv) },
-    ciphertext: b64url(ct), createdAt: info.createdAt, wraps: mergeWraps(wraps.filter((w) => w.fingerprint === info.fingerprint)),
+    ciphertext: b64url(ct), createdAt: info.createdAt, wraps: own,
   };
 }
 
@@ -198,14 +205,19 @@ export function withWraps(backup: KeyBackup, wraps: KeyWrap[]): KeyBackup {
 export async function importBackup(backup: KeyBackup, passphrase: string, opts: { extractable?: boolean } = {}): Promise<KeyRecord> {
   if (!isBackup(backup)) throw new Error("not an OpenManuals key backup");
   if (backup.alg !== "Ed25519") throw new Error(`unsupported key algorithm ${String(backup.alg)}: only Ed25519 keys are supported`);
-  const wrap = await deriveWrapKey(passphrase, b64urlDecode(backup.kdf.salt), backup.kdf.iterations);
-  let plain: ArrayBuffer;
-  try {
-    plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64urlDecode(backup.cipher.iv) as BufferSource }, wrap, b64urlDecode(backup.ciphertext) as BufferSource);
-  } catch {
-    throw new Error("wrong passphrase");
+  let privJwk: JsonWebKey;
+  if (backup.privateJwk) privJwk = { ...backup.privateJwk };
+  else {
+    if (!backup.kdf || !backup.cipher || !backup.ciphertext) throw new Error("not an OpenManuals key backup");
+    const wrap = await deriveWrapKey(passphrase, b64urlDecode(backup.kdf.salt), backup.kdf.iterations);
+    let plain: ArrayBuffer;
+    try {
+      plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64urlDecode(backup.cipher.iv) as BufferSource }, wrap, b64urlDecode(backup.ciphertext) as BufferSource);
+    } catch {
+      throw new Error("wrong passphrase");
+    }
+    privJwk = JSON.parse(utf8.decode(new Uint8Array(plain))) as JsonWebKey;
   }
-  const privJwk = JSON.parse(utf8.decode(new Uint8Array(plain))) as JsonWebKey;
   const publicJwk = stripJwk(privJwk);
   const fp = await fingerprint(publicJwk);
   if (fp !== backup.fingerprint) throw new Error("backup fingerprint mismatch");

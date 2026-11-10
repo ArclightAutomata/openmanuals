@@ -286,6 +286,9 @@ enum KeyCmd {
     Show,
     /// Print the private key (OpenSSH format) for backup.
     Export,
+    /// Use the key from the extension's backup file (Settings → Advanced →
+    /// Download a backup file). Asks for the backup's passphrase on the terminal.
+    ImportBackup { file: PathBuf },
     /// Replace the key with an OpenSSH private key file.
     Import { file: PathBuf },
 }
@@ -402,6 +405,22 @@ fn main() -> Result<()> {
                 println!("{}\n{}", k.public_key().fingerprint(), k.public_key().to_openssh());
             }
             KeyCmd::Export => print!("{}", home.key()?.to_openssh("openmanuals").map_err(|e| anyhow!("{e}"))?),
+            KeyCmd::ImportBackup { file } => {
+                let json = std::fs::read_to_string(&file).with_context(|| file.display().to_string())?;
+                let pass = if keys::backup_is_encrypted(&json) {
+                    let p = rpassword::prompt_password("Backup passphrase: ")?;
+                    eprintln!("Checking the passphrase (this takes a few seconds)…");
+                    p
+                } else {
+                    String::new()
+                };
+                let k = keys::from_backup(&json, &pass)?;
+                if home.key_path().exists() {
+                    anyhow::bail!("{} already has a key; move it away first", home.key_path().display());
+                }
+                keys::save(&home.key_path(), &k)?;
+                println!("{}", k.public_key().fingerprint());
+            }
             KeyCmd::Import { file } => {
                 let k = keys::load(&file)?;
                 keys::save(&home.key_path(), &k)?;

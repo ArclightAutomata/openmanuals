@@ -36,6 +36,9 @@ reqwest = { workspace = true }
 clap = { workspace = true }
 rusty-s3 = "0.7"
 urlencoding = "2"
+aes-gcm = "0.10"
+pbkdf2 = { version = "0.12", default-features = false, features = ["hmac"] }
+rpassword = "7"
 
 [dev-dependencies]
 tempfile = { workspace = true }

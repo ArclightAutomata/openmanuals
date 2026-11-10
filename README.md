@@ -287,8 +287,11 @@ ignore them.
   below; v1 files, without `wraps`, still import). A passkey-only key can get
   a backup file later: **Download backup file** unlocks it with one of its
   passkeys (extractable for that one step) and encrypts it under a new
-  passphrase. **Restore key** imports a backup file. A browser without PRF
-  support gets only this flow.
+  passphrase. With the passphrase left empty, the file isn't encrypted: it
+  has `privateJwk` (the private key) in place of `kdf`, `cipher` and
+  `ciphertext`. That's handy for moving the key to the CLI, but anyone with
+  the file can sign as you. **Restore key** imports a backup file. A browser
+  without PRF support gets only this flow.
 - **Passkeys:**
   - The relying party is the extension itself (`rp.id` omitted; Chrome records
     it as `chrome-extension://<id>`), so only this extension can use these
@@ -342,7 +345,9 @@ ignore them.
   comes from the newest profile.
 - **CLI keys:** an Ed25519 key file made by `om key init` (stored in OpenSSH
   private-key format). A CLI user with an existing key may link it by
-  `succession`.
+  `succession`, or use the extension's key: `om key import-backup <file>`
+  reads its backup file (asking for the passphrase if it has one) and
+  checks the key against the fingerprint in the file.
 
 ### Avatars
 
@@ -1849,7 +1854,7 @@ version is recorded on derivation facts.
 
 ```
 om [--home DIR] <command>         # --home / $OM_HOME: key, outbox and sync state
-om key init [--force]|show|export|import <file>
+om key init [--force]|show|export|import <file>|import-backup <file>
 om canonical fact.json            # the bytes a fact's signature covers
 om sign fact.json [--queue]
 om verify facts.jsonl

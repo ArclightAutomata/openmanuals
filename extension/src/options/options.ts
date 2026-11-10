@@ -346,13 +346,14 @@ $("signInPasskey").addEventListener("click", async () => {
 });
 $("makeBackup").addEventListener("click", async () => {
   const p1 = $<HTMLInputElement>("newBackupPass").value, p2 = $<HTMLInputElement>("newBackupPass2").value;
-  if (p1.length < 8) return say("backupMsg", "Use at least 8 characters.", false);
+  if (p1 && p1.length < 8) return say("backupMsg", "Use at least 8 characters, or leave both empty.", false);
   if (p1 !== p2) return say("backupMsg", "Passphrases don't match.", false);
   say("backupMsg", "Unlock with one of your passkeys…");
   try {
     downloadBackup(await makeBackup(p1));
     $<HTMLInputElement>("newBackupPass").value = $<HTMLInputElement>("newBackupPass2").value = "";
-    say("backupMsg", "Backup file downloaded. Keep it and the passphrase somewhere safe.", true);
+    say("backupMsg", p1 ? "Backup file downloaded. Keep it and the passphrase somewhere safe."
+      : "Backup file downloaded, unencrypted: anyone with the file can sign as you. Import it where you need it, then delete it or keep it somewhere private.", true);
   } catch (e) { say("backupMsg", (e as Error).message, false); }
 });
 
